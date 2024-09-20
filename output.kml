@@ -1,0 +1,2835 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">
+    <Document id="1">
+        <Style id="4">
+            <IconStyle id="5">
+                <color>e42778</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="6">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="7">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="10">
+            <IconStyle id="11">
+                <color>824171</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="12">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="13">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="16">
+            <IconStyle id="17">
+                <color>9e7eb7</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="18">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="19">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="26">
+            <LineStyle id="27">
+                <color>4f48fd</color>
+                <colorMode>normal</colorMode>
+                <width>3</width>
+            </LineStyle>
+            <PolyStyle id="28">
+                <color>6448fd</color>
+                <colorMode>normal</colorMode>
+                <fill>1</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="31">
+            <IconStyle id="32">
+                <color>28f1f8</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="33">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="34">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="37">
+            <IconStyle id="38">
+                <color>6802f6</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="39">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="40">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="47">
+            <LineStyle id="48">
+                <color>4b0058</color>
+                <colorMode>normal</colorMode>
+                <width>3</width>
+            </LineStyle>
+            <PolyStyle id="49">
+                <color>640058</color>
+                <colorMode>normal</colorMode>
+                <fill>1</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="52">
+            <IconStyle id="53">
+                <color>7999fb</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="54">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="55">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="62">
+            <LineStyle id="63">
+                <color>b3a2ad</color>
+                <colorMode>normal</colorMode>
+                <width>3</width>
+            </LineStyle>
+            <PolyStyle id="64">
+                <color>64a2ad</color>
+                <colorMode>normal</colorMode>
+                <fill>1</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="67">
+            <IconStyle id="68">
+                <color>82d36d</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="69">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="70">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="73">
+            <IconStyle id="74">
+                <color>118e03</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="75">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="76">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="79">
+            <IconStyle id="80">
+                <color>d021fc</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="81">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="82">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="85">
+            <IconStyle id="86">
+                <color>d021fc</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="87">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="88">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="91">
+            <IconStyle id="92">
+                <color>d021fc</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="93">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="94">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="97">
+            <IconStyle id="98">
+                <color>d021fc</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="99">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="100">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="103">
+            <IconStyle id="104">
+                <color>d021fc</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="105">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="106">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="109">
+            <IconStyle id="110">
+                <color>d021fc</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="111">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="112">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="115">
+            <IconStyle id="116">
+                <color>d021fc</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="117">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="118">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="121">
+            <IconStyle id="122">
+                <color>d021fc</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="123">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="124">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="127">
+            <IconStyle id="128">
+                <color>d021fc</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="129">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="130">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="133">
+            <IconStyle id="134">
+                <color>d021fc</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="135">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="136">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="139">
+            <IconStyle id="140">
+                <color>d021fc</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="141">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="142">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="145">
+            <IconStyle id="146">
+                <color>65482d</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="147">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="148">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="155">
+            <LineStyle id="156">
+                <color>96a96c</color>
+                <colorMode>normal</colorMode>
+                <width>3</width>
+            </LineStyle>
+            <PolyStyle id="157">
+                <color>64a96c</color>
+                <colorMode>normal</colorMode>
+                <fill>1</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="160">
+            <IconStyle id="161">
+                <color>b675b4</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="162">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="163">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="166">
+            <IconStyle id="167">
+                <color>98a4c5</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="168">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="169">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="172">
+            <IconStyle id="173">
+                <color>4c6e17</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="174">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="175">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="178">
+            <IconStyle id="179">
+                <color>4c6e17</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="180">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="181">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="184">
+            <IconStyle id="185">
+                <color>4c6e17</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="186">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="187">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="190">
+            <IconStyle id="191">
+                <color>4c6e17</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="192">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="193">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="196">
+            <IconStyle id="197">
+                <color>4c6e17</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="198">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="199">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="202">
+            <IconStyle id="203">
+                <color>4c6e17</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="204">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="205">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="208">
+            <IconStyle id="209">
+                <color>4c6e17</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="210">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="211">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="214">
+            <IconStyle id="215">
+                <color>4c6e17</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="216">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="217">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="220">
+            <IconStyle id="221">
+                <color>4c6e17</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="222">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="223">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="226">
+            <IconStyle id="227">
+                <color>4c6e17</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="228">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="229">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="232">
+            <IconStyle id="233">
+                <color>4c6e17</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="234">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="235">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="238">
+            <IconStyle id="239">
+                <color>4c6e17</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="240">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="241">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="244">
+            <IconStyle id="245">
+                <color>4c6e17</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="246">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="247">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="250">
+            <IconStyle id="251">
+                <color>4c6e17</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="252">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="253">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="256">
+            <IconStyle id="257">
+                <color>4c6e17</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="258">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="259">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="266">
+            <LineStyle id="267">
+                <color>c4bbd0</color>
+                <colorMode>normal</colorMode>
+                <width>3</width>
+            </LineStyle>
+            <PolyStyle id="268">
+                <color>64bbd0</color>
+                <colorMode>normal</colorMode>
+                <fill>1</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="275">
+            <LineStyle id="276">
+                <color>b6f58d</color>
+                <colorMode>normal</colorMode>
+                <width>3</width>
+            </LineStyle>
+            <PolyStyle id="277">
+                <color>64f58d</color>
+                <colorMode>normal</colorMode>
+                <fill>1</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="284">
+            <LineStyle id="285">
+                <color>672a14</color>
+                <colorMode>normal</colorMode>
+                <width>3</width>
+            </LineStyle>
+            <PolyStyle id="286">
+                <color>642a14</color>
+                <colorMode>normal</colorMode>
+                <fill>1</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="293">
+            <LineStyle id="294">
+                <color>ed89ad</color>
+                <colorMode>normal</colorMode>
+                <width>3</width>
+            </LineStyle>
+            <PolyStyle id="295">
+                <color>6489ad</color>
+                <colorMode>normal</colorMode>
+                <fill>1</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="302">
+            <LineStyle id="303">
+                <color>aeb5bb</color>
+                <colorMode>normal</colorMode>
+                <width>3</width>
+            </LineStyle>
+            <PolyStyle id="304">
+                <color>64b5bb</color>
+                <colorMode>normal</colorMode>
+                <fill>1</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="311">
+            <LineStyle id="312">
+                <color>fae2da</color>
+                <colorMode>normal</colorMode>
+                <width>3</width>
+            </LineStyle>
+            <PolyStyle id="313">
+                <color>64e2da</color>
+                <colorMode>normal</colorMode>
+                <fill>1</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="320">
+            <LineStyle id="321">
+                <color>fb2b9f</color>
+                <colorMode>normal</colorMode>
+                <width>3</width>
+            </LineStyle>
+            <PolyStyle id="322">
+                <color>642b9f</color>
+                <colorMode>normal</colorMode>
+                <fill>1</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="329">
+            <LineStyle id="330">
+                <color>b64524</color>
+                <colorMode>normal</colorMode>
+                <width>3</width>
+            </LineStyle>
+            <PolyStyle id="331">
+                <color>644524</color>
+                <colorMode>normal</colorMode>
+                <fill>1</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="338">
+            <LineStyle id="339">
+                <color>1f0e3e</color>
+                <colorMode>normal</colorMode>
+                <width>3</width>
+            </LineStyle>
+            <PolyStyle id="340">
+                <color>640e3e</color>
+                <colorMode>normal</colorMode>
+                <fill>1</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="347">
+            <LineStyle id="348">
+                <color>4313c4</color>
+                <colorMode>normal</colorMode>
+                <width>3</width>
+            </LineStyle>
+            <PolyStyle id="349">
+                <color>6413c4</color>
+                <colorMode>normal</colorMode>
+                <fill>1</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="356">
+            <LineStyle id="357">
+                <color>0e6c36</color>
+                <colorMode>normal</colorMode>
+                <width>3</width>
+            </LineStyle>
+            <PolyStyle id="358">
+                <color>646c36</color>
+                <colorMode>normal</colorMode>
+                <fill>1</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="361">
+            <IconStyle id="362">
+                <color>7887ec</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="363">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="364">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="371">
+            <LineStyle id="372">
+                <color>09ddb3</color>
+                <colorMode>normal</colorMode>
+                <width>3</width>
+            </LineStyle>
+            <PolyStyle id="373">
+                <color>64ddb3</color>
+                <colorMode>normal</colorMode>
+                <fill>1</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="380">
+            <LineStyle id="381">
+                <color>3d855a</color>
+                <colorMode>normal</colorMode>
+                <width>3</width>
+            </LineStyle>
+            <PolyStyle id="382">
+                <color>64855a</color>
+                <colorMode>normal</colorMode>
+                <fill>1</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="389">
+            <LineStyle id="390">
+                <color>50a5a6</color>
+                <colorMode>normal</colorMode>
+                <width>3</width>
+            </LineStyle>
+            <PolyStyle id="391">
+                <color>64a5a6</color>
+                <colorMode>normal</colorMode>
+                <fill>1</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="394">
+            <IconStyle id="395">
+                <color>ee2297</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="396">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="397">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="404">
+            <LineStyle id="405">
+                <color>a80204</color>
+                <colorMode>normal</colorMode>
+                <width>3</width>
+            </LineStyle>
+            <PolyStyle id="406">
+                <color>640204</color>
+                <colorMode>normal</colorMode>
+                <fill>1</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="409">
+            <IconStyle id="410">
+                <color>cf762d</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="411">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="412">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="415">
+            <IconStyle id="416">
+                <color>425e98</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="417">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="418">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="421">
+            <IconStyle id="422">
+                <color>6631e4</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="423">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="424">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="431">
+            <LineStyle id="432">
+                <color>15de73</color>
+                <colorMode>normal</colorMode>
+                <width>3</width>
+            </LineStyle>
+            <PolyStyle id="433">
+                <color>64de73</color>
+                <colorMode>normal</colorMode>
+                <fill>1</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="436">
+            <IconStyle id="437">
+                <color>49478f</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="438">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="439">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="442">
+            <IconStyle id="443">
+                <color>a6f345</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="444">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="445">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="452">
+            <LineStyle id="453">
+                <color>b23b92</color>
+                <colorMode>normal</colorMode>
+                <width>3</width>
+            </LineStyle>
+            <PolyStyle id="454">
+                <color>643b92</color>
+                <colorMode>normal</colorMode>
+                <fill>1</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="461">
+            <LineStyle id="462">
+                <color>6a45f4</color>
+                <colorMode>normal</colorMode>
+                <width>3</width>
+            </LineStyle>
+            <PolyStyle id="463">
+                <color>6445f4</color>
+                <colorMode>normal</colorMode>
+                <fill>1</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="470">
+            <LineStyle id="471">
+                <color>0a4736</color>
+                <colorMode>normal</colorMode>
+                <width>3</width>
+            </LineStyle>
+            <PolyStyle id="472">
+                <color>644736</color>
+                <colorMode>normal</colorMode>
+                <fill>1</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="475">
+            <IconStyle id="476">
+                <color>36a968</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="477">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="478">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="485">
+            <LineStyle id="486">
+                <color>606ff6</color>
+                <colorMode>normal</colorMode>
+                <width>3</width>
+            </LineStyle>
+            <PolyStyle id="487">
+                <color>646ff6</color>
+                <colorMode>normal</colorMode>
+                <fill>1</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="494">
+            <LineStyle id="495">
+                <color>3fcddb</color>
+                <colorMode>normal</colorMode>
+                <width>3</width>
+            </LineStyle>
+            <PolyStyle id="496">
+                <color>64cddb</color>
+                <colorMode>normal</colorMode>
+                <fill>1</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="503">
+            <LineStyle id="504">
+                <color>52fd13</color>
+                <colorMode>normal</colorMode>
+                <width>3</width>
+            </LineStyle>
+            <PolyStyle id="505">
+                <color>64fd13</color>
+                <colorMode>normal</colorMode>
+                <fill>1</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="512">
+            <LineStyle id="513">
+                <color>ad77b7</color>
+                <colorMode>normal</colorMode>
+                <width>3</width>
+            </LineStyle>
+            <PolyStyle id="514">
+                <color>6477b7</color>
+                <colorMode>normal</colorMode>
+                <fill>1</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="517">
+            <IconStyle id="518">
+                <color>2b1f2f</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="519">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="520">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="527">
+            <LineStyle id="528">
+                <color>0502f9</color>
+                <colorMode>normal</colorMode>
+                <width>3</width>
+            </LineStyle>
+            <PolyStyle id="529">
+                <color>6402f9</color>
+                <colorMode>normal</colorMode>
+                <fill>1</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="536">
+            <LineStyle id="537">
+                <color>e98736</color>
+                <colorMode>normal</colorMode>
+                <width>3</width>
+            </LineStyle>
+            <PolyStyle id="538">
+                <color>648736</color>
+                <colorMode>normal</colorMode>
+                <fill>1</fill>
+                <outline>1</outline>
+            </PolyStyle>
+        </Style>
+        <Style id="541">
+            <IconStyle id="542">
+                <color>fdc9b0</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="543">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="544">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="547">
+            <IconStyle id="548">
+                <color>40e64c</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="549">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="550">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="553">
+            <IconStyle id="554">
+                <color>842180</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="555">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="556">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="559">
+            <IconStyle id="560">
+                <color>a2380c</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="561">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="562">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="565">
+            <IconStyle id="566">
+                <color>1d93ff</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="567">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="568">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="571">
+            <IconStyle id="572">
+                <color>bce353</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="573">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="574">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="577">
+            <IconStyle id="578">
+                <color>d1f3dd</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="579">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="580">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="583">
+            <IconStyle id="584">
+                <color>f634ff</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="585">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="586">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="589">
+            <IconStyle id="590">
+                <color>457902</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="591">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="592">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="595">
+            <IconStyle id="596">
+                <color>330ac2</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="597">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="598">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="601">
+            <IconStyle id="602">
+                <color>9e0122</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="603">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="604">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="607">
+            <IconStyle id="608">
+                <color>3f9da2</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="609">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="610">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="613">
+            <IconStyle id="614">
+                <color>06331a</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="615">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="616">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="619">
+            <IconStyle id="620">
+                <color>c03935</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="621">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="622">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="625">
+            <IconStyle id="626">
+                <color>2bde93</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="627">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="628">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="631">
+            <IconStyle id="632">
+                <color>5f5940</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="633">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="634">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="637">
+            <IconStyle id="638">
+                <color>afd079</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="639">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="640">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="643">
+            <IconStyle id="644">
+                <color>cde63c</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="645">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="646">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="649">
+            <IconStyle id="650">
+                <color>008462</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="651">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="652">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="655">
+            <IconStyle id="656">
+                <color>0573dc</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="657">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="658">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="661">
+            <IconStyle id="662">
+                <color>a88f6a</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="663">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="664">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="667">
+            <IconStyle id="668">
+                <color>262316</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="669">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="670">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="673">
+            <IconStyle id="674">
+                <color>3a0db2</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="675">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="676">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="679">
+            <IconStyle id="680">
+                <color>07e4fe</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon id="681">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle id="682">
+                <colorMode>normal</colorMode>
+                <scale>0.8</scale>
+            </LabelStyle>
+        </Style>
+        <Placemark id="3">
+            <name>№ п/п 737</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов для производственных нужд
+Вид водопользования: совместное водопользование с забором (изъятием) водных ресурсов из водных объектов при условии возврата воды в водные объекты
+Место водопользования, координаты:  Волжский р-н (Самарская область); 3 км от устья, 53° 8' 0&quot;СШ 50° 2' 0&quot; ВД
+Владелец: ОАО &quot;Волгабурмаш&quot;</description>
+            <styleUrl>#4</styleUrl>
+            <Point id="2">
+                <coordinates>50.033333,53.133333,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="9">
+            <name>№ п/п 772</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Сброс дренажных вод
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 12 км от устья, 53° 7' 40&quot;СШ 49° 54' 55&quot; ВД
+Владелец: ЗАО &quot;Средневолжское предприятие железнодорожного транспорта&quot;</description>
+            <styleUrl>#10</styleUrl>
+            <Point id="8">
+                <coordinates>49.915278,53.127778,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="15">
+            <name>№ п/п 792</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов для производственных нужд
+Вид водопользования: совместное водопользование с забором (изъятием) водных ресурсов из водных объектов при условии возврата воды в водные объекты
+Место водопользования, координаты:  Волжский р-н (Самарская область); 3 км от устья, 53° 8' 0&quot;СШ 50° 2' 0&quot; ВД
+Владелец: ОАО &quot;Волгабурмаш&quot;</description>
+            <styleUrl>#16</styleUrl>
+            <Point id="14">
+                <coordinates>50.033333,53.133333,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="21">
+            <name>№ п/п 817</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование акватории водного объекта для размещения дебаркадера и понтонных сооружений для отстоя маломерных судов
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Волжский р-н (Самарская область); 1 км от устья, ПБ, 53° 8' 59.37989&quot;СШ 50° 4' 6.25852&quot; ВД ; 53° 8' 59.19333&quot;СШ 50° 4' 4.67401&quot; ВД ; 53° 8' 59.99111&quot;СШ 50° 4' 4.39793&quot; ВД ; 53° 9' 0.17623&quot;СШ 50° 4' 5.98245&quot; ВД
+Владелец: ООО &quot;Радуга&quot;</description>
+            <styleUrl>#26</styleUrl>
+            <Polygon id="20">
+                <outerBoundaryIs>
+                    <LinearRing id="24">
+                        <coordinates>50.067965,53.149776,0.0 50.068405,53.149828,0.0 50.068328,53.150049,0.0 50.067888,53.149998,0.0</coordinates>
+                    </LinearRing>
+                </outerBoundaryIs>
+            </Polygon>
+        </Placemark>
+        <Placemark id="30">
+            <name>№ п/п 836</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов для производственных нужд
+Вид водопользования: совместное водопользование с забором (изъятием) водных ресурсов из водных объектов при условии возврата воды в водные объекты
+Место водопользования, координаты:  Волжский р-н (Самарская область); 3 км от устья, 53° 8' 0&quot;СШ 50° 2' 0&quot; ВД
+Владелец: ОАО &quot;Волгабурмаш&quot;</description>
+            <styleUrl>#31</styleUrl>
+            <Point id="29">
+                <coordinates>50.033333,53.133333,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="36">
+            <name>№ п/п 930</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов для производственных нужд
+Вид водопользования: совместное водопользование с забором (изъятием) водных ресурсов из водных объектов при условии возврата воды в водные объекты
+Место водопользования, координаты:  Волжский р-н (Самарская область); 3 км от устья, 53° 8' 0&quot;СШ 50° 2' 0&quot; ВД
+Владелец: ОАО &quot;Волгабурмаш&quot;</description>
+            <styleUrl>#37</styleUrl>
+            <Point id="35">
+                <coordinates>50.033333,53.133333,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="42">
+            <name>№ п/п 972</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование участка акватории водного объекта для размещения сооружений для отстоя маломерных судов, расположения сооружений и обустройство гребного канала для организации учебно-тренировочного процесса по гребле
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 12 км от устья, 53° 7' 34.58&quot;СШ 49° 55' 23.03&quot; ВД ; 53° 7' 48.92&quot;СШ 49° 55' 30.4&quot; ВД ; 53° 7' 55.45&quot;СШ 49° 55' 35.32&quot; ВД ; 53° 7' 58.33&quot;СШ 49° 55' 42.86&quot; ВД ; 53° 7' 58.27&quot;СШ 49° 55' 52.28&quot; ВД ; 53° 7' 53.78&quot;СШ 49° 56' 8.12&quot; ВД ; 53° 7' 29.72&quot;СШ 49° 56' 44.01&quot; ВД ; 53° 7' 27.83&quot;СШ 49° 56' 42.66&quot; ВД ; 53° 7' 52.41&quot;СШ 49° 56' 4.32&quot; ВД ; 53° 7' 56.67&quot;СШ 49° 55' 47.48&quot; ВД ; 53° 7' 54.76&quot;СШ 49° 55' 38.63&quot; ВД ; 53° 7' 49.13&quot;СШ 49° 55' 34.13&quot; ВД ; 53° 7' 36.4&quot;СШ 49° 55' 29&quot; ВД ; 53° 7' 34.26&quot;СШ 49° 55' 35.35&quot; ВД ; 53° 7' 31.81&quot;СШ 49° 55' 33.72&quot; ВД
+Владелец: Автономная некоммерческая организация &quot;Новокуйбышевский спортивный клуб&quot;</description>
+            <styleUrl>#47</styleUrl>
+            <Polygon id="41">
+                <outerBoundaryIs>
+                    <LinearRing id="45">
+                        <coordinates>49.923064,53.126272,0.0 49.925111,53.130256,0.0 49.926478,53.132069,0.0 49.928572,53.132869,0.0 49.931189,53.132853,0.0 49.935589,53.131606,0.0 49.945558,53.124922,0.0 49.945183,53.124397,0.0 49.934533,53.131225,0.0 49.929856,53.132408,0.0 49.927397,53.131878,0.0 49.926147,53.130314,0.0 49.924722,53.126778,0.0 49.926486,53.126183,0.0 49.926033,53.125503,0.0</coordinates>
+                    </LinearRing>
+                </outerBoundaryIs>
+            </Polygon>
+        </Placemark>
+        <Placemark id="51">
+            <name>№ п/п 982</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов для производственных нужд
+Вид водопользования: совместное водопользование с забором (изъятием) водных ресурсов из водных объектов при условии возврата воды в водные объекты
+Место водопользования, координаты:  Волжский р-н (Самарская область); 3 км от устья, 53° 8' 0&quot;СШ 50° 2' 0&quot; ВД
+Владелец: ОАО &quot;Волгабурмаш&quot;</description>
+            <styleUrl>#52</styleUrl>
+            <Point id="50">
+                <coordinates>50.033333,53.133333,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="57">
+            <name>№ п/п 1022</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Озеро оз. Орловское КАС/ВОЛГА/1395/003/8 , р.Татьянка
+Цель водопользования: Использование акватории водного объекта для рекреационных целей
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 8 км от устья, 53° 7' 43.29&quot;СШ 49° 56' 54.96&quot; ВД ; 53° 7' 44.51&quot;СШ 49° 56' 55.4&quot; ВД ; 53° 7' 45.26&quot;СШ 49° 56' 57.87&quot; ВД ; 53° 7' 47.49&quot;СШ 49° 57' 1.51&quot; ВД ; 53° 7' 49.56&quot;СШ 49° 57' 7.46&quot; ВД ; 53° 7' 49.57&quot;СШ 49° 57' 11.59&quot; ВД ; 53° 7' 47.79&quot;СШ 49° 57' 12.25&quot; ВД ; 53° 7' 43.51&quot;СШ 49° 57' 3.53&quot; ВД ; 53° 7' 42.14&quot;СШ 49° 56' 59.3&quot; ВД ; 53° 7' 41.66&quot;СШ 49° 56' 57.03&quot; ВД ; 53° 7' 42.27&quot;СШ 49° 56' 55.65&quot; ВД
+Владелец: ООО &quot;ЭнДжиЭл&quot;</description>
+            <styleUrl>#62</styleUrl>
+            <Polygon id="56">
+                <outerBoundaryIs>
+                    <LinearRing id="60">
+                        <coordinates>49.9486,53.128692,0.0 49.948722,53.129031,0.0 49.949408,53.129239,0.0 49.950419,53.129858,0.0 49.952072,53.130433,0.0 49.953219,53.130436,0.0 49.953403,53.129942,0.0 49.950981,53.128753,0.0 49.949806,53.128372,0.0 49.949175,53.128239,0.0 49.948792,53.128408,0.0</coordinates>
+                    </LinearRing>
+                </outerBoundaryIs>
+            </Polygon>
+        </Placemark>
+        <Placemark id="66">
+            <name>№ п/п 1036</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов для производственных нужд
+Вид водопользования: совместное водопользование с забором (изъятием) водных ресурсов из водных объектов при условии возврата воды в водные объекты
+Место водопользования, координаты:  Волжский р-н (Самарская область); 3 км от устья, 53° 8' 0&quot;СШ 50° 2' 0&quot; ВД
+Владелец: ОАО &quot;Волгабурмаш&quot;</description>
+            <styleUrl>#67</styleUrl>
+            <Point id="65">
+                <coordinates>50.033333,53.133333,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="72">
+            <name>№ п/п 1084</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов для производственных нужд
+Вид водопользования: совместное водопользование с забором (изъятием) водных ресурсов из водных объектов при условии возврата воды в водные объекты
+Место водопользования, координаты:  Волжский р-н (Самарская область); 3 км от устья, 53° 8' 0&quot;СШ 50° 2' 0&quot; ВД
+Владелец: ОАО &quot;Волгабурмаш&quot;</description>
+            <styleUrl>#73</styleUrl>
+            <Point id="71">
+                <coordinates>50.033333,53.133333,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="78">
+            <name>№ п/п 1164</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Озеро оз. Орловское КАС/ВОЛГА/1395/003/8 , р.Татьянка
+Цель водопользования: Использование акватории водного объекта для рекреационных целей
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 8 км от устья, 53° 7' 43.29&quot;СШ 49° 56' 54.96&quot; ВД ; 53° 7' 44.51&quot;СШ 49° 56' 55.4&quot; ВД ; 53° 7' 45.26&quot;СШ 49° 56' 57.87&quot; ВД ; 53° 7' 47.49&quot;СШ 49° 57' 1.51&quot; ВД ; 53° 7' 49.56&quot;СШ 49° 57' 7.46&quot; ВД ; 53° 7' 49.57&quot;СШ 49° 57' 11.59&quot; ВД ; 53° 7' 47.79&quot;СШ 49° 57' 12.25&quot; ВД ; 53° 7' 43.51&quot;СШ 49° 57' 3.53&quot; ВД ; 53° 7' 42.14&quot;СШ 49° 56' 59.3&quot; ВД ; 53° 7' 41.66&quot;СШ 49° 56' 57.03&quot; ВД ; 53° 7' 42.27&quot;СШ 49° 56' 55.65&quot; ВД
+Владелец: ООО &quot;ЭнДжиЭл&quot;</description>
+            <styleUrl>#79</styleUrl>
+            <Point id="77">
+                <coordinates>49.9486,53.128692,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="84">
+            <name>№ п/п 1164</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Озеро оз. Орловское КАС/ВОЛГА/1395/003/8 , р.Татьянка
+Цель водопользования: Использование акватории водного объекта для рекреационных целей
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 8 км от устья, 53° 7' 43.29&quot;СШ 49° 56' 54.96&quot; ВД ; 53° 7' 44.51&quot;СШ 49° 56' 55.4&quot; ВД ; 53° 7' 45.26&quot;СШ 49° 56' 57.87&quot; ВД ; 53° 7' 47.49&quot;СШ 49° 57' 1.51&quot; ВД ; 53° 7' 49.56&quot;СШ 49° 57' 7.46&quot; ВД ; 53° 7' 49.57&quot;СШ 49° 57' 11.59&quot; ВД ; 53° 7' 47.79&quot;СШ 49° 57' 12.25&quot; ВД ; 53° 7' 43.51&quot;СШ 49° 57' 3.53&quot; ВД ; 53° 7' 42.14&quot;СШ 49° 56' 59.3&quot; ВД ; 53° 7' 41.66&quot;СШ 49° 56' 57.03&quot; ВД ; 53° 7' 42.27&quot;СШ 49° 56' 55.65&quot; ВД
+Владелец: ООО &quot;ЭнДжиЭл&quot;</description>
+            <styleUrl>#85</styleUrl>
+            <Point id="83">
+                <coordinates>49.948722,53.129031,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="90">
+            <name>№ п/п 1164</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Озеро оз. Орловское КАС/ВОЛГА/1395/003/8 , р.Татьянка
+Цель водопользования: Использование акватории водного объекта для рекреационных целей
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 8 км от устья, 53° 7' 43.29&quot;СШ 49° 56' 54.96&quot; ВД ; 53° 7' 44.51&quot;СШ 49° 56' 55.4&quot; ВД ; 53° 7' 45.26&quot;СШ 49° 56' 57.87&quot; ВД ; 53° 7' 47.49&quot;СШ 49° 57' 1.51&quot; ВД ; 53° 7' 49.56&quot;СШ 49° 57' 7.46&quot; ВД ; 53° 7' 49.57&quot;СШ 49° 57' 11.59&quot; ВД ; 53° 7' 47.79&quot;СШ 49° 57' 12.25&quot; ВД ; 53° 7' 43.51&quot;СШ 49° 57' 3.53&quot; ВД ; 53° 7' 42.14&quot;СШ 49° 56' 59.3&quot; ВД ; 53° 7' 41.66&quot;СШ 49° 56' 57.03&quot; ВД ; 53° 7' 42.27&quot;СШ 49° 56' 55.65&quot; ВД
+Владелец: ООО &quot;ЭнДжиЭл&quot;</description>
+            <styleUrl>#91</styleUrl>
+            <Point id="89">
+                <coordinates>49.949408,53.129239,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="96">
+            <name>№ п/п 1164</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Озеро оз. Орловское КАС/ВОЛГА/1395/003/8 , р.Татьянка
+Цель водопользования: Использование акватории водного объекта для рекреационных целей
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 8 км от устья, 53° 7' 43.29&quot;СШ 49° 56' 54.96&quot; ВД ; 53° 7' 44.51&quot;СШ 49° 56' 55.4&quot; ВД ; 53° 7' 45.26&quot;СШ 49° 56' 57.87&quot; ВД ; 53° 7' 47.49&quot;СШ 49° 57' 1.51&quot; ВД ; 53° 7' 49.56&quot;СШ 49° 57' 7.46&quot; ВД ; 53° 7' 49.57&quot;СШ 49° 57' 11.59&quot; ВД ; 53° 7' 47.79&quot;СШ 49° 57' 12.25&quot; ВД ; 53° 7' 43.51&quot;СШ 49° 57' 3.53&quot; ВД ; 53° 7' 42.14&quot;СШ 49° 56' 59.3&quot; ВД ; 53° 7' 41.66&quot;СШ 49° 56' 57.03&quot; ВД ; 53° 7' 42.27&quot;СШ 49° 56' 55.65&quot; ВД
+Владелец: ООО &quot;ЭнДжиЭл&quot;</description>
+            <styleUrl>#97</styleUrl>
+            <Point id="95">
+                <coordinates>49.950419,53.129858,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="102">
+            <name>№ п/п 1164</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Озеро оз. Орловское КАС/ВОЛГА/1395/003/8 , р.Татьянка
+Цель водопользования: Использование акватории водного объекта для рекреационных целей
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 8 км от устья, 53° 7' 43.29&quot;СШ 49° 56' 54.96&quot; ВД ; 53° 7' 44.51&quot;СШ 49° 56' 55.4&quot; ВД ; 53° 7' 45.26&quot;СШ 49° 56' 57.87&quot; ВД ; 53° 7' 47.49&quot;СШ 49° 57' 1.51&quot; ВД ; 53° 7' 49.56&quot;СШ 49° 57' 7.46&quot; ВД ; 53° 7' 49.57&quot;СШ 49° 57' 11.59&quot; ВД ; 53° 7' 47.79&quot;СШ 49° 57' 12.25&quot; ВД ; 53° 7' 43.51&quot;СШ 49° 57' 3.53&quot; ВД ; 53° 7' 42.14&quot;СШ 49° 56' 59.3&quot; ВД ; 53° 7' 41.66&quot;СШ 49° 56' 57.03&quot; ВД ; 53° 7' 42.27&quot;СШ 49° 56' 55.65&quot; ВД
+Владелец: ООО &quot;ЭнДжиЭл&quot;</description>
+            <styleUrl>#103</styleUrl>
+            <Point id="101">
+                <coordinates>49.952072,53.130433,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="108">
+            <name>№ п/п 1164</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Озеро оз. Орловское КАС/ВОЛГА/1395/003/8 , р.Татьянка
+Цель водопользования: Использование акватории водного объекта для рекреационных целей
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 8 км от устья, 53° 7' 43.29&quot;СШ 49° 56' 54.96&quot; ВД ; 53° 7' 44.51&quot;СШ 49° 56' 55.4&quot; ВД ; 53° 7' 45.26&quot;СШ 49° 56' 57.87&quot; ВД ; 53° 7' 47.49&quot;СШ 49° 57' 1.51&quot; ВД ; 53° 7' 49.56&quot;СШ 49° 57' 7.46&quot; ВД ; 53° 7' 49.57&quot;СШ 49° 57' 11.59&quot; ВД ; 53° 7' 47.79&quot;СШ 49° 57' 12.25&quot; ВД ; 53° 7' 43.51&quot;СШ 49° 57' 3.53&quot; ВД ; 53° 7' 42.14&quot;СШ 49° 56' 59.3&quot; ВД ; 53° 7' 41.66&quot;СШ 49° 56' 57.03&quot; ВД ; 53° 7' 42.27&quot;СШ 49° 56' 55.65&quot; ВД
+Владелец: ООО &quot;ЭнДжиЭл&quot;</description>
+            <styleUrl>#109</styleUrl>
+            <Point id="107">
+                <coordinates>49.953219,53.130436,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="114">
+            <name>№ п/п 1164</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Озеро оз. Орловское КАС/ВОЛГА/1395/003/8 , р.Татьянка
+Цель водопользования: Использование акватории водного объекта для рекреационных целей
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 8 км от устья, 53° 7' 43.29&quot;СШ 49° 56' 54.96&quot; ВД ; 53° 7' 44.51&quot;СШ 49° 56' 55.4&quot; ВД ; 53° 7' 45.26&quot;СШ 49° 56' 57.87&quot; ВД ; 53° 7' 47.49&quot;СШ 49° 57' 1.51&quot; ВД ; 53° 7' 49.56&quot;СШ 49° 57' 7.46&quot; ВД ; 53° 7' 49.57&quot;СШ 49° 57' 11.59&quot; ВД ; 53° 7' 47.79&quot;СШ 49° 57' 12.25&quot; ВД ; 53° 7' 43.51&quot;СШ 49° 57' 3.53&quot; ВД ; 53° 7' 42.14&quot;СШ 49° 56' 59.3&quot; ВД ; 53° 7' 41.66&quot;СШ 49° 56' 57.03&quot; ВД ; 53° 7' 42.27&quot;СШ 49° 56' 55.65&quot; ВД
+Владелец: ООО &quot;ЭнДжиЭл&quot;</description>
+            <styleUrl>#115</styleUrl>
+            <Point id="113">
+                <coordinates>49.953403,53.129942,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="120">
+            <name>№ п/п 1164</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Озеро оз. Орловское КАС/ВОЛГА/1395/003/8 , р.Татьянка
+Цель водопользования: Использование акватории водного объекта для рекреационных целей
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 8 км от устья, 53° 7' 43.29&quot;СШ 49° 56' 54.96&quot; ВД ; 53° 7' 44.51&quot;СШ 49° 56' 55.4&quot; ВД ; 53° 7' 45.26&quot;СШ 49° 56' 57.87&quot; ВД ; 53° 7' 47.49&quot;СШ 49° 57' 1.51&quot; ВД ; 53° 7' 49.56&quot;СШ 49° 57' 7.46&quot; ВД ; 53° 7' 49.57&quot;СШ 49° 57' 11.59&quot; ВД ; 53° 7' 47.79&quot;СШ 49° 57' 12.25&quot; ВД ; 53° 7' 43.51&quot;СШ 49° 57' 3.53&quot; ВД ; 53° 7' 42.14&quot;СШ 49° 56' 59.3&quot; ВД ; 53° 7' 41.66&quot;СШ 49° 56' 57.03&quot; ВД ; 53° 7' 42.27&quot;СШ 49° 56' 55.65&quot; ВД
+Владелец: ООО &quot;ЭнДжиЭл&quot;</description>
+            <styleUrl>#121</styleUrl>
+            <Point id="119">
+                <coordinates>49.950981,53.128753,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="126">
+            <name>№ п/п 1164</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Озеро оз. Орловское КАС/ВОЛГА/1395/003/8 , р.Татьянка
+Цель водопользования: Использование акватории водного объекта для рекреационных целей
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 8 км от устья, 53° 7' 43.29&quot;СШ 49° 56' 54.96&quot; ВД ; 53° 7' 44.51&quot;СШ 49° 56' 55.4&quot; ВД ; 53° 7' 45.26&quot;СШ 49° 56' 57.87&quot; ВД ; 53° 7' 47.49&quot;СШ 49° 57' 1.51&quot; ВД ; 53° 7' 49.56&quot;СШ 49° 57' 7.46&quot; ВД ; 53° 7' 49.57&quot;СШ 49° 57' 11.59&quot; ВД ; 53° 7' 47.79&quot;СШ 49° 57' 12.25&quot; ВД ; 53° 7' 43.51&quot;СШ 49° 57' 3.53&quot; ВД ; 53° 7' 42.14&quot;СШ 49° 56' 59.3&quot; ВД ; 53° 7' 41.66&quot;СШ 49° 56' 57.03&quot; ВД ; 53° 7' 42.27&quot;СШ 49° 56' 55.65&quot; ВД
+Владелец: ООО &quot;ЭнДжиЭл&quot;</description>
+            <styleUrl>#127</styleUrl>
+            <Point id="125">
+                <coordinates>49.949806,53.128372,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="132">
+            <name>№ п/п 1164</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Озеро оз. Орловское КАС/ВОЛГА/1395/003/8 , р.Татьянка
+Цель водопользования: Использование акватории водного объекта для рекреационных целей
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 8 км от устья, 53° 7' 43.29&quot;СШ 49° 56' 54.96&quot; ВД ; 53° 7' 44.51&quot;СШ 49° 56' 55.4&quot; ВД ; 53° 7' 45.26&quot;СШ 49° 56' 57.87&quot; ВД ; 53° 7' 47.49&quot;СШ 49° 57' 1.51&quot; ВД ; 53° 7' 49.56&quot;СШ 49° 57' 7.46&quot; ВД ; 53° 7' 49.57&quot;СШ 49° 57' 11.59&quot; ВД ; 53° 7' 47.79&quot;СШ 49° 57' 12.25&quot; ВД ; 53° 7' 43.51&quot;СШ 49° 57' 3.53&quot; ВД ; 53° 7' 42.14&quot;СШ 49° 56' 59.3&quot; ВД ; 53° 7' 41.66&quot;СШ 49° 56' 57.03&quot; ВД ; 53° 7' 42.27&quot;СШ 49° 56' 55.65&quot; ВД
+Владелец: ООО &quot;ЭнДжиЭл&quot;</description>
+            <styleUrl>#133</styleUrl>
+            <Point id="131">
+                <coordinates>49.949175,53.128239,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="138">
+            <name>№ п/п 1164</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Озеро оз. Орловское КАС/ВОЛГА/1395/003/8 , р.Татьянка
+Цель водопользования: Использование акватории водного объекта для рекреационных целей
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 8 км от устья, 53° 7' 43.29&quot;СШ 49° 56' 54.96&quot; ВД ; 53° 7' 44.51&quot;СШ 49° 56' 55.4&quot; ВД ; 53° 7' 45.26&quot;СШ 49° 56' 57.87&quot; ВД ; 53° 7' 47.49&quot;СШ 49° 57' 1.51&quot; ВД ; 53° 7' 49.56&quot;СШ 49° 57' 7.46&quot; ВД ; 53° 7' 49.57&quot;СШ 49° 57' 11.59&quot; ВД ; 53° 7' 47.79&quot;СШ 49° 57' 12.25&quot; ВД ; 53° 7' 43.51&quot;СШ 49° 57' 3.53&quot; ВД ; 53° 7' 42.14&quot;СШ 49° 56' 59.3&quot; ВД ; 53° 7' 41.66&quot;СШ 49° 56' 57.03&quot; ВД ; 53° 7' 42.27&quot;СШ 49° 56' 55.65&quot; ВД
+Владелец: ООО &quot;ЭнДжиЭл&quot;</description>
+            <styleUrl>#139</styleUrl>
+            <Point id="137">
+                <coordinates>49.948792,53.128408,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="144">
+            <name>№ п/п 1201</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование акватории водного объекта , в том числе для рекреационных целей
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Самара г (Куйбышевский р-н); 2,5 км от устья, 53° 8' 20&quot;СШ 50° 3' 0&quot; ВД
+Владелец: Логачев Андрей Вячеславович</description>
+            <styleUrl>#145</styleUrl>
+            <Point id="143">
+                <coordinates>50.05,53.138889,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="150">
+            <name>№ п/п 1222</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Озеро оз. Орловское КАС/ВОЛГА/1395/003/8 , р.Татьянка
+Цель водопользования: Проведения дноуглубительных, взрывных, буровых и др. работ, связанных с изменением дна и берегов водных объектов
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 53° 7' 48.982&quot;СШ 49° 57' 3.4344&quot; ВД ; 53° 7' 44.7705&quot;СШ 49° 56' 55.1485&quot; ВД ; 53° 7' 43.8023&quot;СШ 49° 56' 56.2762&quot; ВД ; 53° 7' 43.8758&quot;СШ 49° 56' 57.07&quot; ВД ; 53° 7' 44.0548&quot;СШ 49° 56' 57.1411&quot; ВД ; 53° 7' 44.4412&quot;СШ 49° 56' 57.1197&quot; ВД ; 53° 7' 44.5692&quot;СШ 49° 56' 57.1767&quot; ВД ; 53° 7' 44.6762&quot;СШ 49° 56' 57.6093&quot; ВД ; 53° 7' 44.6953&quot;СШ 49° 56' 57.6059&quot; ВД ; 53° 7' 44.6443&quot;СШ 49° 56' 57.7603&quot; ВД ; 53° 7' 44.6455&quot;СШ 49° 56' 57.8517&quot; ВД ; 53° 7' 45.7387&quot;СШ 49° 56' 59.6445&quot; ВД ; 53° 7' 45.8552&quot;СШ 49° 56' 59.7696&quot; ВД ; 53° 7' 45.6598&quot;СШ 49° 57' 0&quot; ВД ; 53° 7' 45.6709&quot;СШ 49° 57' 0&quot; ВД ; 53° 7' 45.7078&quot;СШ 49° 57' 0.8093&quot; ВД ; 53° 7' 47.275&quot;СШ 49° 57' 2.2986&quot; ВД ; 53° 7' 47.4173&quot;СШ 49° 57' 2.5109&quot; ВД ; 53° 7' 48.0492&quot;СШ 49° 57' 4.3891&quot; ВД ; 53° 7' 48.3288&quot;СШ 49° 57' 4.6667&quot; ВД ; 53° 7' 49.6896&quot;СШ 49° 57' 7.4947&quot; ВД ; 53° 7' 49.7981&quot;СШ 49° 57' 7.8928&quot; ВД ; 53° 7' 50.5152&quot;СШ 49° 57' 10.4264&quot; ВД ; 53° 7' 52.0513&quot;СШ 49° 57' 11.7076&quot; ВД ; 53° 7' 52.03&quot;СШ 49° 57' 11.8647&quot; ВД ; 53° 7' 50.4702&quot;СШ 49° 57' 14.7385&quot; ВД ; 53° 7' 48.4228&quot;СШ 49° 57' 18.4592&quot; ВД ; 53° 7' 48.9348&quot;СШ 49° 57' 14.0764&quot; ВД ; 53° 7' 46.3717&quot;СШ 49° 57' 12.747&quot; ВД ; 53° 7' 48.5718&quot;СШ 49° 57' 9.6518&quot; ВД ; 53° 7' 57.6355&quot;СШ 49° 57' 15.4699&quot; ВД ; 53° 7' 57.5848&quot;СШ 49° 57' 15.4586&quot; ВД ; 53° 7' 57.4335&quot;СШ 49° 57' 15.6899&quot; ВД ; 53° 7' 57.0457&quot;СШ 49° 57' 15.8898&quot; ВД ; 53° 7' 55.6432&quot;СШ 49° 57' 14.9104&quot; ВД ; 53° 7' 54.2507&quot;СШ 49° 57' 14.0986&quot; ВД ; 53° 7' 52.1665&quot;СШ 49° 57' 12.3652&quot; ВД ; 53° 7' 52.0513&quot;СШ 49° 57' 11.7076&quot; ВД ; 53° 7' 52.03&quot;СШ 49° 57' 11.8647&quot; ВД ; 53° 7' 52.1807&quot;СШ 49° 57' 12.8259&quot; ВД ; 53° 7' 54.1473&quot;СШ 49° 57' 14.4094&quot; ВД ; 53° 7' 56.4966&quot;СШ 49° 57' 15.7048&quot; ВД ; 53° 7' 57.0259&quot;СШ 49° 57' 16.0663&quot; ВД ; 53° 7' 57.4651&quot;СШ 49° 57' 15.8347&quot; ВД
+Владелец: ООО &quot;ЭнДжиЭл&quot;</description>
+            <styleUrl>#155</styleUrl>
+            <Polygon id="149">
+                <outerBoundaryIs>
+                    <LinearRing id="153">
+                        <coordinates>49.950954,53.130273,0.0 49.948652,53.129103,0.0 49.948966,53.128834,0.0 49.949186,53.128854,0.0 49.949206,53.128904,0.0 49.9492,53.129011,0.0 49.949216,53.129047,0.0 49.949336,53.129077,0.0 49.949335,53.129082,0.0 49.949378,53.129068,0.0 49.949403,53.129068,0.0 49.949901,53.129372,0.0 49.949936,53.129404,0.0 49.95,53.12935,0.0 49.95,53.129353,0.0 49.950225,53.129363,0.0 49.950639,53.129799,0.0 49.950697,53.129838,0.0 49.951219,53.130014,0.0 49.951296,53.130091,0.0 49.952082,53.130469,0.0 49.952192,53.130499,0.0 49.952896,53.130699,0.0 49.953252,53.131125,0.0 49.953296,53.131119,0.0 49.954094,53.130686,0.0 49.955128,53.130117,0.0 49.95391,53.13026,0.0 49.953541,53.129548,0.0 49.952681,53.130159,0.0 49.954297,53.132677,0.0 49.954294,53.132662,0.0 49.954358,53.13262,0.0 49.954414,53.132513,0.0 49.954142,53.132123,0.0 49.953916,53.131736,0.0 49.953435,53.131157,0.0 49.953252,53.131125,0.0 49.953296,53.131119,0.0 49.953563,53.131161,0.0 49.954003,53.131708,0.0 49.954362,53.13236,0.0 49.954463,53.132507,0.0 49.954399,53.132629,0.0</coordinates>
+                    </LinearRing>
+                </outerBoundaryIs>
+            </Polygon>
+        </Placemark>
+        <Placemark id="159">
+            <name>№ п/п 1230</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование акватории водного объекта для размещения плавучей установки для забора воды
+Вид водопользования: совместное водопользование с забором (изъятием) водных ресурсов из водных объектов без возврата воды в водные объекты
+Место водопользования, координаты:  Самара г (Куйбышевский р-н); 1 км от устья, 53° 8' 34&quot;СШ 50° 3' 45&quot; ВД
+Владелец: ЗАО &quot;СЗ &quot;Нефтемаш&quot;</description>
+            <styleUrl>#160</styleUrl>
+            <Point id="158">
+                <coordinates>50.0625,53.142778,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="165">
+            <name>№ п/п 1231</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов для производственных нужд
+Вид водопользования: совместное водопользование с забором (изъятием) водных ресурсов из водных объектов без возврата воды в водные объекты
+Место водопользования, координаты:  Самара г (Куйбышевский р-н); 1 км от устья, 53° 8' 34&quot;СШ 50° 3' 45&quot; ВД
+Владелец: ЗАО &quot;СЗ &quot;Нефтемаш&quot;</description>
+            <styleUrl>#166</styleUrl>
+            <Point id="164">
+                <coordinates>50.0625,53.142778,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="171">
+            <name>№ п/п 1244</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование участка акватории водного объекта для размещения сооружений для отстоя маломерных судов, расположения сооружений и обустройство гребного канала для организации учебно-тренировочного процесса по гребле
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 12 км от устья, 53° 7' 34.58&quot;СШ 49° 55' 23.03&quot; ВД ; 53° 7' 48.92&quot;СШ 49° 55' 30.4&quot; ВД ; 53° 7' 55.45&quot;СШ 49° 55' 35.32&quot; ВД ; 53° 7' 58.33&quot;СШ 49° 55' 42.86&quot; ВД ; 53° 7' 58.27&quot;СШ 49° 55' 52.28&quot; ВД ; 53° 7' 53.78&quot;СШ 49° 56' 8.12&quot; ВД ; 53° 7' 29.72&quot;СШ 49° 56' 44.01&quot; ВД ; 53° 7' 27.83&quot;СШ 49° 56' 42.66&quot; ВД ; 53° 7' 52.41&quot;СШ 49° 56' 4.32&quot; ВД ; 53° 7' 56.67&quot;СШ 49° 55' 47.48&quot; ВД ; 53° 7' 54.76&quot;СШ 49° 55' 38.63&quot; ВД ; 53° 7' 49.13&quot;СШ 49° 55' 34.13&quot; ВД ; 53° 7' 36.4&quot;СШ 49° 55' 29&quot; ВД ; 53° 7' 34.26&quot;СШ 49° 55' 35.35&quot; ВД ; 53° 7' 31.81&quot;СШ 49° 55' 33.72&quot; ВД
+Владелец: Автономная некоммерческая организация &quot;Новокуйбышевский спортивный клуб&quot;</description>
+            <styleUrl>#172</styleUrl>
+            <Point id="170">
+                <coordinates>49.923064,53.126272,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="177">
+            <name>№ п/п 1244</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование участка акватории водного объекта для размещения сооружений для отстоя маломерных судов, расположения сооружений и обустройство гребного канала для организации учебно-тренировочного процесса по гребле
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 12 км от устья, 53° 7' 34.58&quot;СШ 49° 55' 23.03&quot; ВД ; 53° 7' 48.92&quot;СШ 49° 55' 30.4&quot; ВД ; 53° 7' 55.45&quot;СШ 49° 55' 35.32&quot; ВД ; 53° 7' 58.33&quot;СШ 49° 55' 42.86&quot; ВД ; 53° 7' 58.27&quot;СШ 49° 55' 52.28&quot; ВД ; 53° 7' 53.78&quot;СШ 49° 56' 8.12&quot; ВД ; 53° 7' 29.72&quot;СШ 49° 56' 44.01&quot; ВД ; 53° 7' 27.83&quot;СШ 49° 56' 42.66&quot; ВД ; 53° 7' 52.41&quot;СШ 49° 56' 4.32&quot; ВД ; 53° 7' 56.67&quot;СШ 49° 55' 47.48&quot; ВД ; 53° 7' 54.76&quot;СШ 49° 55' 38.63&quot; ВД ; 53° 7' 49.13&quot;СШ 49° 55' 34.13&quot; ВД ; 53° 7' 36.4&quot;СШ 49° 55' 29&quot; ВД ; 53° 7' 34.26&quot;СШ 49° 55' 35.35&quot; ВД ; 53° 7' 31.81&quot;СШ 49° 55' 33.72&quot; ВД
+Владелец: Автономная некоммерческая организация &quot;Новокуйбышевский спортивный клуб&quot;</description>
+            <styleUrl>#178</styleUrl>
+            <Point id="176">
+                <coordinates>49.925111,53.130256,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="183">
+            <name>№ п/п 1244</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование участка акватории водного объекта для размещения сооружений для отстоя маломерных судов, расположения сооружений и обустройство гребного канала для организации учебно-тренировочного процесса по гребле
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 12 км от устья, 53° 7' 34.58&quot;СШ 49° 55' 23.03&quot; ВД ; 53° 7' 48.92&quot;СШ 49° 55' 30.4&quot; ВД ; 53° 7' 55.45&quot;СШ 49° 55' 35.32&quot; ВД ; 53° 7' 58.33&quot;СШ 49° 55' 42.86&quot; ВД ; 53° 7' 58.27&quot;СШ 49° 55' 52.28&quot; ВД ; 53° 7' 53.78&quot;СШ 49° 56' 8.12&quot; ВД ; 53° 7' 29.72&quot;СШ 49° 56' 44.01&quot; ВД ; 53° 7' 27.83&quot;СШ 49° 56' 42.66&quot; ВД ; 53° 7' 52.41&quot;СШ 49° 56' 4.32&quot; ВД ; 53° 7' 56.67&quot;СШ 49° 55' 47.48&quot; ВД ; 53° 7' 54.76&quot;СШ 49° 55' 38.63&quot; ВД ; 53° 7' 49.13&quot;СШ 49° 55' 34.13&quot; ВД ; 53° 7' 36.4&quot;СШ 49° 55' 29&quot; ВД ; 53° 7' 34.26&quot;СШ 49° 55' 35.35&quot; ВД ; 53° 7' 31.81&quot;СШ 49° 55' 33.72&quot; ВД
+Владелец: Автономная некоммерческая организация &quot;Новокуйбышевский спортивный клуб&quot;</description>
+            <styleUrl>#184</styleUrl>
+            <Point id="182">
+                <coordinates>49.926478,53.132069,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="189">
+            <name>№ п/п 1244</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование участка акватории водного объекта для размещения сооружений для отстоя маломерных судов, расположения сооружений и обустройство гребного канала для организации учебно-тренировочного процесса по гребле
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 12 км от устья, 53° 7' 34.58&quot;СШ 49° 55' 23.03&quot; ВД ; 53° 7' 48.92&quot;СШ 49° 55' 30.4&quot; ВД ; 53° 7' 55.45&quot;СШ 49° 55' 35.32&quot; ВД ; 53° 7' 58.33&quot;СШ 49° 55' 42.86&quot; ВД ; 53° 7' 58.27&quot;СШ 49° 55' 52.28&quot; ВД ; 53° 7' 53.78&quot;СШ 49° 56' 8.12&quot; ВД ; 53° 7' 29.72&quot;СШ 49° 56' 44.01&quot; ВД ; 53° 7' 27.83&quot;СШ 49° 56' 42.66&quot; ВД ; 53° 7' 52.41&quot;СШ 49° 56' 4.32&quot; ВД ; 53° 7' 56.67&quot;СШ 49° 55' 47.48&quot; ВД ; 53° 7' 54.76&quot;СШ 49° 55' 38.63&quot; ВД ; 53° 7' 49.13&quot;СШ 49° 55' 34.13&quot; ВД ; 53° 7' 36.4&quot;СШ 49° 55' 29&quot; ВД ; 53° 7' 34.26&quot;СШ 49° 55' 35.35&quot; ВД ; 53° 7' 31.81&quot;СШ 49° 55' 33.72&quot; ВД
+Владелец: Автономная некоммерческая организация &quot;Новокуйбышевский спортивный клуб&quot;</description>
+            <styleUrl>#190</styleUrl>
+            <Point id="188">
+                <coordinates>49.928572,53.132869,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="195">
+            <name>№ п/п 1244</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование участка акватории водного объекта для размещения сооружений для отстоя маломерных судов, расположения сооружений и обустройство гребного канала для организации учебно-тренировочного процесса по гребле
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 12 км от устья, 53° 7' 34.58&quot;СШ 49° 55' 23.03&quot; ВД ; 53° 7' 48.92&quot;СШ 49° 55' 30.4&quot; ВД ; 53° 7' 55.45&quot;СШ 49° 55' 35.32&quot; ВД ; 53° 7' 58.33&quot;СШ 49° 55' 42.86&quot; ВД ; 53° 7' 58.27&quot;СШ 49° 55' 52.28&quot; ВД ; 53° 7' 53.78&quot;СШ 49° 56' 8.12&quot; ВД ; 53° 7' 29.72&quot;СШ 49° 56' 44.01&quot; ВД ; 53° 7' 27.83&quot;СШ 49° 56' 42.66&quot; ВД ; 53° 7' 52.41&quot;СШ 49° 56' 4.32&quot; ВД ; 53° 7' 56.67&quot;СШ 49° 55' 47.48&quot; ВД ; 53° 7' 54.76&quot;СШ 49° 55' 38.63&quot; ВД ; 53° 7' 49.13&quot;СШ 49° 55' 34.13&quot; ВД ; 53° 7' 36.4&quot;СШ 49° 55' 29&quot; ВД ; 53° 7' 34.26&quot;СШ 49° 55' 35.35&quot; ВД ; 53° 7' 31.81&quot;СШ 49° 55' 33.72&quot; ВД
+Владелец: Автономная некоммерческая организация &quot;Новокуйбышевский спортивный клуб&quot;</description>
+            <styleUrl>#196</styleUrl>
+            <Point id="194">
+                <coordinates>49.931189,53.132853,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="201">
+            <name>№ п/п 1244</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование участка акватории водного объекта для размещения сооружений для отстоя маломерных судов, расположения сооружений и обустройство гребного канала для организации учебно-тренировочного процесса по гребле
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 12 км от устья, 53° 7' 34.58&quot;СШ 49° 55' 23.03&quot; ВД ; 53° 7' 48.92&quot;СШ 49° 55' 30.4&quot; ВД ; 53° 7' 55.45&quot;СШ 49° 55' 35.32&quot; ВД ; 53° 7' 58.33&quot;СШ 49° 55' 42.86&quot; ВД ; 53° 7' 58.27&quot;СШ 49° 55' 52.28&quot; ВД ; 53° 7' 53.78&quot;СШ 49° 56' 8.12&quot; ВД ; 53° 7' 29.72&quot;СШ 49° 56' 44.01&quot; ВД ; 53° 7' 27.83&quot;СШ 49° 56' 42.66&quot; ВД ; 53° 7' 52.41&quot;СШ 49° 56' 4.32&quot; ВД ; 53° 7' 56.67&quot;СШ 49° 55' 47.48&quot; ВД ; 53° 7' 54.76&quot;СШ 49° 55' 38.63&quot; ВД ; 53° 7' 49.13&quot;СШ 49° 55' 34.13&quot; ВД ; 53° 7' 36.4&quot;СШ 49° 55' 29&quot; ВД ; 53° 7' 34.26&quot;СШ 49° 55' 35.35&quot; ВД ; 53° 7' 31.81&quot;СШ 49° 55' 33.72&quot; ВД
+Владелец: Автономная некоммерческая организация &quot;Новокуйбышевский спортивный клуб&quot;</description>
+            <styleUrl>#202</styleUrl>
+            <Point id="200">
+                <coordinates>49.935589,53.131606,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="207">
+            <name>№ п/п 1244</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование участка акватории водного объекта для размещения сооружений для отстоя маломерных судов, расположения сооружений и обустройство гребного канала для организации учебно-тренировочного процесса по гребле
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 12 км от устья, 53° 7' 34.58&quot;СШ 49° 55' 23.03&quot; ВД ; 53° 7' 48.92&quot;СШ 49° 55' 30.4&quot; ВД ; 53° 7' 55.45&quot;СШ 49° 55' 35.32&quot; ВД ; 53° 7' 58.33&quot;СШ 49° 55' 42.86&quot; ВД ; 53° 7' 58.27&quot;СШ 49° 55' 52.28&quot; ВД ; 53° 7' 53.78&quot;СШ 49° 56' 8.12&quot; ВД ; 53° 7' 29.72&quot;СШ 49° 56' 44.01&quot; ВД ; 53° 7' 27.83&quot;СШ 49° 56' 42.66&quot; ВД ; 53° 7' 52.41&quot;СШ 49° 56' 4.32&quot; ВД ; 53° 7' 56.67&quot;СШ 49° 55' 47.48&quot; ВД ; 53° 7' 54.76&quot;СШ 49° 55' 38.63&quot; ВД ; 53° 7' 49.13&quot;СШ 49° 55' 34.13&quot; ВД ; 53° 7' 36.4&quot;СШ 49° 55' 29&quot; ВД ; 53° 7' 34.26&quot;СШ 49° 55' 35.35&quot; ВД ; 53° 7' 31.81&quot;СШ 49° 55' 33.72&quot; ВД
+Владелец: Автономная некоммерческая организация &quot;Новокуйбышевский спортивный клуб&quot;</description>
+            <styleUrl>#208</styleUrl>
+            <Point id="206">
+                <coordinates>49.945558,53.124922,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="213">
+            <name>№ п/п 1244</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование участка акватории водного объекта для размещения сооружений для отстоя маломерных судов, расположения сооружений и обустройство гребного канала для организации учебно-тренировочного процесса по гребле
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 12 км от устья, 53° 7' 34.58&quot;СШ 49° 55' 23.03&quot; ВД ; 53° 7' 48.92&quot;СШ 49° 55' 30.4&quot; ВД ; 53° 7' 55.45&quot;СШ 49° 55' 35.32&quot; ВД ; 53° 7' 58.33&quot;СШ 49° 55' 42.86&quot; ВД ; 53° 7' 58.27&quot;СШ 49° 55' 52.28&quot; ВД ; 53° 7' 53.78&quot;СШ 49° 56' 8.12&quot; ВД ; 53° 7' 29.72&quot;СШ 49° 56' 44.01&quot; ВД ; 53° 7' 27.83&quot;СШ 49° 56' 42.66&quot; ВД ; 53° 7' 52.41&quot;СШ 49° 56' 4.32&quot; ВД ; 53° 7' 56.67&quot;СШ 49° 55' 47.48&quot; ВД ; 53° 7' 54.76&quot;СШ 49° 55' 38.63&quot; ВД ; 53° 7' 49.13&quot;СШ 49° 55' 34.13&quot; ВД ; 53° 7' 36.4&quot;СШ 49° 55' 29&quot; ВД ; 53° 7' 34.26&quot;СШ 49° 55' 35.35&quot; ВД ; 53° 7' 31.81&quot;СШ 49° 55' 33.72&quot; ВД
+Владелец: Автономная некоммерческая организация &quot;Новокуйбышевский спортивный клуб&quot;</description>
+            <styleUrl>#214</styleUrl>
+            <Point id="212">
+                <coordinates>49.945183,53.124397,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="219">
+            <name>№ п/п 1244</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование участка акватории водного объекта для размещения сооружений для отстоя маломерных судов, расположения сооружений и обустройство гребного канала для организации учебно-тренировочного процесса по гребле
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 12 км от устья, 53° 7' 34.58&quot;СШ 49° 55' 23.03&quot; ВД ; 53° 7' 48.92&quot;СШ 49° 55' 30.4&quot; ВД ; 53° 7' 55.45&quot;СШ 49° 55' 35.32&quot; ВД ; 53° 7' 58.33&quot;СШ 49° 55' 42.86&quot; ВД ; 53° 7' 58.27&quot;СШ 49° 55' 52.28&quot; ВД ; 53° 7' 53.78&quot;СШ 49° 56' 8.12&quot; ВД ; 53° 7' 29.72&quot;СШ 49° 56' 44.01&quot; ВД ; 53° 7' 27.83&quot;СШ 49° 56' 42.66&quot; ВД ; 53° 7' 52.41&quot;СШ 49° 56' 4.32&quot; ВД ; 53° 7' 56.67&quot;СШ 49° 55' 47.48&quot; ВД ; 53° 7' 54.76&quot;СШ 49° 55' 38.63&quot; ВД ; 53° 7' 49.13&quot;СШ 49° 55' 34.13&quot; ВД ; 53° 7' 36.4&quot;СШ 49° 55' 29&quot; ВД ; 53° 7' 34.26&quot;СШ 49° 55' 35.35&quot; ВД ; 53° 7' 31.81&quot;СШ 49° 55' 33.72&quot; ВД
+Владелец: Автономная некоммерческая организация &quot;Новокуйбышевский спортивный клуб&quot;</description>
+            <styleUrl>#220</styleUrl>
+            <Point id="218">
+                <coordinates>49.934533,53.131225,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="225">
+            <name>№ п/п 1244</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование участка акватории водного объекта для размещения сооружений для отстоя маломерных судов, расположения сооружений и обустройство гребного канала для организации учебно-тренировочного процесса по гребле
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 12 км от устья, 53° 7' 34.58&quot;СШ 49° 55' 23.03&quot; ВД ; 53° 7' 48.92&quot;СШ 49° 55' 30.4&quot; ВД ; 53° 7' 55.45&quot;СШ 49° 55' 35.32&quot; ВД ; 53° 7' 58.33&quot;СШ 49° 55' 42.86&quot; ВД ; 53° 7' 58.27&quot;СШ 49° 55' 52.28&quot; ВД ; 53° 7' 53.78&quot;СШ 49° 56' 8.12&quot; ВД ; 53° 7' 29.72&quot;СШ 49° 56' 44.01&quot; ВД ; 53° 7' 27.83&quot;СШ 49° 56' 42.66&quot; ВД ; 53° 7' 52.41&quot;СШ 49° 56' 4.32&quot; ВД ; 53° 7' 56.67&quot;СШ 49° 55' 47.48&quot; ВД ; 53° 7' 54.76&quot;СШ 49° 55' 38.63&quot; ВД ; 53° 7' 49.13&quot;СШ 49° 55' 34.13&quot; ВД ; 53° 7' 36.4&quot;СШ 49° 55' 29&quot; ВД ; 53° 7' 34.26&quot;СШ 49° 55' 35.35&quot; ВД ; 53° 7' 31.81&quot;СШ 49° 55' 33.72&quot; ВД
+Владелец: Автономная некоммерческая организация &quot;Новокуйбышевский спортивный клуб&quot;</description>
+            <styleUrl>#226</styleUrl>
+            <Point id="224">
+                <coordinates>49.929856,53.132408,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="231">
+            <name>№ п/п 1244</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование участка акватории водного объекта для размещения сооружений для отстоя маломерных судов, расположения сооружений и обустройство гребного канала для организации учебно-тренировочного процесса по гребле
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 12 км от устья, 53° 7' 34.58&quot;СШ 49° 55' 23.03&quot; ВД ; 53° 7' 48.92&quot;СШ 49° 55' 30.4&quot; ВД ; 53° 7' 55.45&quot;СШ 49° 55' 35.32&quot; ВД ; 53° 7' 58.33&quot;СШ 49° 55' 42.86&quot; ВД ; 53° 7' 58.27&quot;СШ 49° 55' 52.28&quot; ВД ; 53° 7' 53.78&quot;СШ 49° 56' 8.12&quot; ВД ; 53° 7' 29.72&quot;СШ 49° 56' 44.01&quot; ВД ; 53° 7' 27.83&quot;СШ 49° 56' 42.66&quot; ВД ; 53° 7' 52.41&quot;СШ 49° 56' 4.32&quot; ВД ; 53° 7' 56.67&quot;СШ 49° 55' 47.48&quot; ВД ; 53° 7' 54.76&quot;СШ 49° 55' 38.63&quot; ВД ; 53° 7' 49.13&quot;СШ 49° 55' 34.13&quot; ВД ; 53° 7' 36.4&quot;СШ 49° 55' 29&quot; ВД ; 53° 7' 34.26&quot;СШ 49° 55' 35.35&quot; ВД ; 53° 7' 31.81&quot;СШ 49° 55' 33.72&quot; ВД
+Владелец: Автономная некоммерческая организация &quot;Новокуйбышевский спортивный клуб&quot;</description>
+            <styleUrl>#232</styleUrl>
+            <Point id="230">
+                <coordinates>49.927397,53.131878,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="237">
+            <name>№ п/п 1244</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование участка акватории водного объекта для размещения сооружений для отстоя маломерных судов, расположения сооружений и обустройство гребного канала для организации учебно-тренировочного процесса по гребле
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 12 км от устья, 53° 7' 34.58&quot;СШ 49° 55' 23.03&quot; ВД ; 53° 7' 48.92&quot;СШ 49° 55' 30.4&quot; ВД ; 53° 7' 55.45&quot;СШ 49° 55' 35.32&quot; ВД ; 53° 7' 58.33&quot;СШ 49° 55' 42.86&quot; ВД ; 53° 7' 58.27&quot;СШ 49° 55' 52.28&quot; ВД ; 53° 7' 53.78&quot;СШ 49° 56' 8.12&quot; ВД ; 53° 7' 29.72&quot;СШ 49° 56' 44.01&quot; ВД ; 53° 7' 27.83&quot;СШ 49° 56' 42.66&quot; ВД ; 53° 7' 52.41&quot;СШ 49° 56' 4.32&quot; ВД ; 53° 7' 56.67&quot;СШ 49° 55' 47.48&quot; ВД ; 53° 7' 54.76&quot;СШ 49° 55' 38.63&quot; ВД ; 53° 7' 49.13&quot;СШ 49° 55' 34.13&quot; ВД ; 53° 7' 36.4&quot;СШ 49° 55' 29&quot; ВД ; 53° 7' 34.26&quot;СШ 49° 55' 35.35&quot; ВД ; 53° 7' 31.81&quot;СШ 49° 55' 33.72&quot; ВД
+Владелец: Автономная некоммерческая организация &quot;Новокуйбышевский спортивный клуб&quot;</description>
+            <styleUrl>#238</styleUrl>
+            <Point id="236">
+                <coordinates>49.926147,53.130314,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="243">
+            <name>№ п/п 1244</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование участка акватории водного объекта для размещения сооружений для отстоя маломерных судов, расположения сооружений и обустройство гребного канала для организации учебно-тренировочного процесса по гребле
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 12 км от устья, 53° 7' 34.58&quot;СШ 49° 55' 23.03&quot; ВД ; 53° 7' 48.92&quot;СШ 49° 55' 30.4&quot; ВД ; 53° 7' 55.45&quot;СШ 49° 55' 35.32&quot; ВД ; 53° 7' 58.33&quot;СШ 49° 55' 42.86&quot; ВД ; 53° 7' 58.27&quot;СШ 49° 55' 52.28&quot; ВД ; 53° 7' 53.78&quot;СШ 49° 56' 8.12&quot; ВД ; 53° 7' 29.72&quot;СШ 49° 56' 44.01&quot; ВД ; 53° 7' 27.83&quot;СШ 49° 56' 42.66&quot; ВД ; 53° 7' 52.41&quot;СШ 49° 56' 4.32&quot; ВД ; 53° 7' 56.67&quot;СШ 49° 55' 47.48&quot; ВД ; 53° 7' 54.76&quot;СШ 49° 55' 38.63&quot; ВД ; 53° 7' 49.13&quot;СШ 49° 55' 34.13&quot; ВД ; 53° 7' 36.4&quot;СШ 49° 55' 29&quot; ВД ; 53° 7' 34.26&quot;СШ 49° 55' 35.35&quot; ВД ; 53° 7' 31.81&quot;СШ 49° 55' 33.72&quot; ВД
+Владелец: Автономная некоммерческая организация &quot;Новокуйбышевский спортивный клуб&quot;</description>
+            <styleUrl>#244</styleUrl>
+            <Point id="242">
+                <coordinates>49.924722,53.126778,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="249">
+            <name>№ п/п 1244</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование участка акватории водного объекта для размещения сооружений для отстоя маломерных судов, расположения сооружений и обустройство гребного канала для организации учебно-тренировочного процесса по гребле
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 12 км от устья, 53° 7' 34.58&quot;СШ 49° 55' 23.03&quot; ВД ; 53° 7' 48.92&quot;СШ 49° 55' 30.4&quot; ВД ; 53° 7' 55.45&quot;СШ 49° 55' 35.32&quot; ВД ; 53° 7' 58.33&quot;СШ 49° 55' 42.86&quot; ВД ; 53° 7' 58.27&quot;СШ 49° 55' 52.28&quot; ВД ; 53° 7' 53.78&quot;СШ 49° 56' 8.12&quot; ВД ; 53° 7' 29.72&quot;СШ 49° 56' 44.01&quot; ВД ; 53° 7' 27.83&quot;СШ 49° 56' 42.66&quot; ВД ; 53° 7' 52.41&quot;СШ 49° 56' 4.32&quot; ВД ; 53° 7' 56.67&quot;СШ 49° 55' 47.48&quot; ВД ; 53° 7' 54.76&quot;СШ 49° 55' 38.63&quot; ВД ; 53° 7' 49.13&quot;СШ 49° 55' 34.13&quot; ВД ; 53° 7' 36.4&quot;СШ 49° 55' 29&quot; ВД ; 53° 7' 34.26&quot;СШ 49° 55' 35.35&quot; ВД ; 53° 7' 31.81&quot;СШ 49° 55' 33.72&quot; ВД
+Владелец: Автономная некоммерческая организация &quot;Новокуйбышевский спортивный клуб&quot;</description>
+            <styleUrl>#250</styleUrl>
+            <Point id="248">
+                <coordinates>49.926486,53.126183,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="255">
+            <name>№ п/п 1244</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование участка акватории водного объекта для размещения сооружений для отстоя маломерных судов, расположения сооружений и обустройство гребного канала для организации учебно-тренировочного процесса по гребле
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 12 км от устья, 53° 7' 34.58&quot;СШ 49° 55' 23.03&quot; ВД ; 53° 7' 48.92&quot;СШ 49° 55' 30.4&quot; ВД ; 53° 7' 55.45&quot;СШ 49° 55' 35.32&quot; ВД ; 53° 7' 58.33&quot;СШ 49° 55' 42.86&quot; ВД ; 53° 7' 58.27&quot;СШ 49° 55' 52.28&quot; ВД ; 53° 7' 53.78&quot;СШ 49° 56' 8.12&quot; ВД ; 53° 7' 29.72&quot;СШ 49° 56' 44.01&quot; ВД ; 53° 7' 27.83&quot;СШ 49° 56' 42.66&quot; ВД ; 53° 7' 52.41&quot;СШ 49° 56' 4.32&quot; ВД ; 53° 7' 56.67&quot;СШ 49° 55' 47.48&quot; ВД ; 53° 7' 54.76&quot;СШ 49° 55' 38.63&quot; ВД ; 53° 7' 49.13&quot;СШ 49° 55' 34.13&quot; ВД ; 53° 7' 36.4&quot;СШ 49° 55' 29&quot; ВД ; 53° 7' 34.26&quot;СШ 49° 55' 35.35&quot; ВД ; 53° 7' 31.81&quot;СШ 49° 55' 33.72&quot; ВД
+Владелец: Автономная некоммерческая организация &quot;Новокуйбышевский спортивный клуб&quot;</description>
+            <styleUrl>#256</styleUrl>
+            <Point id="254">
+                <coordinates>49.926033,53.125503,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="261">
+            <name>№ п/п 1373</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование акватории водного объекта для размещения причальных сооружений и отстоя маломерных судов
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Самара г (Куйбышевский р-н, в районе ул. Большая Караванная); 1-2 км от устья, ЛБ, 53° 8' 21.1&quot;СШ 50° 3' 21&quot; ВД ; 53° 8' 23.9&quot;СШ 50° 3' 25.76&quot; ВД ; 53° 8' 25.28&quot;СШ 50° 3' 29.16&quot; ВД ; 53° 8' 24.53&quot;СШ 50° 3' 30&quot; ВД ; 53° 8' 23.2&quot;СШ 50° 3' 26.72&quot; ВД ; 53° 8' 20.45&quot;СШ 50° 3' 22.05&quot; ВД
+Владелец: ООО &quot;Фэбус&quot;</description>
+            <styleUrl>#266</styleUrl>
+            <Polygon id="260">
+                <outerBoundaryIs>
+                    <LinearRing id="264">
+                        <coordinates>50.055833,53.139194,0.0 50.057156,53.139972,0.0 50.0581,53.140356,0.0 50.058333,53.140147,0.0 50.057422,53.139778,0.0 50.056125,53.139014,0.0</coordinates>
+                    </LinearRing>
+                </outerBoundaryIs>
+            </Polygon>
+        </Placemark>
+        <Placemark id="270">
+            <name>№ п/п 1374</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование акватории водного объекта для размещения на акватории плавательных средств
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Самара г (Куйбышевский р-н); 1 км от устья, ПБ, 53° 8' 26.28188&quot;СШ 50° 3' 44.85482&quot; ВД ; 53° 8' 26.82976&quot;СШ 50° 3' 45.58006&quot; ВД ; 53° 8' 27.78891&quot;СШ 50° 3' 46.70413&quot; ВД ; 53° 8' 28.55927&quot;СШ 50° 3' 47.18712&quot; ВД ; 53° 8' 29.75759&quot;СШ 50° 3' 47.64177&quot; ВД ; 53° 8' 31.65782&quot;СШ 50° 3' 47.96726&quot; ВД ; 53° 8' 33.27557&quot;СШ 50° 3' 48.02292&quot; ВД ; 53° 8' 34.79051&quot;СШ 50° 3' 48.26374&quot; ВД ; 53° 8' 34.80392&quot;СШ 50° 3' 46.61801&quot; ВД ; 53° 8' 32.18493&quot;СШ 50° 3' 46.36416&quot; ВД ; 53° 8' 31.67124&quot;СШ 50° 3' 46.36459&quot; ВД ; 53° 8' 29.891&quot;СШ 50° 3' 45.99598&quot; ВД ; 53° 8' 28.2902&quot;СШ 50° 3' 45.31413&quot; ВД ; 53° 8' 26.94595&quot;СШ 50° 3' 43.67825&quot; ВД
+Владелец: ООО &quot;Альянс&quot;</description>
+            <styleUrl>#275</styleUrl>
+            <Polygon id="269">
+                <outerBoundaryIs>
+                    <LinearRing id="273">
+                        <coordinates>50.06246,53.140634,0.0 50.062661,53.140786,0.0 50.062973,53.141052,0.0 50.063108,53.141266,0.0 50.063234,53.141599,0.0 50.063324,53.142127,0.0 50.06334,53.142577,0.0 50.063407,53.142997,0.0 50.062949,53.143001,0.0 50.062879,53.142274,0.0 50.062879,53.142131,0.0 50.062777,53.141636,0.0 50.062587,53.141192,0.0 50.062133,53.140818,0.0</coordinates>
+                    </LinearRing>
+                </outerBoundaryIs>
+            </Polygon>
+        </Placemark>
+        <Placemark id="279">
+            <name>№ п/п 1377</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование акватории водного объекта для размещения на акватории понтонных сооружений для отстоя маломерных судов
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Волжский р-н (Самарская, обл.., в районе КСП &quot;Волгарь&quot;); 3 км от устья, ЛБ, 53° 8' 14.3&quot;СШ 50° 2' 10.05&quot; ВД ; 53° 8' 14.29&quot;СШ 50° 2' 11.62&quot; ВД ; 53° 8' 12.55&quot;СШ 50° 2' 11.96&quot; ВД ; 53° 8' 10.26&quot;СШ 50° 2' 13.63&quot; ВД ; 53° 8' 8.1&quot;СШ 50° 2' 13.39&quot; ВД ; 53° 8' 5.92&quot;СШ 50° 2' 11.64&quot; ВД ; 53° 8' 6.38&quot;СШ 50° 2' 10.35&quot; ВД ; 53° 8' 8.27&quot;СШ 50° 2' 11.9&quot; ВД ; 53° 8' 10.09&quot;СШ 50° 2' 12.07&quot; ВД ; 53° 8' 12.41&quot;СШ 50° 2' 10.42&quot; ВД
+Владелец: ООО &quot;МИРАЖ&quot;</description>
+            <styleUrl>#284</styleUrl>
+            <Polygon id="278">
+                <outerBoundaryIs>
+                    <LinearRing id="282">
+                        <coordinates>50.036125,53.137306,0.0 50.036561,53.137303,0.0 50.036656,53.136819,0.0 50.037119,53.136183,0.0 50.037053,53.135583,0.0 50.036567,53.134978,0.0 50.036208,53.135106,0.0 50.036639,53.135631,0.0 50.036686,53.136136,0.0 50.036228,53.136781,0.0</coordinates>
+                    </LinearRing>
+                </outerBoundaryIs>
+            </Polygon>
+        </Placemark>
+        <Placemark id="288">
+            <name>№ п/п 1378</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование акватории водного объекта для размещения на акватории плавательных средств, понтонных сооружений
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Самара г (Куйбышевский р-н); 1 км от устья, ПБ, 53° 8' 35.31406&quot;СШ 50° 3' 46.6391&quot; ВД ; 53° 8' 37.33534&quot;СШ 50° 3' 47.18506&quot; ВД ; 53° 8' 37.13494&quot;СШ 50° 3' 48.76481&quot; ВД ; 53° 8' 35.11366&quot;СШ 50° 3' 48.21828&quot; ВД
+Владелец: ООО &quot;Актив&quot;</description>
+            <styleUrl>#293</styleUrl>
+            <Polygon id="287">
+                <outerBoundaryIs>
+                    <LinearRing id="291">
+                        <coordinates>50.062955,53.143143,0.0 50.063394,53.143087,0.0 50.063546,53.143649,0.0 50.063107,53.143704,0.0</coordinates>
+                    </LinearRing>
+                </outerBoundaryIs>
+            </Polygon>
+        </Placemark>
+        <Placemark id="297">
+            <name>№ п/п 1396</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование акватории водного объекта для размещения плавательных средств и других объектов и сооружений
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Самара г (Куйбышевский р-н); 1 км от устья, ПБ, 53° 8' 38.56&quot;СШ 50° 3' 47.88&quot; ВД ; 53° 8' 38.33&quot;СШ 50° 3' 49.44&quot; ВД ; 53° 8' 37.47&quot;СШ 50° 3' 49.09&quot; ВД ; 53° 8' 37.7&quot;СШ 50° 3' 47.52&quot; ВД
+Владелец: Казанин Игорь Николаевич</description>
+            <styleUrl>#302</styleUrl>
+            <Polygon id="296">
+                <outerBoundaryIs>
+                    <LinearRing id="300">
+                        <coordinates>50.0632,53.143806,0.0 50.063636,53.143742,0.0 50.063733,53.143981,0.0 50.0633,53.144044,0.0</coordinates>
+                    </LinearRing>
+                </outerBoundaryIs>
+            </Polygon>
+        </Placemark>
+        <Placemark id="306">
+            <name>№ п/п 1397</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование акватории водного объекта для размещения на акватории плавательных средств
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Самара г (Куйбышевский р-н); 1 км от устья, ПБ, 53° 8' 26.28188&quot;СШ 50° 3' 44.85482&quot; ВД ; 53° 8' 26.82976&quot;СШ 50° 3' 45.58006&quot; ВД ; 53° 8' 27.78891&quot;СШ 50° 3' 46.70413&quot; ВД ; 53° 8' 28.55927&quot;СШ 50° 3' 47.18712&quot; ВД ; 53° 8' 29.75759&quot;СШ 50° 3' 47.64177&quot; ВД ; 53° 8' 31.65782&quot;СШ 50° 3' 47.96726&quot; ВД ; 53° 8' 33.27557&quot;СШ 50° 3' 48.02292&quot; ВД ; 53° 8' 34.79051&quot;СШ 50° 3' 48.26374&quot; ВД ; 53° 8' 34.80392&quot;СШ 50° 3' 46.61801&quot; ВД ; 53° 8' 32.18493&quot;СШ 50° 3' 46.36416&quot; ВД ; 53° 8' 31.67124&quot;СШ 50° 3' 46.36459&quot; ВД ; 53° 8' 29.891&quot;СШ 50° 3' 45.99598&quot; ВД ; 53° 8' 28.2902&quot;СШ 50° 3' 45.31413&quot; ВД ; 53° 8' 26.94595&quot;СШ 50° 3' 43.67825&quot; ВД
+Владелец: ООО &quot;Альянс&quot;</description>
+            <styleUrl>#311</styleUrl>
+            <Polygon id="305">
+                <outerBoundaryIs>
+                    <LinearRing id="309">
+                        <coordinates>50.06246,53.140634,0.0 50.062661,53.140786,0.0 50.062973,53.141052,0.0 50.063108,53.141266,0.0 50.063234,53.141599,0.0 50.063324,53.142127,0.0 50.06334,53.142577,0.0 50.063407,53.142997,0.0 50.062949,53.143001,0.0 50.062879,53.142274,0.0 50.062879,53.142131,0.0 50.062777,53.141636,0.0 50.062587,53.141192,0.0 50.062133,53.140818,0.0</coordinates>
+                    </LinearRing>
+                </outerBoundaryIs>
+            </Polygon>
+        </Placemark>
+        <Placemark id="315">
+            <name>№ п/п 1398</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование акватории водного объекта для размещения на акватории плавательных средств, понтонных сооружений
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Самара г (Куйбышевский р-н); 1 км от устья, ПБ, 53° 8' 35.31406&quot;СШ 50° 3' 46.6391&quot; ВД ; 53° 8' 37.33534&quot;СШ 50° 3' 47.18506&quot; ВД ; 53° 8' 37.13494&quot;СШ 50° 3' 48.76481&quot; ВД ; 53° 8' 35.11366&quot;СШ 50° 3' 48.21828&quot; ВД
+Владелец: ООО &quot;Актив&quot;</description>
+            <styleUrl>#320</styleUrl>
+            <Polygon id="314">
+                <outerBoundaryIs>
+                    <LinearRing id="318">
+                        <coordinates>50.062955,53.143143,0.0 50.063394,53.143087,0.0 50.063546,53.143649,0.0 50.063107,53.143704,0.0</coordinates>
+                    </LinearRing>
+                </outerBoundaryIs>
+            </Polygon>
+        </Placemark>
+        <Placemark id="324">
+            <name>№ п/п 1461</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование акватории водного объекта для размещения плавательных средств и других объектов и сооружений
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Самара г (Куйбышевский р-н); 1 км от устья, ПБ, 53° 8' 38.56&quot;СШ 50° 3' 47.88&quot; ВД ; 53° 8' 38.33&quot;СШ 50° 3' 49.44&quot; ВД ; 53° 8' 37.47&quot;СШ 50° 3' 49.09&quot; ВД ; 53° 8' 37.7&quot;СШ 50° 3' 47.52&quot; ВД
+Владелец: Казанин Игорь Николаевич</description>
+            <styleUrl>#329</styleUrl>
+            <Polygon id="323">
+                <outerBoundaryIs>
+                    <LinearRing id="327">
+                        <coordinates>50.0632,53.143806,0.0 50.063636,53.143742,0.0 50.063733,53.143981,0.0 50.0633,53.144044,0.0</coordinates>
+                    </LinearRing>
+                </outerBoundaryIs>
+            </Polygon>
+        </Placemark>
+        <Placemark id="333">
+            <name>№ п/п 1478</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Озеро озеро, сообщающееся с р.Татьянка КАС/ВОЛГА/1395/0003 , КАС/ВОЛГА/1395/0003
+Цель водопользования: Использование акватории водного объекта для рекрекреационных целей
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Волжский р-н (Самарская область); 3,4 км от устья, 53° 8' 5.35146&quot;СШ 50° 2' 19.77751&quot; ВД ; 53° 8' 5.9733&quot;СШ 50° 2' 20.98261&quot; ВД ; 53° 8' 4.99884&quot;СШ 50° 2' 22.766&quot; ВД ; 53° 8' 4.9357&quot;СШ 50° 2' 23.88339&quot; ВД ; 53° 8' 4.72267&quot;СШ 50° 2' 25.24202&quot; ВД ; 53° 8' 4.27629&quot;СШ 50° 2' 28.25842&quot; ВД ; 53° 8' 4.15925&quot;СШ 50° 2' 29.32021&quot; ВД ; 53° 8' 3.82323&quot;СШ 50° 2' 30.34083&quot; ВД ; 53° 8' 3.34136&quot;СШ 50° 2' 31.20311&quot; ВД ; 53° 8' 2.86602&quot;СШ 50° 2' 31.6761&quot; ВД ; 53° 8' 2.28169&quot;СШ 50° 2' 31.87811&quot; ВД ; 53° 8' 1.51781&quot;СШ 50° 2' 31.58482&quot; ВД ; 53° 8' 1.17401&quot;СШ 50° 2' 31.00282&quot; ВД ; 53° 8' 0.98132&quot;СШ 50° 2' 29.95747&quot; ВД ; 53° 8' 0.9522&quot;СШ 50° 2' 29.15532&quot; ВД ; 53° 8' 1.20195&quot;СШ 50° 2' 27.70184&quot; ВД ; 53° 8' 1.56366&quot;СШ 50° 2' 26.16705&quot; ВД ; 53° 8' 2.06352&quot;СШ 50° 2' 24.51608&quot; ВД ; 53° 8' 3.23235&quot;СШ 50° 2' 20.72156&quot; ВД ; 53° 8' 3.47098&quot;СШ 50° 2' 18.32052&quot; ВД ; 53° 8' 4.00463&quot;СШ 50° 2' 18.21948&quot; ВД ; 53° 8' 4.51939&quot;СШ 50° 2' 18.70808&quot; ВД
+Владелец: ООО &quot;ЭкоСтройРесурс&quot;</description>
+            <styleUrl>#338</styleUrl>
+            <Polygon id="332">
+                <outerBoundaryIs>
+                    <LinearRing id="336">
+                        <coordinates>50.038827,53.13482,0.0 50.039162,53.134993,0.0 50.039657,53.134722,0.0 50.039968,53.134704,0.0 50.040345,53.134645,0.0 50.041183,53.134521,0.0 50.041478,53.134489,0.0 50.041761,53.134395,0.0 50.042001,53.134261,0.0 50.042132,53.134129,0.0 50.042188,53.133967,0.0 50.042107,53.133755,0.0 50.041945,53.133659,0.0 50.041655,53.133606,0.0 50.041432,53.133598,0.0 50.041028,53.133667,0.0 50.040602,53.133768,0.0 50.040143,53.133907,0.0 50.039089,53.134231,0.0 50.038422,53.134297,0.0 50.038394,53.134446,0.0 50.03853,53.134589,0.0</coordinates>
+                    </LinearRing>
+                </outerBoundaryIs>
+            </Polygon>
+        </Placemark>
+        <Placemark id="342">
+            <name>№ п/п 1525</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование акватории водного объекта для размещения причальных сооружений и отстоя маломерных судов
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Самара г (Куйбышевский р-н, в районе ул. Большая Караванная); 1-2 км от устья, ЛБ, 53° 8' 21.1&quot;СШ 50° 3' 21&quot; ВД ; 53° 8' 23.9&quot;СШ 50° 3' 25.76&quot; ВД ; 53° 8' 25.28&quot;СШ 50° 3' 29.16&quot; ВД ; 53° 8' 24.53&quot;СШ 50° 3' 30&quot; ВД ; 53° 8' 23.2&quot;СШ 50° 3' 26.72&quot; ВД ; 53° 8' 20.45&quot;СШ 50° 3' 22.05&quot; ВД
+Владелец: Афанасьев Александр Владимирович</description>
+            <styleUrl>#347</styleUrl>
+            <Polygon id="341">
+                <outerBoundaryIs>
+                    <LinearRing id="345">
+                        <coordinates>50.055833,53.139194,0.0 50.057156,53.139972,0.0 50.0581,53.140356,0.0 50.058333,53.140147,0.0 50.057422,53.139778,0.0 50.056125,53.139014,0.0</coordinates>
+                    </LinearRing>
+                </outerBoundaryIs>
+            </Polygon>
+        </Placemark>
+        <Placemark id="351">
+            <name>№ п/п 1656</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование акватории водного объекта для размещения причальных сооружений и отстоя маломерных судов
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Самара г (Куйбышевский р-н, в районе ул. Большая Караванная); 1-2 км от устья, ЛБ, 53° 8' 21.1&quot;СШ 50° 3' 21&quot; ВД ; 53° 8' 23.9&quot;СШ 50° 3' 25.76&quot; ВД ; 53° 8' 25.28&quot;СШ 50° 3' 29.16&quot; ВД ; 53° 8' 24.53&quot;СШ 50° 3' 30&quot; ВД ; 53° 8' 23.2&quot;СШ 50° 3' 26.72&quot; ВД ; 53° 8' 20.45&quot;СШ 50° 3' 22.05&quot; ВД
+Владелец: ООО &quot;Авторемонтное предприятие&quot;</description>
+            <styleUrl>#356</styleUrl>
+            <Polygon id="350">
+                <outerBoundaryIs>
+                    <LinearRing id="354">
+                        <coordinates>50.055833,53.139194,0.0 50.057156,53.139972,0.0 50.0581,53.140356,0.0 50.058333,53.140147,0.0 50.057422,53.139778,0.0 50.056125,53.139014,0.0</coordinates>
+                    </LinearRing>
+                </outerBoundaryIs>
+            </Polygon>
+        </Placemark>
+        <Placemark id="360">
+            <name>№ п/п 1854</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов для технических нужд
+Вид водопользования: совместное водопользование с забором (изъятием) водных ресурсов из водных объектов без возврата воды в водные объекты
+Место водопользования, координаты:  Волжский район р-н (Самарская область); 3.4 км от устья, 53° 8' 8.1&quot;СШ 50° 2' 13.7&quot; ВД
+Владелец: ООО &quot;ЭкоСтройРесурс&quot;</description>
+            <styleUrl>#361</styleUrl>
+            <Point id="359">
+                <coordinates>50.037139,53.135583,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="366">
+            <name>№ п/п 1886</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование акватории водного объекта для размещения сооружений для отстоя маломерных судов
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 13 км от устья, ПБ, 53° 7' 40.146&quot;СШ 49° 55' 0.237&quot; ВД ; 53° 7' 37.467&quot;СШ 49° 55' 17.415&quot; ВД ; 53° 7' 35.474&quot;СШ 49° 55' 16.461&quot; ВД ; 53° 7' 37.933&quot;СШ 49° 55' 0.699&quot; ВД
+Владелец: Автономная некоммерческая организация &quot;Новокуйбышевский спортивный клуб&quot;</description>
+            <styleUrl>#371</styleUrl>
+            <Polygon id="365">
+                <outerBoundaryIs>
+                    <LinearRing id="369">
+                        <coordinates>49.921239,53.126521,0.0 49.921504,53.127074,0.0 49.916732,53.127818,0.0 49.916861,53.127204,0.0</coordinates>
+                    </LinearRing>
+                </outerBoundaryIs>
+            </Polygon>
+        </Placemark>
+        <Placemark id="375">
+            <name>№ п/п 1900</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование акватории водного объекта для размещения сооружений для отстоя маломерных судов
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 13 км от устья, ПБ, 53° 7' 40.146&quot;СШ 49° 55' 0.237&quot; ВД ; 53° 7' 37.467&quot;СШ 49° 55' 17.415&quot; ВД ; 53° 7' 35.474&quot;СШ 49° 55' 16.461&quot; ВД ; 53° 7' 37.933&quot;СШ 49° 55' 0.699&quot; ВД
+Владелец: Автономная некоммерческая организация &quot;Новокуйбышевский спортивный клуб&quot;</description>
+            <styleUrl>#380</styleUrl>
+            <Polygon id="374">
+                <outerBoundaryIs>
+                    <LinearRing id="378">
+                        <coordinates>49.921239,53.126521,0.0 49.921504,53.127074,0.0 49.916732,53.127818,0.0 49.916861,53.127204,0.0</coordinates>
+                    </LinearRing>
+                </outerBoundaryIs>
+            </Polygon>
+        </Placemark>
+        <Placemark id="384">
+            <name>№ п/п 1959</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование акватории водного объекта для размещения понтонных сооружений для отстоя маломерных судов
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Волжский район р-н (Самарская область); 3 км от устья, ПБ, 53° 8' 8.93&quot;СШ 50° 2' 13.91&quot; ВД ; 53° 8' 8.8&quot;СШ 50° 2' 14.68&quot; ВД ; 53° 8' 8.33&quot;СШ 50° 2' 14.46&quot; ВД ; 53° 8' 8.46&quot;СШ 50° 2' 13.69&quot; ВД
+Владелец: Афанасьев Александр Владимирович</description>
+            <styleUrl>#389</styleUrl>
+            <Polygon id="383">
+                <outerBoundaryIs>
+                    <LinearRing id="387">
+                        <coordinates>50.037136,53.135683,0.0 50.03735,53.135647,0.0 50.037411,53.135778,0.0 50.037197,53.135814,0.0</coordinates>
+                    </LinearRing>
+                </outerBoundaryIs>
+            </Polygon>
+        </Placemark>
+        <Placemark id="393">
+            <name>№ п/п 1972</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов для технических нужд
+Вид водопользования: совместное водопользование с забором (изъятием) водных ресурсов из водных объектов без возврата воды в водные объекты
+Место водопользования, координаты:  Волжский район р-н (Самарская область); 3.4 км от устья, 53° 8' 8.1&quot;СШ 50° 2' 13.7&quot; ВД
+Владелец: ООО &quot;ЭкоСтройРесурс&quot;</description>
+            <styleUrl>#394</styleUrl>
+            <Point id="392">
+                <coordinates>50.037139,53.135583,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="399">
+            <name>№ п/п 1988</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование акватории водного объекта, в т. ч. для рекреационных целей (по результатам аукциона)
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Волжский район р-н (Самарская область); 3.5 км от устья, ПБ, 53° 8' 6.08612&quot;СШ 50° 2' 12.52844&quot; ВД ; 53° 8' 6.69725&quot;СШ 50° 2' 13.02197&quot; ВД ; 53° 8' 6.45708&quot;СШ 50° 2' 13.84477&quot; ВД ; 53° 8' 5.84595&quot;СШ 50° 2' 13.3507&quot; ВД
+Владелец: Афанасьев Александр Владимирович</description>
+            <styleUrl>#404</styleUrl>
+            <Polygon id="398">
+                <outerBoundaryIs>
+                    <LinearRing id="402">
+                        <coordinates>50.036813,53.135024,0.0 50.037042,53.134957,0.0 50.037179,53.135127,0.0 50.036951,53.135194,0.0</coordinates>
+                    </LinearRing>
+                </outerBoundaryIs>
+            </Polygon>
+        </Placemark>
+        <Placemark id="408">
+            <name>№ п/п 2009</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов для технических нужд
+Вид водопользования: совместное водопользование с забором (изъятием) водных ресурсов из водных объектов без возврата воды в водные объекты
+Место водопользования, координаты:  Волжский район р-н (Самарская область); 3.4 км от устья, 53° 8' 8.1&quot;СШ 50° 2' 13.7&quot; ВД
+Владелец: ООО &quot;ЭкоСтройРесурс&quot;</description>
+            <styleUrl>#409</styleUrl>
+            <Point id="407">
+                <coordinates>50.037139,53.135583,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="414">
+            <name>№ п/п 2151</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов для технических нужд
+Вид водопользования: совместное водопользование с забором (изъятием) водных ресурсов из водных объектов без возврата воды в водные объекты
+Место водопользования, координаты:  Волжский район р-н (Самарская область); 3.4 км от устья, 53° 8' 8.1&quot;СШ 50° 2' 13.7&quot; ВД
+Владелец: ООО &quot;ЭкоСтройРесурс&quot;</description>
+            <styleUrl>#415</styleUrl>
+            <Point id="413">
+                <coordinates>50.037139,53.135583,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="420">
+            <name>№ п/п 2207</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов для технических нужд
+Вид водопользования: совместное водопользование с забором (изъятием) водных ресурсов из водных объектов без возврата воды в водные объекты
+Место водопользования, координаты:  Волжский район р-н (Самарская область); 3.4 км от устья, 53° 8' 8.1&quot;СШ 50° 2' 13.7&quot; ВД
+Владелец: ООО &quot;ЭкоСтройРесурс&quot;</description>
+            <styleUrl>#421</styleUrl>
+            <Point id="419">
+                <coordinates>50.037139,53.135583,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="426">
+            <name>№ п/п 2208</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Озеро озеро, сообщающееся с р.Татьянка КАС/ВОЛГА/1395/0003 , КАС/ВОЛГА/1395/0003
+Цель водопользования: Использование акватории водного объекта для рекрекреационных целей
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Волжский р-н (Самарская область); 3,4 км от устья, 53° 8' 5.35146&quot;СШ 50° 2' 19.77751&quot; ВД ; 53° 8' 5.9733&quot;СШ 50° 2' 20.98261&quot; ВД ; 53° 8' 4.99884&quot;СШ 50° 2' 22.766&quot; ВД ; 53° 8' 4.9357&quot;СШ 50° 2' 23.88339&quot; ВД ; 53° 8' 4.72267&quot;СШ 50° 2' 25.24202&quot; ВД ; 53° 8' 4.27629&quot;СШ 50° 2' 28.25842&quot; ВД ; 53° 8' 4.15925&quot;СШ 50° 2' 29.32021&quot; ВД ; 53° 8' 3.82323&quot;СШ 50° 2' 30.34083&quot; ВД ; 53° 8' 3.34136&quot;СШ 50° 2' 31.20311&quot; ВД ; 53° 8' 2.86602&quot;СШ 50° 2' 31.6761&quot; ВД ; 53° 8' 2.28169&quot;СШ 50° 2' 31.87811&quot; ВД ; 53° 8' 1.51781&quot;СШ 50° 2' 31.58482&quot; ВД ; 53° 8' 1.17401&quot;СШ 50° 2' 31.00282&quot; ВД ; 53° 8' 0.98132&quot;СШ 50° 2' 29.95747&quot; ВД ; 53° 8' 0.9522&quot;СШ 50° 2' 29.15532&quot; ВД ; 53° 8' 1.20195&quot;СШ 50° 2' 27.70184&quot; ВД ; 53° 8' 1.56366&quot;СШ 50° 2' 26.16705&quot; ВД ; 53° 8' 2.06352&quot;СШ 50° 2' 24.51608&quot; ВД ; 53° 8' 3.23235&quot;СШ 50° 2' 20.72156&quot; ВД ; 53° 8' 3.47098&quot;СШ 50° 2' 18.32052&quot; ВД ; 53° 8' 4.00463&quot;СШ 50° 2' 18.21948&quot; ВД ; 53° 8' 4.51939&quot;СШ 50° 2' 18.70808&quot; ВД
+Владелец: ООО &quot;ЭкоСтройРесурс&quot;</description>
+            <styleUrl>#431</styleUrl>
+            <Polygon id="425">
+                <outerBoundaryIs>
+                    <LinearRing id="429">
+                        <coordinates>50.038827,53.13482,0.0 50.039162,53.134993,0.0 50.039657,53.134722,0.0 50.039968,53.134704,0.0 50.040345,53.134645,0.0 50.041183,53.134521,0.0 50.041478,53.134489,0.0 50.041761,53.134395,0.0 50.042001,53.134261,0.0 50.042132,53.134129,0.0 50.042188,53.133967,0.0 50.042107,53.133755,0.0 50.041945,53.133659,0.0 50.041655,53.133606,0.0 50.041432,53.133598,0.0 50.041028,53.133667,0.0 50.040602,53.133768,0.0 50.040143,53.133907,0.0 50.039089,53.134231,0.0 50.038422,53.134297,0.0 50.038394,53.134446,0.0 50.03853,53.134589,0.0</coordinates>
+                    </LinearRing>
+                </outerBoundaryIs>
+            </Polygon>
+        </Placemark>
+        <Placemark id="435">
+            <name>№ п/п 2212</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование акватории водного объекта, в том числе для рекреационных целей
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Самара г (Куйбышевский р-н); 2,5 км от устья, ПБ, 53° 8' 20&quot;СШ 50° 3' 0&quot; ВД
+Владелец: Логачев Андрей Вячеславович</description>
+            <styleUrl>#436</styleUrl>
+            <Point id="434">
+                <coordinates>50.05,53.138889,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="441">
+            <name>№ п/п 2226 - сброс 1</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Сброс сточных вод
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 12 км от устья, 53° 7' 42.61&quot;СШ 49° 54' 59.68&quot; ВД
+Владелец: Акционерное общество &quot;Средневолжское предприятие железнодорожного транспорта&quot;, АО &quot;СПЖТ&quot;</description>
+            <styleUrl>#442</styleUrl>
+            <Point id="440">
+                <coordinates>49.916578,53.128503,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="447">
+            <name>№ п/п 2233</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование участка акватории водного объекта для размещения сооружений для отстоя маломерных судов, расположения сооружений и обустройство гребного канала для организации учебно-тренировочного процесса по гребле
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 12 км от устья, 53° 7' 34.58&quot;СШ 49° 55' 23.03&quot; ВД ; 53° 7' 48.92&quot;СШ 49° 55' 30.4&quot; ВД ; 53° 7' 55.45&quot;СШ 49° 55' 35.32&quot; ВД ; 53° 7' 58.33&quot;СШ 49° 55' 42.86&quot; ВД ; 53° 7' 58.27&quot;СШ 49° 55' 52.28&quot; ВД ; 53° 7' 53.78&quot;СШ 49° 56' 8.12&quot; ВД ; 53° 7' 29.72&quot;СШ 49° 56' 44.01&quot; ВД ; 53° 7' 27.83&quot;СШ 49° 56' 42.66&quot; ВД ; 53° 7' 52.41&quot;СШ 49° 56' 4.32&quot; ВД ; 53° 7' 56.67&quot;СШ 49° 55' 47.48&quot; ВД ; 53° 7' 54.76&quot;СШ 49° 55' 38.63&quot; ВД ; 53° 7' 49.13&quot;СШ 49° 55' 34.13&quot; ВД ; 53° 7' 36.4&quot;СШ 49° 55' 29&quot; ВД ; 53° 7' 34.26&quot;СШ 49° 55' 35.35&quot; ВД ; 53° 7' 31.81&quot;СШ 49° 55' 33.72&quot; ВД
+Владелец: Автономная некоммерческая организация &quot;Новокуйбышевский спортивный клуб&quot;</description>
+            <styleUrl>#452</styleUrl>
+            <Polygon id="446">
+                <outerBoundaryIs>
+                    <LinearRing id="450">
+                        <coordinates>49.923064,53.126272,0.0 49.925111,53.130256,0.0 49.926478,53.132069,0.0 49.928572,53.132869,0.0 49.931189,53.132853,0.0 49.935589,53.131606,0.0 49.945558,53.124922,0.0 49.945183,53.124397,0.0 49.934533,53.131225,0.0 49.929856,53.132408,0.0 49.927397,53.131878,0.0 49.926147,53.130314,0.0 49.924722,53.126778,0.0 49.926486,53.126183,0.0 49.926033,53.125503,0.0</coordinates>
+                    </LinearRing>
+                </outerBoundaryIs>
+            </Polygon>
+        </Placemark>
+        <Placemark id="456">
+            <name>№ п/п 2234</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование акватории водного объекта для размещения сооружений для отстоя маломерных судов
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 13 км от устья, ПБ, 53° 7' 40.146&quot;СШ 49° 55' 0.237&quot; ВД ; 53° 7' 37.467&quot;СШ 49° 55' 17.415&quot; ВД ; 53° 7' 35.474&quot;СШ 49° 55' 16.461&quot; ВД ; 53° 7' 37.933&quot;СШ 49° 55' 0.699&quot; ВД
+Владелец: Автономная некоммерческая организация &quot;Новокуйбышевский спортивный клуб&quot;</description>
+            <styleUrl>#461</styleUrl>
+            <Polygon id="455">
+                <outerBoundaryIs>
+                    <LinearRing id="459">
+                        <coordinates>49.921239,53.126521,0.0 49.921504,53.127074,0.0 49.916732,53.127818,0.0 49.916861,53.127204,0.0</coordinates>
+                    </LinearRing>
+                </outerBoundaryIs>
+            </Polygon>
+        </Placemark>
+        <Placemark id="465">
+            <name>№ п/п 2248</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование акватории водного объекта для размещения причальных сооружений и отстоя маломерных судов
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Самара г (Куйбышевский р-н, в районе ул. Большая Караванная); 1-2 км от устья, ЛБ, 53° 8' 21.1&quot;СШ 50° 3' 21&quot; ВД ; 53° 8' 23.9&quot;СШ 50° 3' 25.76&quot; ВД ; 53° 8' 25.28&quot;СШ 50° 3' 29.16&quot; ВД ; 53° 8' 24.53&quot;СШ 50° 3' 30&quot; ВД ; 53° 8' 23.2&quot;СШ 50° 3' 26.72&quot; ВД ; 53° 8' 20.45&quot;СШ 50° 3' 22.05&quot; ВД
+Владелец: ООО &quot;Авторемонтное предприятие&quot;</description>
+            <styleUrl>#470</styleUrl>
+            <Polygon id="464">
+                <outerBoundaryIs>
+                    <LinearRing id="468">
+                        <coordinates>50.055833,53.139194,0.0 50.057156,53.139972,0.0 50.0581,53.140356,0.0 50.058333,53.140147,0.0 50.057422,53.139778,0.0 50.056125,53.139014,0.0</coordinates>
+                    </LinearRing>
+                </outerBoundaryIs>
+            </Polygon>
+        </Placemark>
+        <Placemark id="474">
+            <name>№ п/п 2316</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование акватории водного объекта для размещения плавучей установки для забора воды
+Вид водопользования: совместное водопользование с забором (изъятием) водных ресурсов из водных объектов без возврата воды в водные объекты
+Место водопользования, координаты:  Самара г (Куйбышевский р-н); 1 км от устья, 53° 8' 34&quot;СШ 50° 3' 45&quot; ВД
+Владелец: ЗАО &quot;СЗ &quot;Нефтемаш&quot;</description>
+            <styleUrl>#475</styleUrl>
+            <Point id="473">
+                <coordinates>50.0625,53.142778,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="480">
+            <name>№ п/п 2318</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование акватории водного объекта для размещения на акватории плавательных средств
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Самара г (Куйбышевский р-н); 1 км от устья, ПБ, 53° 8' 26.28188&quot;СШ 50° 3' 44.85482&quot; ВД ; 53° 8' 26.82976&quot;СШ 50° 3' 45.58006&quot; ВД ; 53° 8' 27.78891&quot;СШ 50° 3' 46.70413&quot; ВД ; 53° 8' 28.55927&quot;СШ 50° 3' 47.18712&quot; ВД ; 53° 8' 29.75759&quot;СШ 50° 3' 47.64177&quot; ВД ; 53° 8' 31.65782&quot;СШ 50° 3' 47.96726&quot; ВД ; 53° 8' 33.27557&quot;СШ 50° 3' 48.02292&quot; ВД ; 53° 8' 34.79051&quot;СШ 50° 3' 48.26374&quot; ВД ; 53° 8' 34.80392&quot;СШ 50° 3' 46.61801&quot; ВД ; 53° 8' 32.18493&quot;СШ 50° 3' 46.36416&quot; ВД ; 53° 8' 31.67124&quot;СШ 50° 3' 46.36459&quot; ВД ; 53° 8' 29.891&quot;СШ 50° 3' 45.99598&quot; ВД ; 53° 8' 28.2902&quot;СШ 50° 3' 45.31413&quot; ВД ; 53° 8' 26.94595&quot;СШ 50° 3' 43.67825&quot; ВД
+Владелец: ООО &quot;Альянс&quot;</description>
+            <styleUrl>#485</styleUrl>
+            <Polygon id="479">
+                <outerBoundaryIs>
+                    <LinearRing id="483">
+                        <coordinates>50.06246,53.140634,0.0 50.062661,53.140786,0.0 50.062973,53.141052,0.0 50.063108,53.141266,0.0 50.063234,53.141599,0.0 50.063324,53.142127,0.0 50.06334,53.142577,0.0 50.063407,53.142997,0.0 50.062949,53.143001,0.0 50.062879,53.142274,0.0 50.062879,53.142131,0.0 50.062777,53.141636,0.0 50.062587,53.141192,0.0 50.062133,53.140818,0.0</coordinates>
+                    </LinearRing>
+                </outerBoundaryIs>
+            </Polygon>
+        </Placemark>
+        <Placemark id="489">
+            <name>№ п/п 2334</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование акватории водного объекта для размещения понтонных сооружений для отстоя маломерных судов
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Волжский район р-н (Самарская область); 3 км от устья, ПБ, 53° 8' 8.93&quot;СШ 50° 2' 13.91&quot; ВД ; 53° 8' 8.8&quot;СШ 50° 2' 14.68&quot; ВД ; 53° 8' 8.33&quot;СШ 50° 2' 14.46&quot; ВД ; 53° 8' 8.46&quot;СШ 50° 2' 13.69&quot; ВД
+Владелец: Афанасьев Александр Владимирович</description>
+            <styleUrl>#494</styleUrl>
+            <Polygon id="488">
+                <outerBoundaryIs>
+                    <LinearRing id="492">
+                        <coordinates>50.037136,53.135683,0.0 50.03735,53.135647,0.0 50.037411,53.135778,0.0 50.037197,53.135814,0.0</coordinates>
+                    </LinearRing>
+                </outerBoundaryIs>
+            </Polygon>
+        </Placemark>
+        <Placemark id="498">
+            <name>№ п/п 2335</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование акватории водного объекта, в т. ч. для рекреационных целей (по результатам аукциона)
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Волжский район р-н (Самарская область); 3.5 км от устья, ПБ, 53° 8' 6.08612&quot;СШ 50° 2' 12.52844&quot; ВД ; 53° 8' 6.69725&quot;СШ 50° 2' 13.02197&quot; ВД ; 53° 8' 6.45708&quot;СШ 50° 2' 13.84477&quot; ВД ; 53° 8' 5.84595&quot;СШ 50° 2' 13.3507&quot; ВД
+Владелец: Афанасьев Александр Владимирович</description>
+            <styleUrl>#503</styleUrl>
+            <Polygon id="497">
+                <outerBoundaryIs>
+                    <LinearRing id="501">
+                        <coordinates>50.036813,53.135024,0.0 50.037042,53.134957,0.0 50.037179,53.135127,0.0 50.036951,53.135194,0.0</coordinates>
+                    </LinearRing>
+                </outerBoundaryIs>
+            </Polygon>
+        </Placemark>
+        <Placemark id="507">
+            <name>№ п/п 2338</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование акватории водного объекта для размещения на акватории понтонных сооружений для отстоя маломерных судов
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Волжский р-н (Самарская, обл.., в районе КСП &quot;Волгарь&quot;); 3 км от устья, ЛБ, 53° 8' 14.3&quot;СШ 50° 2' 10.05&quot; ВД ; 53° 8' 14.29&quot;СШ 50° 2' 11.62&quot; ВД ; 53° 8' 12.55&quot;СШ 50° 2' 11.96&quot; ВД ; 53° 8' 10.26&quot;СШ 50° 2' 13.63&quot; ВД ; 53° 8' 8.1&quot;СШ 50° 2' 13.39&quot; ВД ; 53° 8' 5.92&quot;СШ 50° 2' 11.64&quot; ВД ; 53° 8' 6.38&quot;СШ 50° 2' 10.35&quot; ВД ; 53° 8' 8.27&quot;СШ 50° 2' 11.9&quot; ВД ; 53° 8' 10.09&quot;СШ 50° 2' 12.07&quot; ВД ; 53° 8' 12.41&quot;СШ 50° 2' 10.42&quot; ВД
+Владелец: ООО &quot;МИРАЖ&quot;</description>
+            <styleUrl>#512</styleUrl>
+            <Polygon id="506">
+                <outerBoundaryIs>
+                    <LinearRing id="510">
+                        <coordinates>50.036125,53.137306,0.0 50.036561,53.137303,0.0 50.036656,53.136819,0.0 50.037119,53.136183,0.0 50.037053,53.135583,0.0 50.036567,53.134978,0.0 50.036208,53.135106,0.0 50.036639,53.135631,0.0 50.036686,53.136136,0.0 50.036228,53.136781,0.0</coordinates>
+                    </LinearRing>
+                </outerBoundaryIs>
+            </Polygon>
+        </Placemark>
+        <Placemark id="516">
+            <name>№ п/п 2343</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов для технических нужд
+Вид водопользования: совместное водопользование с забором (изъятием) водных ресурсов из водных объектов без возврата воды в водные объекты
+Место водопользования, координаты:  Волжский район р-н (Самарская область); 3.4 км от устья, 53° 8' 8.1&quot;СШ 50° 2' 13.7&quot; ВД
+Владелец: ООО &quot;ЭкоСтройРесурс&quot;</description>
+            <styleUrl>#517</styleUrl>
+            <Point id="515">
+                <coordinates>50.037139,53.135583,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="522">
+            <name>№ п/п 2355</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Озеро оз. Орловское КАС/ВОЛГА/1395/003/8 , р.Татьянка
+Цель водопользования: Использование акватории водного объекта для рекреационных целей
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 8 км от устья, 53° 7' 43.29&quot;СШ 49° 56' 54.96&quot; ВД ; 53° 7' 44.51&quot;СШ 49° 56' 55.4&quot; ВД ; 53° 7' 45.26&quot;СШ 49° 56' 57.87&quot; ВД ; 53° 7' 47.49&quot;СШ 49° 57' 1.51&quot; ВД ; 53° 7' 49.56&quot;СШ 49° 57' 7.46&quot; ВД ; 53° 7' 49.57&quot;СШ 49° 57' 11.59&quot; ВД ; 53° 7' 47.79&quot;СШ 49° 57' 12.25&quot; ВД ; 53° 7' 43.51&quot;СШ 49° 57' 3.53&quot; ВД ; 53° 7' 42.14&quot;СШ 49° 56' 59.3&quot; ВД ; 53° 7' 41.66&quot;СШ 49° 56' 57.03&quot; ВД ; 53° 7' 42.27&quot;СШ 49° 56' 55.65&quot; ВД
+Владелец: ООО &quot;ЭнДжиЭл&quot;</description>
+            <styleUrl>#527</styleUrl>
+            <Polygon id="521">
+                <outerBoundaryIs>
+                    <LinearRing id="525">
+                        <coordinates>49.9486,53.128692,0.0 49.948722,53.129031,0.0 49.949408,53.129239,0.0 49.950419,53.129858,0.0 49.952072,53.130433,0.0 49.953219,53.130436,0.0 49.953403,53.129942,0.0 49.950981,53.128753,0.0 49.949806,53.128372,0.0 49.949175,53.128239,0.0 49.948792,53.128408,0.0</coordinates>
+                    </LinearRing>
+                </outerBoundaryIs>
+            </Polygon>
+        </Placemark>
+        <Placemark id="531">
+            <name>№ п/п 2396</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Использование акватории водного объекта для размещения плавательных средств и других объектов и сооружений
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Самара г (Куйбышевский р-н); 1 км от устья, ПБ, 53° 8' 38.56&quot;СШ 50° 3' 47.88&quot; ВД ; 53° 8' 38.33&quot;СШ 50° 3' 49.44&quot; ВД ; 53° 8' 37.47&quot;СШ 50° 3' 49.09&quot; ВД ; 53° 8' 37.7&quot;СШ 50° 3' 47.52&quot; ВД
+Владелец: Казанин Игорь Николаевич</description>
+            <styleUrl>#536</styleUrl>
+            <Polygon id="530">
+                <outerBoundaryIs>
+                    <LinearRing id="534">
+                        <coordinates>50.0632,53.143806,0.0 50.063636,53.143742,0.0 50.063733,53.143981,0.0 50.0633,53.144044,0.0</coordinates>
+                    </LinearRing>
+                </outerBoundaryIs>
+            </Polygon>
+        </Placemark>
+        <Placemark id="540">
+            <name>№ п/п 2398</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов для технических нужд
+Вид водопользования: совместное водопользование с забором (изъятием) водных ресурсов из водных объектов без возврата воды в водные объекты
+Место водопользования, координаты:  Волжский район р-н (Самарская область); 3.4 км от устья, 53° 8' 8.1&quot;СШ 50° 2' 13.7&quot; ВД
+Владелец: ООО &quot;ЭкоСтройРесурс&quot;</description>
+            <styleUrl>#541</styleUrl>
+            <Point id="539">
+                <coordinates>50.037139,53.135583,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="546">
+            <name>№ п/п 2407 - сброс 1</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Сброс сточных вод
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 12 км от устья, 53° 7' 42.61&quot;СШ 49° 54' 59.68&quot; ВД
+Владелец: Акционерное общество &quot;Средневолжское предприятие железнодорожного транспорта&quot;, АО &quot;СПЖТ&quot;</description>
+            <styleUrl>#547</styleUrl>
+            <Point id="545">
+                <coordinates>49.916578,53.128503,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="552">
+            <name>№ п/п 2408 - сброс 1</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка КАС/ВОЛГА 1395/0003 , протока Сухая Самарка, на 3 км от устья, левый берег (11010001512112100000070)
+Цель водопользования: Сброс сточных вод
+Вид водопользования: совместное водопользование без забора (изъятия) водных ресурсов из водных объектов
+Место водопользования, координаты:  Новокуйбышевск г (Самарская область); 12 км от устья, 53° 7' 42.61&quot;СШ 49° 54' 59.68&quot; ВД
+Владелец: Акционерное общество &quot;Средневолжское предприятие железнодорожного транспорта&quot;, АО &quot;СПЖТ&quot;</description>
+            <styleUrl>#553</styleUrl>
+            <Point id="551">
+                <coordinates>49.916578,53.128503,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="558">
+            <name>№ п/п 2483</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Татьянка, КАС/ВОЛГА 1395/0003 (11010001512112100000070)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов для технических нужд
+Вид водопользования: совместное водопользование с забором (изъятием) водных ресурсов из водных объектов без возврата воды в водные объекты
+Место водопользования, координаты:  Волжский район р-н (Самарская область), 3.40 км от устья, 53°8'8.1&quot;СШ 50°2'13.7&quot;ВД
+Владелец: ООО &quot;ЭкоСтройРесурс&quot;</description>
+            <styleUrl>#559</styleUrl>
+            <Point id="557">
+                <coordinates>50.037139,53.135583,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="564">
+            <name>№ п/п 2545</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Татьянка, КАС/ВОЛГА 1395/0003 (11010001512112100000070)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов для технических нужд
+Вид водопользования: совместное водопользование с забором (изъятием) водных ресурсов из водных объектов без возврата воды в водные объекты
+Место водопользования, координаты:  Волжский район р-н (Самарская область), 3.40 км от устья, 53°8'8.1&quot;СШ 50°2'13.7&quot;ВД
+Владелец: ООО &quot;ЭкоСтройРесурс&quot;</description>
+            <styleUrl>#565</styleUrl>
+            <Point id="563">
+                <coordinates>50.037139,53.135583,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="570">
+            <name>№ п/п 2621</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка, КАС/ВОЛГА 1395/0003 (11010001512112100000070)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов для технических нужд
+Вид водопользования: совместное водопользование с забором (изъятием) водных ресурсов из водных объектов без возврата воды в водные объекты
+Место водопользования, координаты:  Волжский район р-н (Самарская область), 3.40 км от устья, Самарская область: 53°8'8.1&quot;СШ 50°2'13.7&quot;ВД
+Владелец: ООО &quot;ЭкоСтройРесурс&quot;</description>
+            <styleUrl>#571</styleUrl>
+            <Point id="569">
+                <coordinates>50.037139,53.135583,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="576">
+            <name>№ п/п 2640</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка, КАС/ВОЛГА 1395/0003 (11010001512112100000070)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов для технических нужд
+Вид водопользования: совместное водопользование с забором (изъятием) водных ресурсов из водных объектов без возврата воды в водные объекты
+Место водопользования, координаты:  Волжский район р-н (Самарская область), 3.40 км от устья, Самарская область: 53°8'8.1&quot;СШ 50°2'13.7&quot;ВД
+Владелец: ООО &quot;КВ Холдинг&quot;</description>
+            <styleUrl>#577</styleUrl>
+            <Point id="575">
+                <coordinates>50.037139,53.135583,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="582">
+            <name>№ п/п 2707</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка, КАС/ВОЛГА 1395/0003 (11010001512112100000070)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов для технических нужд
+Вид водопользования: совместное водопользование с забором (изъятием) водных ресурсов из водных объектов без возврата воды в водные объекты
+Место водопользования, координаты:  Волжский район р-н, 3.40 км от устья, Самарская область: 53°8'8.1&quot;СШ 50°2'13.7&quot;ВД
+Владелец: ООО &quot;КВ Холдинг&quot;</description>
+            <styleUrl>#583</styleUrl>
+            <Point id="581">
+                <coordinates>50.037139,53.135583,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="588">
+            <name>№ п/п 2763</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка, КАС/ВОЛГА 1395/0003 (11010001512112100000070)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов для технических нужд
+Вид водопользования: совместное водопользование с забором (изъятием) водных ресурсов из водных объектов без возврата воды в водные объекты
+Место водопользования, координаты:  Волжский район р-н (Самарская область), 3.40 км от устья, 53°8'8.1&quot;СШ 50°2'13.7&quot;ВД
+Владелец: ООО &quot;КВ Холдинг&quot;</description>
+            <styleUrl>#589</styleUrl>
+            <Point id="587">
+                <coordinates>50.037139,53.135583,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="594">
+            <name>№ п/п 2834</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка, КАС/ВОЛГА 1395/0003 (11010001512112100000070)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов для технических нужд
+Вид водопользования: совместное водопользование с забором (изъятием) водных ресурсов из водных объектов без возврата воды в водные объекты
+Место водопользования, координаты:  Волжский район р-н (Самарская область), 3.40 км от устья, 53°8'8.1&quot;СШ 50°2'13.7&quot;ВД
+Владелец: ООО &quot;КВ Холдинг&quot;</description>
+            <styleUrl>#595</styleUrl>
+            <Point id="593">
+                <coordinates>50.037139,53.135583,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="600">
+            <name>№ п/п 2889</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка, КАС/ВОЛГА 1395/0003 (11010001512112100000070)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов для технических нужд
+Вид водопользования: совместное водопользование с забором (изъятием) водных ресурсов из водных объектов без возврата воды в водные объекты
+Место водопользования, координаты:  Волжский район р-н, 3.40 км от устья, Самарская область: 53°8'8.1&quot;СШ 50°2'13.7&quot;ВД
+Владелец: ООО &quot;КВ Холдинг&quot;</description>
+            <styleUrl>#601</styleUrl>
+            <Point id="599">
+                <coordinates>50.037139,53.135583,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="606">
+            <name>№ п/п 2982</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка, КАС/ВОЛГА 1395/0003 (11010001512112100000070)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов для технических нужд
+Вид водопользования: совместное водопользование с забором (изъятием) водных ресурсов из водных объектов без возврата воды в водные объекты
+Место водопользования, координаты:  Волжский район р-н (Самарская область), 3.40 км от устья, 53°8'8.1&quot;СШ 50°2'13.7&quot;ВД
+Владелец: ООО &quot;ЭкоСтройРесурс&quot;</description>
+            <styleUrl>#607</styleUrl>
+            <Point id="605">
+                <coordinates>50.037139,53.135583,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="612">
+            <name>№ п/п 2998</name>
+            <description>Уполномоченный орган:  Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка, КАС/ВОЛГА 1395/0003 (11010001512112100000070)
+Цель водопользования: Использование акватории водного объекта для размещения плавучей установки для забора воды
+Вид водопользования: совместное водопользование с забором (изъятием) водных ресурсов из водных объектов без возврата воды в водные объекты
+Место водопользования, координаты:  Самара г (Куйбышевский район), 1,0 км от устья, 53°8'34&quot;СШ 50°3'45&quot;ВД
+Владелец: ЗАО &quot;СЗ &quot;Нефтемаш&quot;</description>
+            <styleUrl>#613</styleUrl>
+            <Point id="611">
+                <coordinates>50.0625,53.142778,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="618">
+            <name>№ п/п 2999</name>
+            <description>Уполномоченный орган:  Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка, КАС/ВОЛГА 1395/0003 (11010001512112100000070)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностного водного объекта для производственных нужд
+Вид водопользования: совместное водопользование с забором (изъятием) водных ресурсов из водных объектов без возврата воды в водные объекты
+Место водопользования, координаты:  Самара г (Куйбышевский район), 1,0 км от устья, 53°8'34&quot;СШ 50°3'45&quot;ВД
+Владелец: ЗАО &quot;СЗ &quot;Нефтемаш&quot;</description>
+            <styleUrl>#619</styleUrl>
+            <Point id="617">
+                <coordinates>50.0625,53.142778,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="624">
+            <name>№ п/п 3047</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка, КАС/ВОЛГА 1395/0003 (11010001512112100000070)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов для технических нужд
+Вид водопользования: совместное водопользование с забором (изъятием) водных ресурсов из водных объектов без возврата воды в водные объекты
+Место водопользования, координаты:  Волжский район р-н (Самарская область), 3.40 км от устья, Самарская область: 53°8'8.1&quot;СШ 50°2'13.7&quot;ВД
+Владелец: ООО &quot;КВ Холдинг&quot;</description>
+            <styleUrl>#625</styleUrl>
+            <Point id="623">
+                <coordinates>50.037139,53.135583,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="630">
+            <name>№ п/п 3197</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка, КАС/ВОЛГА 1395/0003 (11010001512112100000070)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов для технических нужд
+Вид водопользования: совместное водопользование с забором (изъятием) водных ресурсов из водных объектов без возврата воды в водные объекты
+Место водопользования, координаты:  Волжский район р-н (Самарская область), 3.40 км от устья, 53°8'8.1&quot;СШ 50°2'13.7&quot;ВД
+Владелец: ООО &quot;КВ Холдинг&quot;</description>
+            <styleUrl>#631</styleUrl>
+            <Point id="629">
+                <coordinates>50.037139,53.135583,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="636">
+            <name>№ п/п 3275</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка(11010001112112100008672)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов
+Вид водопользования: совместное водопользование
+Место водопользования, координаты:  Волжский район, п. Красный Кряжок, на 3,4 км от устья 1: 53°8'8.1&quot; СШ 50°2'13.7&quot; ВД
+Владелец: Общество с ограниченной ответственностью &quot;КВ Холдинг&quot;</description>
+            <styleUrl>#637</styleUrl>
+            <Point id="635">
+                <coordinates>50.037139,53.135583,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="642">
+            <name>№ п/п 3276</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка(11010001112112100008672)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов
+Вид водопользования: совместное водопользование
+Место водопользования, координаты:  Волжский район, п. Красный Кряжок, на 3,4 км от устья 1: 53°8'8.1&quot; СШ 50°2'13.7&quot; ВД
+Владелец: Общество с ограниченной ответственностью &quot;КВ Холдинг&quot;</description>
+            <styleUrl>#643</styleUrl>
+            <Point id="641">
+                <coordinates>50.037139,53.135583,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="648">
+            <name>№ п/п 3284</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка, (11010001112112100008672)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов
+Вид водопользования: совместное водопользование
+Место водопользования, координаты:  г.о. Самара, Куйбышевского района, Самарской области, на левом берегу реки на 1 км от устья 1: 53°8'34.0&quot; СШ 50°3'45.0&quot; ВД
+Владелец: ЗАО &quot; Самарский завод &quot;Нефтемаш&quot;</description>
+            <styleUrl>#649</styleUrl>
+            <Point id="647">
+                <coordinates>50.0625,53.142778,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="654">
+            <name>№ п/п 3373</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка, (11010001112112100008672)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов
+Вид водопользования: совместное водопользование
+Место водопользования, координаты:  Волжский район, п. Красный Кряжок, на 3,4 км от устья 1: 53°8'8.1&quot; СШ 50°2'13.7&quot; ВД
+Владелец: Общество с ограниченной ответственностью &quot;КВ Холдинг&quot;</description>
+            <styleUrl>#655</styleUrl>
+            <Point id="653">
+                <coordinates>50.037139,53.135583,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="660">
+            <name>№ п/п 3389</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка, (11010001112112100008672)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов
+Вид водопользования: совместное водопользование
+Место водопользования, координаты:  г.о. Самара, Куйбышевского района, Самарской области, на левом берегу реки на 1 км от устья 1: 53°8'34.0&quot; СШ 50°3'45.0&quot; ВД
+Владелец: Закрытое акционерное общество &quot; Самарский завод &quot;Нефтемаш&quot;, ЗАО &quot; СЗ &quot;Нефтемаш&quot;</description>
+            <styleUrl>#661</styleUrl>
+            <Point id="659">
+                <coordinates>50.0625,53.142778,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="666">
+            <name>№ п/п 1356</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка, КАС/ВОЛГА 1395/0003(11010001512112100000070)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов
+Вид водопользования: совместное водопользование
+Место водопользования, координаты:  г.о. Самара, Куйбышевского района, Самарской области, на левом берегу реки на 1 км от устья 1: 53°8'34.0&quot; СШ 50°3'45.0&quot; ВД
+Владелец: Закрытое акционерное общество &quot; Самарский завод &quot;Нефтемаш&quot;, ЗАО &quot; СЗ &quot;Нефтемаш&quot;</description>
+            <styleUrl>#667</styleUrl>
+            <Point id="665">
+                <coordinates>50.0625,53.142778,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="672">
+            <name>№ п/п 3682</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка, КАС/ВОЛГА 1395/0003 (11010001512112100000070)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов
+Вид водопользования: совместное водопользование
+Место водопользования, координаты:  Волжский район, п. Красный Кряжок, на 3,4 км от устья 1: 53°8'8.1&quot; СШ 50°2'13.7&quot; ВД
+Владелец: Общество с ограниченной ответственностью &quot;Легалион&quot; (ООО &quot;Легалион&quot;)</description>
+            <styleUrl>#673</styleUrl>
+            <Point id="671">
+                <coordinates>50.037139,53.135583,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="678">
+            <name>№ п/п 8037</name>
+            <description>Уполномоченный орган: Министерство лесного хозяйства, охраны окружающей среды и природопользования Самарской области
+Наименование водного объекта, его код:  Река Татьянка, КАС/ВОЛГА 1395/0003 (11010001512112100000070)
+Цель водопользования: Забор (изъятие) водных ресурсов из поверхностных водных объектов
+Вид водопользования: совместное водопользование
+Место водопользования, координаты:  г.о. Самара, Куйбышевского района, Самарской области, на левом берегу реки на 1 км от устья 1: 53°8'34.0&quot; СШ 50°3'45.0&quot; ВД
+Владелец: Закрытое акционерное общество &quot; Самарский завод &quot;Нефтемаш&quot;, ЗАО &quot; СЗ &quot;Нефтемаш&quot;</description>
+            <styleUrl>#679</styleUrl>
+            <Point id="677">
+                <coordinates>50.0625,53.142778,0.0</coordinates>
+            </Point>
+        </Placemark>
+    </Document>
+</kml>
