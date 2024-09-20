@@ -47,6 +47,12 @@ def create_msk50_zone2_transformer():
     return Transformer.from_crs(msk50_zone2_cs, "EPSG:4326", always_xy=True)
 
 
+def create_msk63_zone1_transformer():
+    msk63_zone1_cs = CRS.from_proj4(
+        "+proj=tmerc +lat_0=0 +lon_0=49.03333333333 +k=1 +x_0=1300000 +y_0=-5509414.70 +ellps=krass +towgs84=23.57,-140.95,-79.8,0,0.35,0.79,-0.22 +units=m +no_defs")
+    return Transformer.from_crs(msk63_zone1_cs, "EPSG:4326", always_xy=True)
+
+
 def create_msk73_zone1_transformer():
     msk73_zone1_cs = CRS.from_proj4(
         "+proj=tmerc +lat_0=0 +lon_0=46.05 +k=1 +x_0=1300000 +y_0=-5514743.504 +ellps=krass +towgs84=23.57,-140.95,-79.8,0,0.35,0.79,-0.22 +units=m +no_defs")
@@ -62,6 +68,7 @@ def create_msk73_zone2_transformer():
 moscow_transformer = create_moscow_transformer()
 msk50_zone1_transformer = create_msk50_zone1_transformer()
 msk50_zone2_transformer = create_msk50_zone2_transformer()
+msk63_zone1_transformer = create_msk63_zone1_transformer()
 msk73_zone1_transformer = create_msk73_zone1_transformer()
 msk73_zone2_transformer = create_msk73_zone2_transformer()
 
@@ -91,6 +98,9 @@ def parse_coordinates(coord_str: str) -> List[Tuple[str, float, float]]:
 
     if "МСК-50 зона 2" in coord_str:
         return process_coordinates(coord_str, msk50_zone2_transformer)
+
+    if "МСК-63 зона 1" in coord_str:
+        return process_coordinates(coord_str, msk63_zone1_transformer)
 
     if "МСК-73 зона 1" in coord_str:
         return process_coordinates(coord_str, msk73_zone1_transformer)
@@ -133,6 +143,26 @@ def parse_coordinates(coord_str: str) -> List[Tuple[str, float, float]]:
 
             if lat != 0 or lon != 0:
                 result.append((name.strip(), round(lon, 6), round(lat, 6)))
+        elif len(coords) > 2:
+            for i in range(0, len(coords), 2):
+                if i + 1 >= len(coords):
+                    break  # Handle the case where we have an odd number of coordinates
+
+                # Get latitude and longitude pairs
+                lat_deg, lat_min, lat_sec = coords[i]
+                lon_deg, lon_min, lon_sec = coords[i + 1]
+
+                # Convert latitude and longitude to decimal degrees
+                lat = int(lat_deg) + int(lat_min) / 60 + float(lat_sec.replace(',', '.')) / 3600
+                lon = int(lon_deg) + int(lon_min) / 60 + float(lon_sec.replace(',', '.')) / 3600
+
+                # Check for direction (currently assuming Northern/Eastern hemisphere, adjust for South/West if needed)
+                # For example, you could check for "ЮШ" or "ЗД" in the original string to set negative values if necessary
+
+                # Append result as (point_name, longitude, latitude)
+                point_name = f"точка {i // 2 + 1}"  # Each pair is a new "точка"
+                if lat != 0 or lon != 0:
+                    result.append((point_name, round(lon, 6), round(lat, 6)))
 
     return result
 
@@ -219,7 +249,7 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
                 else:
                     sorted_coords = [(lon, lat) for _, lon, lat in coords_array]
 
-                polygon.outerboundaryis = sorted_coords
+                polygon.outerboundaries = sorted_coords
                 polygon.style.linestyle.color = color
                 polygon.style.linestyle.width = 3
                 polygon.style.polystyle.color = simplekml.Color.changealphaint(100, color)
@@ -246,7 +276,7 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
                         full_name = f"№ п/п {main_name} - {point_name}" if point_name else f"№ п/п {main_name}"
                     create_kml_point(kml, full_name, (lon, lat), description, color)
 
-    kml.save(output_file)
+    kml.save("output/" + output_file)
 
 
 def choose_file() -> str:
@@ -273,13 +303,12 @@ def main():
     workbook = load_workbook(filename=file_name, data_only=True)
 
     # Specify which "№ п/п" values should have their coordinates sorted
-    sort_numbers = [4957,6327,3067]  # Add the specific numbers you want to sort
-
-    create_kml_from_coordinates(workbook.active, sort_numbers=sort_numbers)
+    sort_numbers = [4957, 6327, 3067]  # Add the specific numbers you want to sort
+    filename = file_name.rsplit(".", 1)[0] + ".kml"
+    create_kml_from_coordinates(workbook.active, output_file=filename, sort_numbers=sort_numbers)
 
 
 if __name__ == '__main__':
-    # Test the function
-    test = parse_coordinates("""Самарская область, Волжский район, в районе КСП "Волгарь", левый берег р. Татьянка, на 3 км от устья 1: 53°8'14.3" СШ 50°2'10.05" ВД 2: 53°8'14.29" СШ 50°2'11.62" ВД 3: 53°8'12.55" СШ 50°2'11.96" ВД 4: 53°8'10.26" СШ 50°2'13.63" ВД 5: 53°8'8.1" СШ 50°2'13.39" ВД 6: 53°8'5.92" СШ 50°2'11.64" ВД 7: 53°8'6.38" СШ 50°2'10.35" ВД 8: 53°8'8.27" СШ 50°2'11.9" ВД 9: 53°8'10.09" СШ 50°2'12.07" ВД 10: 53°8'12.41" СШ 50°3'10.42" ВД""")
-    [print(f"{lat}, {lon}") for name, lon, lat in test]
-    # main()
+    test = parse_coordinates("""МСК-63 зона 1 г.о. Самара, Куйбышевского района, Самарской области, на левом берегу реки на 1 км от устья 1: 381631.8м., 1368949.26м.""")
+    print(test)
+    main()
