@@ -240,6 +240,7 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
 
             # Check if there are more than 3 points and the 16th column is not zero or empty
             if len(coords_array) > 3 and row[15] not in (0, None, ""):
+                print("Creating polygon")
                 # Create a polygon
                 polygon = kml.newpolygon(name=f"№ п/п {main_name}")
 
@@ -249,7 +250,7 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
                 else:
                     sorted_coords = [(lon, lat) for _, lon, lat in coords_array]
 
-                polygon.outerboundaries = sorted_coords
+                polygon.outerboundaryis = sorted_coords
                 polygon.style.linestyle.color = color
                 polygon.style.linestyle.width = 3
                 polygon.style.polystyle.color = simplekml.Color.changealphaint(100, color)
@@ -303,12 +304,12 @@ def main():
     workbook = load_workbook(filename=file_name, data_only=True)
 
     # Specify which "№ п/п" values should have their coordinates sorted
-    sort_numbers = [4957, 6327, 3067]  # Add the specific numbers you want to sort
+    sort_numbers = []  # Add the specific numbers you want to sort
     filename = file_name.rsplit(".", 1)[0] + ".kml"
     create_kml_from_coordinates(workbook.active, output_file=filename, sort_numbers=sort_numbers)
 
 
 if __name__ == '__main__':
-    test = parse_coordinates("""МСК-63 зона 1 г.о. Самара, Куйбышевского района, Самарской области, на левом берегу реки на 1 км от устья 1: 381631.8м., 1368949.26м.""")
-    print(test)
+    # test = parse_coordinates("""МСК-63 зона 1 г.о. Самара, Куйбышевского района, Самарской области, на левом берегу реки на 1 км от устья 1: 381631.8м., 1368949.26м.""")
+    # print(test)
     main()
