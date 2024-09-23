@@ -58,6 +58,7 @@ class TestParseCoordinates(unittest.TestCase):
 
         result = parse_coordinates(input_data)
         self.assertEqual(result, expected_output)
+
     def test_parse_coordinates_case3(self):
         input_data = """
         МСК-63 зона 1 г.о. Самара, Куйбышевского района, Самарской области, на левом берегу реки на 1 км от устья 1: 381631.8м., 1368949.26м.
