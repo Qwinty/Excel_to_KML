@@ -29,48 +29,25 @@ def sort_coordinates(coords):
     return sorted(coords, key=lambda coord: calculate_angle(coord, centroid))
 
 
-def create_moscow_transformer():
-    moscow_cs = CRS.from_proj4(
-        "+proj=tmerc +lat_0=55.66666666667 +lon_0=37.5 +k=1 +x_0=16.098 +y_0=14.512 +ellps=bessel +towgs84=316.151,78.924,589.650,-1.57273,2.69209,2.34693,8.4507 +units=m +no_defs")
-    return Transformer.from_crs(moscow_cs, "EPSG:4326", always_xy=True)
+def create_transformer(proj4_str: str) -> Transformer:
+    """Create a transformer from a given Proj4 string to WGS84."""
+    crs = CRS.from_proj4(proj4_str)
+    return Transformer.from_crs(crs, "EPSG:4326", always_xy=True)
 
 
-def create_msk50_zone1_transformer():
-    msk50_zone1_cs = CRS.from_proj4(
-        "+proj=tmerc +lat_0=0 +lon_0=35.48333333333 +k=1 +x_0=1250000 +y_0=-5712900.566 +ellps=krass +towgs84=23.57,-140.95,-79.8,0,0.35,0.79,-0.22 +units=m +no_defs")
-    return Transformer.from_crs(msk50_zone1_cs, "EPSG:4326", always_xy=True)
+# Define Proj4 strings
+proj4_strings = {
+    "Московская СК": "+proj=tmerc +lat_0=55.66666666667 +lon_0=37.5 +k=1 +x_0=16.098 +y_0=14.512 +ellps=bessel +towgs84=316.151,78.924,589.650,-1.57273,2.69209,2.34693,8.4507 +units=m +no_defs",
+    "МСК-50 зона 1": "+proj=tmerc +lat_0=0 +lon_0=35.48333333333 +k=1 +x_0=1250000 +y_0=-5712900.566 +ellps=krass +towgs84=23.57,-140.95,-79.8,0,0.35,0.79,-0.22 +units=m +no_defs",
+    "МСК-50 зона 2": "+proj=tmerc +lat_0=0 +lon_0=38.48333333333 +k=1 +x_0=2250000 +y_0=-5712900.566 +ellps=krass +towgs84=23.57,-140.95,-79.8,0,0.35,0.79,-0.22 +units=m +no_defs",
+    "МСК-63 зона 1": "+proj=tmerc +lat_0=0 +lon_0=49.03333333333 +k=1 +x_0=1300000 +y_0=-5509414.70 +ellps=krass +towgs84=23.57,-140.95,-79.8,0,0.35,0.79,-0.22 +units=m +no_defs",
+    "МСК-73 зона 1": "+proj=tmerc +lat_0=0 +lon_0=46.05 +k=1 +x_0=1300000 +y_0=-5514743.504 +ellps=krass +towgs84=23.57,-140.95,-79.8,0,0.35,0.79,-0.22 +units=m +no_defs",
+    "МСК-73 зона 2": "+proj=tmerc +lat_0=0 +lon_0=49.05 +k=1 +x_0=2300000 +y_0=-5514743.504 +ellps=krass +towgs84=23.57,-140.95,-79.8,0,0.35,0.79,-0.22 +units=m +no_defs",
+    # Add other Proj4 strings here...
+}
 
-
-def create_msk50_zone2_transformer():
-    msk50_zone2_cs = CRS.from_proj4(
-        "+proj=tmerc +lat_0=0 +lon_0=38.48333333333 +k=1 +x_0=2250000 +y_0=-5712900.566 +ellps=krass +towgs84=23.57,-140.95,-79.8,0,0.35,0.79,-0.22 +units=m +no_defs")
-    return Transformer.from_crs(msk50_zone2_cs, "EPSG:4326", always_xy=True)
-
-
-def create_msk63_zone1_transformer():
-    msk63_zone1_cs = CRS.from_proj4(
-        "+proj=tmerc +lat_0=0 +lon_0=49.03333333333 +k=1 +x_0=1300000 +y_0=-5509414.70 +ellps=krass +towgs84=23.57,-140.95,-79.8,0,0.35,0.79,-0.22 +units=m +no_defs")
-    return Transformer.from_crs(msk63_zone1_cs, "EPSG:4326", always_xy=True)
-
-
-def create_msk73_zone1_transformer():
-    msk73_zone1_cs = CRS.from_proj4(
-        "+proj=tmerc +lat_0=0 +lon_0=46.05 +k=1 +x_0=1300000 +y_0=-5514743.504 +ellps=krass +towgs84=23.57,-140.95,-79.8,0,0.35,0.79,-0.22 +units=m +no_defs")
-    return Transformer.from_crs(msk73_zone1_cs, "EPSG:4326", always_xy=True)
-
-
-def create_msk73_zone2_transformer():
-    msk73_zone2_cs = CRS.from_proj4(
-        "+proj=tmerc +lat_0=0 +lon_0=49.05 +k=1 +x_0=2300000 +y_0=-5514743.504 +ellps=krass +towgs84=23.57,-140.95,-79.8,0,0.35,0.79,-0.22 +units=m +no_defs")
-    return Transformer.from_crs(msk73_zone2_cs, "EPSG:4326", always_xy=True)
-
-
-moscow_transformer = create_moscow_transformer()
-msk50_zone1_transformer = create_msk50_zone1_transformer()
-msk50_zone2_transformer = create_msk50_zone2_transformer()
-msk63_zone1_transformer = create_msk63_zone1_transformer()
-msk73_zone1_transformer = create_msk73_zone1_transformer()
-msk73_zone2_transformer = create_msk73_zone2_transformer()
+# Create transformers
+transformers = {name: create_transformer(proj4) for name, proj4 in proj4_strings.items()}
 
 
 def process_coordinates(input_string, transformer):
@@ -90,23 +67,9 @@ def parse_coordinates(coord_str: str) -> List[Tuple[str, float, float]]:
         print(f"Skipping empty string")
         return []
 
-    if "Московская СК" in coord_str:
-        return process_coordinates(coord_str, moscow_transformer)
-
-    if "МСК-50 зона 1" in coord_str:
-        return process_coordinates(coord_str, msk50_zone1_transformer)
-
-    if "МСК-50 зона 2" in coord_str:
-        return process_coordinates(coord_str, msk50_zone2_transformer)
-
-    if "МСК-63 зона 1" in coord_str:
-        return process_coordinates(coord_str, msk63_zone1_transformer)
-
-    if "МСК-73 зона 1" in coord_str:
-        return process_coordinates(coord_str, msk73_zone1_transformer)
-
-    if "МСК-73 зона 2" in coord_str:
-        return process_coordinates(coord_str, msk73_zone2_transformer)
+    for key, transformer in transformers.items():
+        if key in coord_str:
+            return process_coordinates(coord_str, transformer)
 
     if '°' not in coord_str:
         print(f"Skipping string without coordinates: '{coord_str}'")
