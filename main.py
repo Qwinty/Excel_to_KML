@@ -43,6 +43,8 @@ proj4_strings = {
     "МСК-63 зона 1": "+proj=tmerc +lat_0=0 +lon_0=49.03333333333 +k=1 +x_0=1300000 +y_0=-5509414.70 +ellps=krass +towgs84=23.57,-140.95,-79.8,0,0.35,0.79,-0.22 +units=m +no_defs",
     "МСК-73 зона 1": "+proj=tmerc +lat_0=0 +lon_0=46.05 +k=1 +x_0=1300000 +y_0=-5514743.504 +ellps=krass +towgs84=23.57,-140.95,-79.8,0,0.35,0.79,-0.22 +units=m +no_defs",
     "МСК-73 зона 2": "+proj=tmerc +lat_0=0 +lon_0=49.05 +k=1 +x_0=2300000 +y_0=-5514743.504 +ellps=krass +towgs84=23.57,-140.95,-79.8,0,0.35,0.79,-0.22 +units=m +no_defs",
+    "МСК-76 зона 1": "+proj=tmerc +lat_0=0 +lon_0=38.55 +k=1 +x_0=1250000 +y_0=-6014743.504 +ellps=krass +towgs84=23.57,-140.95,-79.8,0,0.35,0.79,-0.22 +units=m +no_defs",
+    "МСК-76 зона 2": "+proj=tmerc +lat_0=0 +lon_0=41.55 +k=1 +x_0=2250000 +y_0=-6014743.504 +ellps=krass +towgs84=23.57,-140.95,-79.8,0,0.35,0.79,-0.22 +units=m +no_defs",
     # Add other Proj4 strings here...
 }
 
@@ -51,7 +53,7 @@ transformers = {name: create_transformer(proj4) for name, proj4 in proj4_strings
 
 
 def process_coordinates(input_string, transformer):
-    coordinates = re.findall(r'(\d+):\s*([-\d.]+)м\.,\s*([-\d.]+)м\.', input_string)
+    coordinates = re.findall(r'(\d+):\s*([-\d.]+)\s*м\.,\s*([-\d.]+)\s*м\.', input_string)
     results = []
     for _, x, y in coordinates:
         if float(x) == 0 and float(y) == 0:
@@ -180,8 +182,8 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
 
         main_name = row[indices["name"]] if indices[
                                                 "name"] != -1 else f"Row {sheet.iter_rows(min_row=5, max_row=sheet.max_row).index(row) + 5}"
-        coords_array = parse_coordinates(coords_str)
         print(f"------\n№ п/п {main_name} | String:", coords_str)
+        coords_array = parse_coordinates(coords_str)
         print(f"Parsed {len(coords_array)} points")
 
         if coords_array:
@@ -208,7 +210,7 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
                 polygon = kml.newpolygon(name=f"№ п/п {main_name}")
 
                 # Sort coordinates only if main_name is in sort_numbers
-                if (sort_numbers and main_name in sort_numbers) or len(coords_array) == 4:
+                if (sort_numbers and int(main_name) in sort_numbers) or len(coords_array) == 4:
                     sorted_coords = sort_coordinates([(lon, lat) for _, lon, lat in coords_array])
                 else:
                     sorted_coords = [(lon, lat) for _, lon, lat in coords_array]
@@ -245,19 +247,24 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
 
 def choose_file() -> str:
     """Prompt user to choose an Excel file from the current directory."""
-    files = glob.glob("*.xlsx")
+    files = glob.glob("input/*.xlsx")
 
     if not files:
         print("No Excel files found in the current directory.")
         return None
+
     for i, file in enumerate(files, 1):
         print(f"{i}. {file}")
 
     while True:
         try:
-            return files[int(input("Choose a file number: ")) - 1]
-        except (ValueError, IndexError):
-            print("Invalid input. Please enter a valid number.")
+            choice = int(input("Choose a file number: "))
+            if 1 <= choice <= len(files):
+                return files[choice - 1]
+            else:
+                print("Invalid number. Please choose a valid file number.")
+        except ValueError:
+            print("Invalid input. Please enter a number.")
 
 
 def main():
@@ -267,7 +274,7 @@ def main():
     workbook = load_workbook(filename=file_name, data_only=True)
 
     # Specify which "№ п/п" values should have their coordinates sorted
-    sort_numbers = []  # Add the specific numbers you want to sort
+    sort_numbers = [31860, 23534, 1682, 27017, 31860, 3175, 2112, 1832]  # Add the specific numbers you want to sort
     filename = file_name.rsplit(".", 1)[0] + ".kml"
     create_kml_from_coordinates(workbook.active, output_file=filename, sort_numbers=sort_numbers)
 
