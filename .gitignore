@@ -168,3 +168,4 @@ cython_debug/
 *.kml
 *.xlsx
 *.xls
+map_uploader/browser_session
