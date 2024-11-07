@@ -52,6 +52,7 @@ def batch_convert(dir):
         create_kml_from_coordinates(workbook.active, output_file=out_filename)
         exit()
 
+
 def main():
     # file_name = choose_file()
     # if not file_name:
