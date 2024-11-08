@@ -185,7 +185,7 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
             # Check if there's 16th column
 
             # Check if there are more than 3 points and the 16th column is not zero or empty
-            if len(coords_array) > 3 and len(row) > 15 and row[15] not in (0, None, ""):
+            if len(coords_array) > 3:
                 print("Creating polygon")
                 # Create a polygon
                 polygon = kml.newpolygon(name=f"№ п/п {main_name}")
@@ -203,7 +203,7 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
                 polygon.description = description
                 [print(f"{lat}, {lon}") for lon, lat in sorted_coords]
             else:
-                # Create a line if there are multiple points
+                # Create a line if there are multiple points and conditions are met
                 if len(coords_array) > 2 \
                         and all(name.startswith("точка") for name, _, _ in coords_array) \
                         and row[indices["goal"]] != "Сброс сточных вод":
@@ -212,15 +212,15 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
                     line.style.linestyle.color = color
                     line.style.linestyle.width = 3
                     line.description = description
-
-                # Create individual points
-                index = 1
-                for point_name, lon, lat in coords_array:
-                    print(f"{lat}, {lon}")
-                    if row[indices["goal"]] == "Сброс сточных вод":
-                        full_name = f"№ п/п {main_name} - сброс {index}"
-                    else:
-                        full_name = f"№ п/п {main_name} - {point_name}" if point_name else f"№ п/п {main_name}"
-                    create_kml_point(kml, full_name, (lon, lat), description, color)
+                else:
+                    # Create individual points only if we didn't create a line
+                    index = 1
+                    for point_name, lon, lat in coords_array:
+                        print(f"{lat}, {lon}")
+                        if row[indices["goal"]] == "Сброс сточных вод":
+                            full_name = f"№ п/п {main_name} - сброс {index}"
+                        else:
+                            full_name = f"№ п/п {main_name} - {point_name}" if point_name else f"№ п/п {main_name}"
+                        create_kml_point(kml, full_name, (lon, lat), description, color)
 
     kml.save(output_file)
