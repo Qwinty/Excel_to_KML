@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 def generate_random_color() -> str:
-    """Generate a random color in KML format."""
+    """Рандомный цвет в KML формате."""
     return f'{random.randint(0, 255):02x}{random.randint(0, 255):02x}{random.randint(0, 255):02x}'
 
 

@@ -9,8 +9,6 @@ import shutil
 from utils import setup_logging
 
 
-
-
 class WaterObjectsProcessor:
     def __init__(self, input_file, output_dir):
         self.input_file = input_file
@@ -225,6 +223,7 @@ class WaterObjectsProcessor:
             return False, [], [], []
 
     def save_changes_report(self, region_name, new_objects, removed_objects, modified_objects):
+
         """
         Сохраняет подробный отчет об изменениях водных объектов
         """
@@ -271,6 +270,47 @@ class WaterObjectsProcessor:
                         f.write(f"  Было:  {old_val}\n")
                         f.write(f"  Стало: {new_val}\n")
 
+    def save_objects_without_coordinates(self, current_regions, column_widths):
+        def has_coordinate_markers(text):
+            """Проверяет, содержит ли текст маркеры координат."""
+            coordinate_markers = ["м.", "СШ", "с.ш."]
+            if not isinstance(text, str):
+                return False
+            return any(marker in text for marker in coordinate_markers)
+
+        """Сохраняет объекты без координат в отдельный файл."""
+        try:
+            if not current_regions:
+                self.logger.warning("Словарь регионов пуст. Файл для объектов без координат не создан.")
+                return
+
+            no_coordinates_df = pd.DataFrame(columns=list(current_regions.values())[0].columns)
+            no_coordinates_header = list(current_regions.values())[0].iloc[0:2]
+
+            for region_name, current_region_df in current_regions.items():
+                # Получаем данные без заголовков
+                region_coordinates_df = current_region_df.iloc[2:]
+
+                # Создаем новый DataFrame без строк с координатами
+                filtered_rows = []
+                for index, row in region_coordinates_df.iterrows():
+                    if not has_coordinate_markers(str(row[4])):
+                        filtered_rows.append(row)
+
+                # Добавляем отфильтрованные строки в итоговый DataFrame
+                if filtered_rows:
+                    filtered_df = pd.DataFrame(filtered_rows)
+                    no_coordinates_df = pd.concat([no_coordinates_df, filtered_df], ignore_index=True)
+
+                # Добавляем заголовки обратно в начало DataFrame
+            final_df = pd.concat([no_coordinates_header, no_coordinates_df], ignore_index=True)
+            # print(final_df)
+            exit()
+            return final_df
+
+        except Exception as e:
+            self.logger.error(f"Ошибка при сохранении объектов без координат: {e}")
+
     def process_file(self):
         """Основной метод обработки файла"""
         self.logger.info(f"Начало обработки файла: {self.input_file}")
@@ -290,6 +330,12 @@ class WaterObjectsProcessor:
             current_regions = self.get_regions_data(current_df)
             self.logger.info(f"Найдено регионов: {len(current_regions)}")
 
+            # Сохраняем объекты без координат
+            self.save_objects_without_coordinates(current_regions, column_widths)
+
+            # Создаем директорию для выходных файлов
+            os.makedirs(self.output_dir, exist_ok=True)
+
             # Загружаем предыдущую версию файла
             previous_file = history.get('latest_file')
             if previous_file and os.path.exists(previous_file):
@@ -299,9 +345,6 @@ class WaterObjectsProcessor:
             else:
                 previous_regions = {}
                 self.logger.info("Предыдущая версия файла не найдена")
-
-            # Создаем директорию для выходных файлов
-            os.makedirs(self.output_dir, exist_ok=True)
 
             # Сравниваем регионы и сохраняем только измененные
             changed_regions = []

@@ -54,20 +54,23 @@ def batch_convert(dir):
 
 
 def main():
-    # file_name = choose_file()
-    # if not file_name:
-    #     return
-    # workbook = load_workbook(filename=file_name, data_only=True)
-    #
-    # # Specify which "№ п/п" values should have their coordinates sorted
-    # sort_numbers = []  # Add the specific numbers you want to sort
-    # filename = file_name.rsplit(".", 1)[0] + ".kml"
-    # create_kml_from_coordinates(workbook.active, output_file=filename, sort_numbers=sort_numbers)
+    user_input = input("1. Batch convert\n2. Single convert\n")
+    if user_input == "1":
+        file_name = choose_file()
+        if not file_name:
+            return
+        workbook = load_workbook(filename=file_name, data_only=True)
 
-    batch_convert("output/separated_regions")
+        # Specify which "№ п/п" values should have their coordinates sorted
+        sort_numbers = []  # Add the specific numbers you want to sort
+        filename = file_name.rsplit(".", 1)[0] + ".kml"
+        create_kml_from_coordinates(workbook.active, output_file=filename, sort_numbers=sort_numbers)
 
+    elif user_input == "2":
+        batch_convert("output/separated_regions")
+
+    else:
+        print("Invalid input. Please enter 1 or 2.")
 
 if __name__ == '__main__':
-    # test = parse_coordinates("""МСК-63 зона 1 г.о. Самара, Куйбышевского района, Самарской области, на левом берегу реки на 1 км от устья 1: 381631.8м., 1368949.26м.""")
-    # print(test)
     main()

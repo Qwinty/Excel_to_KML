@@ -11,19 +11,20 @@ from utils import *
 
 
 def create_transformer(proj4_str: str) -> Transformer:
-    """Create a transformer from a given Proj4 string to WGS84."""
+    """Создает трансформер из заданной строки Proj4 в WGS84."""
     crs = CRS.from_proj4(proj4_str)
     return Transformer.from_crs(crs, "EPSG:4326", always_xy=True)
 
 
-# Define Proj4 strings
+# Определяем строки Proj4
 proj4_strings = json.load(open("data/proj4.json", "r", encoding="utf-8"))
 
-# Create transformers
+# Создаем трансформеры
 transformers = {name: create_transformer(proj4) for name, proj4 in proj4_strings.items()}
 
 
 def process_coordinates(input_string, transformer):
+    # Извлекаем координаты из строки
     coordinates = re.findall(r'(\d+):\s*([-\d.]+)\s*м\.,\s*([-\d.]+)\s*м\.', input_string)
     results = []
     for _, x, y in coordinates:
@@ -35,9 +36,9 @@ def process_coordinates(input_string, transformer):
 
 
 def parse_coordinates(coord_str: str) -> List[Tuple[str, float, float]]:
-    """Parse coordinate string and return list of (name, longitude, latitude) tuples."""
+    """Парсит строку с координатами и возвращает список кортежей (имя, долгота, широта)."""
     if not coord_str:
-        print(f"Skipping empty string")
+        print(f"Пропуск пустой строки")
         return []
 
     for key, transformer in transformers.items():
@@ -46,7 +47,7 @@ def parse_coordinates(coord_str: str) -> List[Tuple[str, float, float]]:
             return process_coordinates(coord_str, transformer)
 
     if '°' not in coord_str:
-        print(f"Skipping string without coordinates: '{coord_str}'")
+        print(f"Пропуск строки без координат: '{coord_str}'")
         return []
 
     parts = coord_str.split(';')
@@ -57,7 +58,7 @@ def parse_coordinates(coord_str: str) -> List[Tuple[str, float, float]]:
         coords = re.findall(r'(\d+)°\s*(\d+)\'\s*(\d+(?:[.,]\d+)?)"', part)
 
         if not coords:
-            # print(f"Skipping part without coordinates: '{part}'")
+            # print(f"Пропуск части без координат: '{part}'")
             continue
 
         if "выпуск" in part.lower():
@@ -83,21 +84,20 @@ def parse_coordinates(coord_str: str) -> List[Tuple[str, float, float]]:
         elif len(coords) > 2:
             for i in range(0, len(coords), 2):
                 if i + 1 >= len(coords):
-                    break  # Handle the case where we have an odd number of coordinates
+                    break  # Обрабатываем случай, когда количество координат нечетное
 
-                # Get latitude and longitude pairs
+                # Получаем пары широты и долготы
                 lat_deg, lat_min, lat_sec = coords[i]
                 lon_deg, lon_min, lon_sec = coords[i + 1]
 
-                # Convert latitude and longitude to decimal degrees
+                # Конвертируем широту и долготу в десятичные градусы
                 lat = int(lat_deg) + int(lat_min) / 60 + float(lat_sec.replace(',', '.')) / 3600
                 lon = int(lon_deg) + int(lon_min) / 60 + float(lon_sec.replace(',', '.')) / 3600
 
-                # Check for direction (currently assuming Northern/Eastern hemisphere, adjust for South/West if needed)
-                # For example, you could check for "ЮШ" or "ЗД" in the original string to set negative values if necessary
+                # Проверяем направление (по умолчанию предполагается северное/восточное полушарие, при необходимости корректируем для южного/западного)
 
-                # Append result as (point_name, longitude, latitude)
-                point_name = f"точка {i // 2 + 1}"  # Each pair is a new "точка"
+                # Добавляем результат как (имя_точки, долгота, широта)
+                point_name = f"точка {i // 2 + 1}"  # Каждая пара — новая "точка"
                 if lat != 0 or lon != 0:
                     result.append((point_name, round(lon, 6), round(lat, 6)))
 
@@ -105,16 +105,16 @@ def parse_coordinates(coord_str: str) -> List[Tuple[str, float, float]]:
 
 
 def find_column_index(sheet, target_name: str) -> int:
-    """Find the column index for a given header name across rows 1 and 4."""
+    """Находит индекс столбца для заданного имени заголовка в строках 1-4."""
     for row in sheet.iter_rows(min_row=1, max_row=4, values_only=True):
         for idx, cell in enumerate(row):
-            if cell and target_name.lower() == str(cell).lower():
+            if cell and target_name.lower() in str(cell).lower():
                 return idx
     return -1
 
 
 def get_column_indices(sheet) -> dict:
-    """Get indices for all required columns."""
+    """Получает индексы всех необходимых столбцов."""
     columns = {
         "coord": "Место водопользования",
         "name": "№ п/п",
@@ -128,13 +128,13 @@ def get_column_indices(sheet) -> dict:
 
     for key, value in indices.items():
         if value == -1:
-            print(f"Column '{columns[key]}' not found.")
+            print(f"Столбец '{columns[key]}' не найден.")
 
     return indices
 
 
 def create_kml_point(kml, name: str, coords: Tuple[float, float], description: str, color: str) -> None:
-    """Create a KML point with given parameters."""
+    """Создает точку KML с заданными параметрами."""
     point = kml.newpoint(name=name, coords=[coords])
     point.description = description
     point.style.iconstyle.color = color
@@ -143,32 +143,32 @@ def create_kml_point(kml, name: str, coords: Tuple[float, float], description: s
 
 
 def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_numbers: List[int] = None) -> None:
-    """Create KML file from worksheet with coordinates."""
+    """Создает KML-файл из листа с координатами."""
     kml = simplekml.Kml()
     indices = get_column_indices(sheet)
 
-    # Check cell E4 for specific characters
+    # Проверяем ячейку E4 на наличие определенных символов
     cell_e4 = sheet['E4'].value
-    min_row = 5  # default value
+    min_row = 5  # значение по умолчанию
 
     if isinstance(cell_e4, str) and ('м.' in cell_e4 or '"' in cell_e4):
         min_row = 4
 
-    # Use the determined min_row in the loop
+    # Используем определенное значение min_row в цикле
     for row in sheet.iter_rows(min_row=min_row, values_only=True):
         coords_str = row[indices["coord"]] if indices["coord"] != -1 else None
         if not isinstance(coords_str, str):
             continue
         main_name = row[indices["name"]] if indices[
                                                 "name"] != -1 else f"Row {sheet.iter_rows(min_row=5, max_row=sheet.max_row).index(row) + 5}"
-        print(f"------\n№ п/п {main_name} | String:", coords_str)
+        print(f"------\n№ п/п {main_name} | Строка:", coords_str)
         coords_array = parse_coordinates(coords_str)
-        print(f"Parsed {len(coords_array)} points")
+        print(f"Распознано {len(coords_array)} точек")
 
         if coords_array:
             color = generate_random_color()
 
-            # Prepare description
+            # Подготавливаем описание
             desc = []
             for key, column_name in [
                 ("organ", "Уполномоченный орган"),
@@ -182,28 +182,28 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
                     desc.append(f"{column_name}: {row[indices[key]]}")
             description = '\n'.join(desc)
 
-            # Check if there's 16th column
+            # Проверяем, есть ли 16-й столбец
 
-            # Check if there are more than 3 points and the 16th column is not zero or empty
+            # Проверяем, есть ли более 3 точек и 16-й столбец не равен нулю или пуст
             if len(coords_array) > 3:
-                print("Creating polygon")
-                # Create a polygon
+                print("Создание полигона")
+                # Создаем полигон
                 polygon = kml.newpolygon(name=f"№ п/п {main_name}")
 
-                # Sort coordinates only if main_name is in sort_numbers
+                # Сортируем координаты только если main_name есть в sort_numbers
                 if (sort_numbers and int(main_name) in sort_numbers) or len(coords_array) == 4:
                     sorted_coords = sort_coordinates([(lon, lat) for _, lon, lat in coords_array])
                 else:
                     sorted_coords = [(lon, lat) for _, lon, lat in coords_array]
 
-                polygon.outerboundaryis = sorted_coords
+                polygon.outerboundaries = sorted_coords
                 polygon.style.linestyle.color = color
                 polygon.style.linestyle.width = 3
                 polygon.style.polystyle.color = simplekml.Color.changealphaint(100, color)
                 polygon.description = description
                 [print(f"{lat}, {lon}") for lon, lat in sorted_coords]
             else:
-                # Create a line if there are multiple points and conditions are met
+                # Создаем линию, если есть несколько точек и условия выполнены
                 if len(coords_array) > 2 \
                         and all(name.startswith("точка") for name, _, _ in coords_array) \
                         and row[indices["goal"]] != "Сброс сточных вод":
@@ -213,7 +213,7 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
                     line.style.linestyle.width = 3
                     line.description = description
                 else:
-                    # Create individual points only if we didn't create a line
+                    # Создаем отдельные точки, если линия не была создана
                     index = 1
                     for point_name, lon, lat in coords_array:
                         print(f"{lat}, {lon}")
