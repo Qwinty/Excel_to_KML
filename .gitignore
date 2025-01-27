@@ -165,6 +165,5 @@ cython_debug/
 #.idea/
 
 *.kml
-*.xlsx
 *.xls
 map_uploader/browser_session
