@@ -54,7 +54,7 @@ def batch_convert(dir):
 
 
 def main():
-    user_input = input("1. Batch convert\n2. Single convert\n")
+    user_input = input("1. Single convert \n2. Batch convert separated_regions\n")
     if user_input == "1":
         file_name = choose_file()
         if not file_name:

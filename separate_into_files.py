@@ -408,7 +408,7 @@ class WaterObjectsProcessor:
 
 # Пример использования
 if __name__ == "__main__":
-    input_excel_file = "input/Forma-informatsii-o-predostavlenii-vodnykh-obektov-v-polzovanie20241031.xlsx"
+    input_excel_file = "input/Объекты.xlsx"
     output_directory = "output/separated_regions"
 
     processor = WaterObjectsProcessor(input_excel_file, output_directory)
