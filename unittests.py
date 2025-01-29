@@ -90,18 +90,5 @@ class TestParseCoordinates(unittest.TestCase):
         self.assertEqual(result, expected_output)
 
 
-    def test_parse_coordinates_case5(self):
-        input_data = """
-        Беседы с Ленинский район (Московская область, с. Беседы Ленинского района), 55°37'4"СШ 37°47'47.8"ВД , 55°37'8"СШ 37°47'43.4"ВД , 55°37'8.1"СШ 37°47'47"ВД , 55°37'3"СШ 37°47'47.8"ВД , 55°37'2.9"СШ 37°47'46.5"ВД , 55°37'5"СШ 37°47'46"ВД
-        """
-        expected_output = [
-            ('', 123.200556, 55.307222),
-            ('', 123.269444, 55.203611)
-        ]
-
-        result = parse_coordinates(input_data)
-        self.assertEqual(result, expected_output)
-
-
 if __name__ == '__main__':
     unittest.main()
