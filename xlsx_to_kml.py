@@ -190,7 +190,7 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
             # Проверяем, есть ли 16-й столбец
 
             # Проверяем, есть ли более 3 точек и 16-й столбец не равен нулю или пуст
-            if len(coords_array) > 3:
+            if len(coords_array) > 3 and row[indices["goal"]] != "Сброс сточных вод":
                 print("Создание полигона")
                 # Создаем полигон
                 polygon = kml.newpolygon(name=f"№ п/п {main_name}")
@@ -227,5 +227,6 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
                         else:
                             full_name = f"№ п/п {main_name} - {point_name}" if point_name else f"№ п/п {main_name}"
                         create_kml_point(kml, full_name, (lon, lat), description, color)
+                        index += 1
 
     kml.save(output_file)
