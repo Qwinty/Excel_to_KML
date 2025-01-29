@@ -147,12 +147,17 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
     kml = simplekml.Kml()
     indices = get_column_indices(sheet)
 
-    # Проверяем ячейку E4 на наличие определенных символов
-    cell_e4 = sheet['E4'].value
-    min_row = 5  # значение по умолчанию
+    # Default min_row value
+    min_row = 5
 
-    if isinstance(cell_e4, str) and ('м.' in cell_e4 or '"' in cell_e4):
-        min_row = 4
+    # Check rows 2..5 using iter_rows()
+    for row in sheet.iter_rows(min_row=2, max_row=5):
+        cell = row[indices["coord"]] if indices["coord"] != -1 else None
+        value = cell.value
+
+        if isinstance(value, str) and ('м.' in value or '"' in value):
+            min_row = cell.row  # Get the actual row number (3 or 4)
+            break  # Stop at first match
 
     # Используем определенное значение min_row в цикле
     for row in sheet.iter_rows(min_row=min_row, values_only=True):
@@ -196,7 +201,7 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
                 else:
                     sorted_coords = [(lon, lat) for _, lon, lat in coords_array]
 
-                polygon.outerboundaries = sorted_coords
+                polygon.outerboundaryis = sorted_coords
                 polygon.style.linestyle.color = color
                 polygon.style.linestyle.width = 3
                 polygon.style.polystyle.color = simplekml.Color.changealphaint(100, color)
