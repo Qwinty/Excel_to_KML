@@ -50,7 +50,7 @@ def haversine_distance(lat1, lon1, lat2, lon2):
     return c * r
 
 
-def detect_coordinate_anomalies(coordinates, threshold_km=20):
+def detect_coordinate_anomalies(coordinates, threshold_km=5):
     """
     Detect anomalous coordinates in a sequence by looking for points that are
     significantly further away from the majority of other points.
@@ -313,6 +313,8 @@ def get_column_indices(sheet) -> dict:
         "goal": "Цель водопользования",
         "vid": "Вид водопользования",
         "owner": "Наименование",
+        "start_date": "Дата начала водопользования",
+        "end_date": "Дата окончания водопользования"
     }
     indices = {key: find_column_index(sheet, value)
                for key, value in columns.items()}
@@ -391,10 +393,22 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
                 ("goal", "Цель водопользования"),
                 ("vid", "Вид водопользования"),
                 ("coord", "Место водопользования"),
-                ("owner", "Владелец")
+                ("owner", "Владелец"),
+                ("start_date", "Дата начала водопользования"),
+                ("end_date", "Дата окончания водопользования")
             ]:
-                if indices[key] != -1:
-                    desc.append(f"{column_name}: {row[indices[key]]}")
+                if indices[key] != -1 and row[indices[key]]:
+                    # Форматируем даты без времени, если это даты начала или окончания водопользования
+                    if key in ["start_date", "end_date"] and hasattr(row[indices[key]], "date"):
+                        # Если это объект datetime, берем только дату
+                        date_value = row[indices[key]].date()
+                        desc.append(f"{column_name}: {date_value}")
+                    elif key in ["start_date", "end_date"] and isinstance(row[indices[key]], str):
+                        # Если это строка, обрезаем время, если оно есть
+                        date_str = row[indices[key]].split(" ")[0]
+                        desc.append(f"{column_name}: {date_str}")
+                    else:
+                        desc.append(f"{column_name}: {row[indices[key]]}")
             description = '\n'.join(desc)
 
             # Проверяем, есть ли 16-й столбец
