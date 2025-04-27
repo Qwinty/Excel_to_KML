@@ -13,20 +13,21 @@ class TestParseCoordinates(unittest.TestCase):
         10: 53°8'12.41" СШ 50°3'10.42" ВД
         """
         expected_output = [
-            ('точка 1', 50.036125, 53.137306),
-            ('точка 2', 50.036561, 53.137303),
-            ('точка 3', 50.036656, 53.136819),
-            ('точка 4', 50.037119, 53.136183),
-            ('точка 5', 50.037053, 53.135583),
-            ('точка 6', 50.036567, 53.134978),
-            ('точка 7', 50.036208, 53.135106),
-            ('точка 8', 50.036639, 53.135631),
-            ('точка 9', 50.036686, 53.136136),
-            ('точка 10', 50.052894, 53.136781)
+            ('т.1', 50.036125, 53.137306),
+            ('т.2', 50.036561, 53.137303),
+            ('т.3', 50.036656, 53.136819),
+            ('т.4', 50.037119, 53.136183),
+            ('т.5', 50.037053, 53.135583),
+            ('т.6', 50.036567, 53.134978),
+            ('т.7', 50.036208, 53.135106),
+            ('т.8', 50.036639, 53.135631),
+            ('т.9', 50.036686, 53.136136),
+            ('т.10', 50.052894, 53.136781)
         ]
 
-        result = parse_coordinates(input_data)
-        self.assertEqual(result, expected_output)
+        result_coords, error_reason = parse_coordinates(input_data)
+        self.assertIsNone(error_reason, f"Expected no error, but got: {error_reason}")
+        self.assertEqual(result_coords, expected_output)
 
     def test_parse_coordinates_case2(self):
         input_data = """
@@ -63,8 +64,12 @@ class TestParseCoordinates(unittest.TestCase):
             ('', 50.062133, 53.140818)
         ]
 
-        result = parse_coordinates(input_data)
-        self.assertEqual(result, expected_output)
+        result_coords, error_reason = parse_coordinates(input_data)
+        self.assertIsNone(error_reason, f"Expected no error, but got: {error_reason}")
+        self.assertEqual(len(result_coords), len(expected_output), f"Expected {len(expected_output)} coords, got {len(result_coords)}")
+        for i, (res, exp) in enumerate(zip(result_coords, expected_output)):
+            self.assertEqual(res, exp, f"Mismatch at index {i}")
+        # self.assertEqual(result_coords, expected_output) # Use element-wise compare instead
 
     def test_parse_coordinates_case3(self):
         input_data = """
@@ -74,8 +79,9 @@ class TestParseCoordinates(unittest.TestCase):
             ('точка 1', 50.062209, 53.142413)
         ]
 
-        result = parse_coordinates(input_data)
-        self.assertEqual(result, expected_output)
+        result_coords, error_reason = parse_coordinates(input_data)
+        self.assertIsNone(error_reason, f"Expected no error, but got: {error_reason}")
+        self.assertEqual(result_coords, expected_output)
 
     def test_parse_coordinates_case4(self):
         input_data = """
@@ -86,8 +92,9 @@ class TestParseCoordinates(unittest.TestCase):
             ('', 123.269444, 55.203611)
         ]
 
-        result = parse_coordinates(input_data)
-        self.assertEqual(result, expected_output)
+        result_coords, error_reason = parse_coordinates(input_data)
+        self.assertIsNone(error_reason, f"Expected no error, but got: {error_reason}")
+        self.assertEqual(result_coords, expected_output)
 
 
 if __name__ == '__main__':

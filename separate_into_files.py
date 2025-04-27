@@ -7,15 +7,22 @@ from datetime import datetime
 import json
 import shutil
 from utils import setup_logging
+from xlsx_to_kml import parse_coordinates, create_kml_from_coordinates
+import simplekml
 
 
 class WaterObjectsProcessor:
     def __init__(self, input_file, output_dir):
         self.input_file = input_file
-        self.output_dir = output_dir
-        self.history_file = "input/processing_history.json"
-        self.changes_dir = "output/regions_with_header/changes_history"
-        self.logger = setup_logging()
+        self.output_dir = os.path.join(output_dir, "separated_regions")
+        self.history_file = os.path.join(output_dir, "processing_history.json")
+        self.changes_dir = os.path.join(output_dir, "changes_reports")
+        self.logger = setup_logging(output_dir)
+        self.logger.info("Инициализация WaterObjectsProcessor")
+        self.logger.info(f"Входной файл: {self.input_file}")
+        self.logger.info(f"Директория для разделенных регионов: {self.output_dir}")
+        self.logger.info(f"Файл истории: {self.history_file}")
+        self.logger.info(f"Директория отчетов об изменениях: {self.changes_dir}")
 
     def get_column_widths(self, input_file):
         """
@@ -63,7 +70,8 @@ class WaterObjectsProcessor:
             columns_to_merge = ['A', 'D', 'E', 'F', 'G']
             for col in columns_to_merge:
                 ws.merge_cells(f'{col}1:{col}2')
-            self.logger.debug(f"Объединены ячейки в столбцах: {columns_to_merge}")
+            self.logger.debug(
+                f"Объединены ячейки в столбцах: {columns_to_merge}")
 
             # Объединяем ячейки в строке 3
             ws.merge_cells('A3:G3')
@@ -90,9 +98,11 @@ class WaterObjectsProcessor:
             )
 
             wb.save(filename)
-            self.logger.info(f"Форматирование успешно применено к файлу: {filename}")
+            self.logger.info(
+                f"Форматирование успешно применено к файлу: {filename}")
         except Exception as e:
-            self.logger.error(f"Ошибка при применении форматирования к файлу {filename}: {e}")
+            self.logger.error(
+                f"Ошибка при применении форматирования к файлу {filename}: {e}")
 
     def load_processing_history(self):
         """Загружает историю обработки файлов"""
@@ -101,7 +111,8 @@ class WaterObjectsProcessor:
             try:
                 with open(self.history_file, 'r', encoding='utf-8') as f:
                     history = json.load(f)
-                self.logger.info(f"Загружена история обработки: {len(history)} записей")
+                self.logger.info(
+                    f"Загружена история обработки: {len(history)} записей")
                 return history
             except Exception as e:
                 self.logger.error(f"Ошибка при загрузке истории: {e}")
@@ -123,7 +134,7 @@ class WaterObjectsProcessor:
         """
         Извлекает данные по регионам из DataFrame
         Returns:
-            dict: {region_name: region_df}
+            dict: {region_n,ame: region_df}
         """
         regions_data = {}
         header_rows = df.iloc[3:5]
@@ -139,7 +150,8 @@ class WaterObjectsProcessor:
             if pd.notna(row_value) and isinstance(row_value, str) and "область" in row_value:
                 if start_row is not None:
                     region_df = df.iloc[start_row:i]
-                    region_df = pd.concat([header_rows, region_df], ignore_index=True)
+                    region_df = pd.concat(
+                        [header_rows, region_df], ignore_index=True)
                     regions_data[current_region] = region_df
 
                 start_row = i
@@ -147,7 +159,8 @@ class WaterObjectsProcessor:
 
             elif pd.isna(row_value) and start_row is not None and i > 7:
                 region_df = df.iloc[start_row:i]
-                region_df = pd.concat([header_rows, region_df], ignore_index=True)
+                region_df = pd.concat(
+                    [header_rows, region_df], ignore_index=True)
                 regions_data[current_region] = region_df
                 start_row = None
 
@@ -177,10 +190,13 @@ class WaterObjectsProcessor:
             # Создаем уникальные идентификаторы для водных объектов
             # Используем комбинацию названия, местоположения и цели использования
             def create_object_id(row):
-                return tuple(str(x).strip() for x in row.iloc[[1, 2, 3]])  # колонки B, C, D
+                # колонки B, C, D
+                return tuple(str(x).strip() for x in row.iloc[[1, 2, 3]])
 
-            current_objects = {create_object_id(row): row for _, row in current_data.iterrows()}
-            previous_objects = {create_object_id(row): row for _, row in previous_data.iterrows()}
+            current_objects = {create_object_id(
+                row): row for _, row in current_data.iterrows()}
+            previous_objects = {create_object_id(
+                row): row for _, row in previous_data.iterrows()}
 
             current_ids = set(current_objects.keys())
             previous_ids = set(previous_objects.keys())
@@ -215,7 +231,8 @@ class WaterObjectsProcessor:
                         'new_data': current_obj.to_dict()
                     })
 
-            has_changes = bool(new_objects or removed_objects or modified_objects)
+            has_changes = bool(
+                new_objects or removed_objects or modified_objects)
             return has_changes, new_objects, removed_objects, modified_objects
 
         except Exception as e:
@@ -223,17 +240,19 @@ class WaterObjectsProcessor:
             return False, [], [], []
 
     def save_changes_report(self, region_name, new_objects, removed_objects, modified_objects):
-
         """
         Сохраняет подробный отчет об изменениях водных объектов
         """
         os.makedirs(self.changes_dir, exist_ok=True)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        report_file = os.path.join(self.changes_dir, f"{region_name}_changes_{timestamp}.txt")
+        report_file = os.path.join(
+            self.changes_dir, f"{region_name}_changes_{timestamp}.txt")
 
         with open(report_file, 'w', encoding='utf-8') as f:
-            f.write(f"Отчет об изменениях водных объектов для региона: {region_name}\n")
-            f.write(f"Дата: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
+            f.write(
+                f"Отчет об изменениях водных объектов для региона: {region_name}\n")
+            f.write(
+                f"Дата: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
 
             # Новые объекты
             f.write(f"Новые водные объекты ({len(new_objects)}):\n")
@@ -252,7 +271,8 @@ class WaterObjectsProcessor:
                 f.write(f"Цель использования: {obj['data'].get(3, 'Н/Д')}\n")
 
             # Измененные объекты
-            f.write(f"\nИзмененные водные объекты ({len(modified_objects)}):\n")
+            f.write(
+                f"\nИзмененные водные объекты ({len(modified_objects)}):\n")
             for obj in modified_objects:
                 f.write("-" * 50 + "\n")
                 f.write(f"Водный объект: {obj['id'][0]}\n")
@@ -270,46 +290,39 @@ class WaterObjectsProcessor:
                         f.write(f"  Было:  {old_val}\n")
                         f.write(f"  Стало: {new_val}\n")
 
-    def save_objects_without_coordinates(self, current_regions, column_widths):
-        def has_coordinate_markers(text):
-            """Проверяет, содержит ли текст маркеры координат."""
-            coordinate_markers = ["м.", "СШ", "с.ш."]
-            if not isinstance(text, str):
-                return False
-            return any(marker in text for marker in coordinate_markers)
+    def save_anomalous_xlsx(self, region_name, anomalous_df, header_rows, column_widths, anomalous_xlsx_dir):
+        """Сохраняет аномальные данные региона в отдельный XLSX файл."""
+        if anomalous_df.empty:
+            return
 
-        """Сохраняет объекты без координат в отдельный файл."""
+        os.makedirs(anomalous_xlsx_dir, exist_ok=True)
+        safe_region_name = region_name.strip().replace(' ', '_').replace('/', '_') # Санитизация имени файла
+        output_filename = os.path.join(anomalous_xlsx_dir, f"ANO_{safe_region_name}.xlsx")
+
         try:
-            if not current_regions:
-                self.logger.warning("Словарь регионов пуст. Файл для объектов без координат не создан.")
-                return
+            # Добавляем заголовки обратно
+            final_df = pd.concat([header_rows, anomalous_df], ignore_index=True)
 
-            no_coordinates_df = pd.DataFrame(columns=list(current_regions.values())[0].columns)
-            no_coordinates_header = list(current_regions.values())[0].iloc[0:2]
+            # Сохраняем в Excel
+            final_df.to_excel(output_filename, index=False, header=False)
+            self.logger.info(f"Аномальные данные для региона '{region_name}' сохранены в {output_filename}")
 
-            for region_name, current_region_df in current_regions.items():
-                # Получаем данные без заголовков
-                region_coordinates_df = current_region_df.iloc[2:]
-
-                # Создаем новый DataFrame без строк с координатами
-                filtered_rows = []
-                for index, row in region_coordinates_df.iterrows():
-                    if not has_coordinate_markers(str(row[4])):
-                        filtered_rows.append(row)
-
-                # Добавляем отфильтрованные строки в итоговый DataFrame
-                if filtered_rows:
-                    filtered_df = pd.DataFrame(filtered_rows)
-                    no_coordinates_df = pd.concat([no_coordinates_df, filtered_df], ignore_index=True)
-
-                # Добавляем заголовки обратно в начало DataFrame
-            final_df = pd.concat([no_coordinates_header, no_coordinates_df], ignore_index=True)
-            # print(final_df)
-            exit()
-            return final_df
+            # Применяем форматирование (если ширина столбцов известна)
+            if column_widths is not None:
+                # Добавляем ширину для новой колонки "Причина аномалии"
+                # Предполагаем, что она последняя
+                max_col_index = final_df.shape[1] - 1
+                # Используем ширину предпоследней колонки или значение по умолчанию
+                last_col_width = column_widths.get(max_col_index -1, 20) if max_col_index > 0 else 20
+                extended_column_widths = {**column_widths, max_col_index: last_col_width}
+                self.apply_formatting(output_filename, extended_column_widths)
+            else:
+                # Если исходной ширины нет, применяем только объединение ячеек заголовка
+                self.apply_formatting(output_filename, None)
 
         except Exception as e:
-            self.logger.error(f"Ошибка при сохранении объектов без координат: {e}")
+            self.logger.error(f"Ошибка при сохранении аномального XLSX файла {output_filename}: {e}")
+            raise # Передаем исключение выше для логгирования в process_file
 
     def process_file(self):
         """Основной метод обработки файла"""
@@ -320,85 +333,223 @@ class WaterObjectsProcessor:
             # Получаем ширину столбцов из исходного файла
             column_widths = self.get_column_widths(self.input_file)
             if column_widths is None:
-                self.logger.warning("Не удалось получить ширину столбцов, продолжаем без форматирования")
+                self.logger.warning(
+                    "Не удалось получить ширину столбцов, продолжаем без форматирования")
 
             # Загружаем текущий файл
             current_df = pd.read_excel(self.input_file, header=None)
-            self.logger.info(f"Загружен текущий файл. Размер: {current_df.shape}")
+            self.logger.info(
+                f"Загружен текущий файл. Размер: {current_df.shape}")
 
             # Получаем данные по регионам из текущего файла
-            current_regions = self.get_regions_data(current_df)
-            self.logger.info(f"Найдено регионов: {len(current_regions)}")
+            all_regions_data = self.get_regions_data(current_df)
+            self.logger.info(f"Найдено регионов: {len(all_regions_data)}")
 
-            # Сохраняем объекты без координат
-            self.save_objects_without_coordinates(current_regions, column_widths)
-
-            # Создаем директорию для выходных файлов
+            # Создаем директорию для выходных файлов регионов и KML
             os.makedirs(self.output_dir, exist_ok=True)
+            kml_output_dir = os.path.join(self.output_dir, "kml")
+            os.makedirs(kml_output_dir, exist_ok=True)
+            # Директории для аномальных данных (создаются в функциях сохранения)
+            anomalous_xlsx_dir = os.path.join(self.output_dir, "anomalous")
+            anomalous_kml_dir = os.path.join(kml_output_dir, "anomalous")
 
             # Загружаем предыдущую версию файла
             previous_file = history.get('latest_file')
             if previous_file and os.path.exists(previous_file):
                 previous_df = pd.read_excel(previous_file, header=None)
-                previous_regions = self.get_regions_data(previous_df)
+                previous_regions_data = self.get_regions_data(previous_df)
                 self.logger.info("Загружена предыдущая версия файла")
             else:
-                previous_regions = {}
+                previous_regions_data = {}
                 self.logger.info("Предыдущая версия файла не найдена")
 
-            # Сравниваем регионы и сохраняем только измененные
-            changed_regions = []
-            for region_name, current_region_df in current_regions.items():
-                if region_name in previous_regions:
+            changed_regions_count = 0
+            new_regions_count = 0
+            processed_regions_count = 0
+
+            # Обрабатываем каждый регион
+            for region_name, current_region_df in all_regions_data.items():
+                processed_regions_count += 1
+                self.logger.info(f"Обработка региона: {region_name} ({processed_regions_count}/{len(all_regions_data)})")
+
+                # ---- Разделение на валидные и аномальные данные (Task 2.1, 2.2) ----
+                if current_region_df.shape[0] <= 2: # Только заголовок
+                    self.logger.info(f"Регион '{region_name}' не содержит данных, пропуск.")
+                    continue
+
+                header_rows = current_region_df.iloc[0:2]
+                data_rows_df = current_region_df.iloc[2:].copy() # Работаем с копией
+                coord_col_index = 4 # Индекс колонки "Место водопользования" (E), 0-based
+
+                valid_rows = []
+                anomalous_rows = []
+
+                for index, row in data_rows_df.iterrows():
+                    coord_str = row.iloc[coord_col_index]
+                    anomaly_reason = None
+
+                    # Проверка 1: Пустые координаты?
+                    if pd.isna(coord_str) or not str(coord_str).strip():
+                        anomaly_reason = "Отсутствуют координаты"
+                    else:
+                        coord_str = str(coord_str).strip()
+                        # Проверка 2: Есть ли маркеры?
+                        if 'м.' not in coord_str and '°' not in coord_str:
+                             # Не считаем ошибкой, если строка явно не похожа на координаты
+                             # Это может быть адрес.
+                             # parse_coordinates сама вернет [], None
+                             pass # Пропускаем к parse_coordinates
+
+                        # Проверка 3: Парсинг и валидация
+                        parsed_coords, error_reason = parse_coordinates(coord_str)
+
+                        if error_reason is not None:
+                            # parse_coordinates вернула ошибку
+                            anomaly_reason = error_reason
+                        elif parsed_coords is None:
+                             # Не должно происходить при новой логике parse_coordinates,
+                             # но на всякий случай
+                             anomaly_reason = "Неизвестная ошибка парсинга"
+                        # else: # Успешный парсинг (parsed_coords - список, возможно пустой)
+                            # Строка валидна с точки зрения формата/диапазона
+
+                    if anomaly_reason:
+                        row_copy = row.copy()
+                        # Добавляем причину аномалии (можно добавить как последнюю колонку)
+                        # row_copy['Причина аномалии'] = anomaly_reason
+                        anomalous_rows.append((row_copy, anomaly_reason))
+                    else:
+                        valid_rows.append(row)
+                # ---- Конец разделения ----
+
+                # ---- Создание DataFrame'ов ----
+                valid_df = pd.DataFrame(valid_rows)
+                if anomalous_rows:
+                    anomalous_data, reasons = zip(*anomalous_rows)
+                    anomalous_df = pd.DataFrame(list(anomalous_data))
+                    anomalous_df['Причина аномалии'] = list(reasons)
+                else:
+                    anomalous_df = pd.DataFrame(columns=data_rows_df.columns.tolist() + ['Причина аномалии'])
+
+                self.logger.info(f"Регион '{region_name}': Найдено валидных строк: {len(valid_df)}, аномальных: {len(anomalous_df)}")
+
+                # ---- Сохранение аномальных данных (Task 2.3, 2.4) ----
+                if not anomalous_df.empty:
+                    try:
+                        self.save_anomalous_xlsx(region_name, anomalous_df, header_rows, column_widths, anomalous_xlsx_dir)
+                    except Exception as e:
+                        self.logger.error(f"Ошибка при сохранении ANO_*.xlsx для региона '{region_name}': {e}")
+                # ---- Конец сохранения аномальных ----
+
+                # ---- Обработка валидных данных ----
+                if valid_df.empty:
+                    self.logger.info(f"В регионе '{region_name}' не найдено валидных строк для дальнейшей обработки.")
+                    # Если и аномальных нет, регион пуст. Если были аномальные, они сохранены.
+                    # Если регион был в previous_regions_data, он считается удаленным/очищенным?
+                    # Текущая логика сравнения ниже обработает это как изменение (все старые удалены).
+                    # Создаем DataFrame с заголовками, чтобы сравнение работало
+                    current_valid_region_df = header_rows.copy()
+                else:
+                    # Собираем валидный DataFrame с заголовками
+                    current_valid_region_df = pd.concat([header_rows, valid_df], ignore_index=True)
+
+                # ---- Сравнение и сохранение ИЗМЕНЕННЫХ валидных данных ----
+                region_changed = False
+                region_is_new = False
+                if region_name in previous_regions_data:
+                    # Сравниваем только валидные данные
                     has_changes, new_objects, removed_objects, modified_objects = self.compare_regions(
-                        current_region_df, previous_regions[region_name]
+                        current_valid_region_df, previous_regions_data[region_name]
                     )
-
                     if has_changes:
-                        self.logger.info(f"Обнаружены изменения в регионе: {region_name}")
-                        changed_regions.append(region_name)
-
-                        # Сохраняем файл региона
-                        output_file = os.path.join(self.output_dir,
-                                                   f"{region_name.strip().replace(' ', '_')}.xlsx")
-                        current_region_df.to_excel(output_file, index=False, header=False)
-
-                        # Применяем форматирование
-                        if column_widths is not None:
-                            self.apply_formatting(output_file, column_widths)
-
-                        # Сохраняем отчет об изменениях
-                        self.save_changes_report(region_name, new_objects, removed_objects, modified_objects)
+                        self.logger.info(f"Обнаружены изменения в ВАЛИДНЫХ данных региона: {region_name}")
+                        changed_regions_count += 1
+                        region_changed = True
+                        # Сохраняем отчет об изменениях (только для валидных данных)
+                        self.save_changes_report(
+                            region_name, new_objects, removed_objects, modified_objects)
+                    else:
+                        self.logger.info(f"Валидные данные в регионе '{region_name}' не изменились.")
                 else:
                     # Новый регион
                     self.logger.info(f"Обнаружен новый регион: {region_name}")
-                    changed_regions.append(region_name)
-                    output_file = os.path.join(self.output_dir,
-                                               f"{region_name.strip().replace(' ', '_')}.xlsx")
-                    current_region_df.to_excel(output_file, index=False, header=False)
+                    new_regions_count += 1
+                    region_is_new = True
+                    # Считаем новый регион "измененным", если он не пустой
+                    region_changed = not current_valid_region_df.iloc[2:].empty
 
-                    # Применяем форматирование
-                    if column_widths is not None:
-                        self.apply_formatting(output_file, column_widths)
+                # Сохраняем .xlsx и .kml для региона, ТОЛЬКО если он новый или изменился,
+                # и ТОЛЬКО если в нем есть валидные данные
+                if region_changed and not valid_df.empty:
+                    self.logger.info(f"Сохранение валидных данных для региона: {region_name}")
+                    output_xlsx_file = os.path.join(self.output_dir,
+                                                f"{region_name.strip().replace(' ', '_')}.xlsx")
+                    output_kml_file = os.path.join(kml_output_dir,
+                                                f"{region_name.strip().replace(' ', '_')}.kml")
+
+                    # Сохраняем XLSX
+                    try:
+                        current_valid_region_df.to_excel(output_xlsx_file, index=False, header=False)
+                        # Применяем форматирование XLSX
+                        if column_widths is not None:
+                             self.apply_formatting(output_xlsx_file, column_widths)
+                    except Exception as e:
+                        self.logger.error(f"Ошибка при сохранении XLSX для региона '{region_name}': {e}")
+
+                    # Создаем KML из валидного DataFrame
+                    try:
+                        # Создаем временный Workbook в памяти для create_kml_from_coordinates
+                        # Это обходной путь, т.к. create_kml_from_coordinates ожидает openpyxl sheet
+                        # TODO: Рефакторинг create_kml_from_coordinates для приема DataFrame
+                        with pd.ExcelWriter('temp_kml_sheet.xlsx', engine='openpyxl') as writer:
+                            current_valid_region_df.to_excel(writer, sheet_name='Sheet1', index=False, header=False)
+                        wb = load_workbook('temp_kml_sheet.xlsx')
+                        sheet = wb.active
+                        create_kml_from_coordinates(sheet, output_kml_file)
+                        os.remove('temp_kml_sheet.xlsx') # Удаляем временный файл
+                        self.logger.info(f"KML файл для региона '{region_name}' создан: {output_kml_file}")
+                    except Exception as e:
+                        self.logger.error(f"Ошибка при создании KML для региона '{region_name}': {e}")
+                        if os.path.exists('temp_kml_sheet.xlsx'):
+                            os.remove('temp_kml_sheet.xlsx')
+                elif not valid_df.empty:
+                     self.logger.info(f"Валидные данные региона '{region_name}' не изменились, сохранение пропущено.")
+
+                # ---- Конец обработки валидных данных ----
+
+            # --- Конец цикла по регионам ---
+
+            self.logger.info(f"Обработка файла завершена. Всего регионов: {processed_regions_count}, "
+                             f"Новых: {new_regions_count}, Измененных (валидные данные): {changed_regions_count}")
 
             # Обновляем историю
             history['latest_file'] = self.input_file
-            history['last_processed'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            history['changed_regions'] = changed_regions
+            history['last_processed'] = datetime.now().strftime(
+                "%Y-%m-%d %H:%M:%S")
+            # В историю записываем все обработанные регионы?
+            # Или только те, у кого изменились валидные данные?
+            # Давайте записывать все, где были изменения (включая только аномальные)
+            # history['changed_regions'] = changed_regions # Старая логика
+            # Собираем список регионов, где были хоть какие-то изменения или аномалии
+            updated_processed_regions = list(all_regions_data.keys()) # Placeholder
+            # TODO: Уточнить, что должно попадать в history['changed_regions']
+            history['processed_regions'] = updated_processed_regions # Записываем все обработанные
 
-            # Сохраняем копию текущего файла
-            history_dir = "input/history"  # Изменен путь для сохранения истории
+            # Сохраняем копию текущего файла в историю
+            history_dir = os.path.join("input", "history") # Изменен путь
             os.makedirs(history_dir, exist_ok=True)
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            history_file = os.path.join(history_dir, f"water_objects_{timestamp}.xlsx")
+            history_file = os.path.join(
+                history_dir, f"water_objects_{timestamp}.xlsx")
             shutil.copy2(self.input_file, history_file)
 
             self.save_processing_history(history)
 
-            self.logger.info(f"Обработка завершена. Изменения найдены в {len(changed_regions)} регионах")
-            if changed_regions:
+            self.logger.info(
+                f"Обработка завершена. Изменения найдены в {len(changed_regions_count)} регионах")
+            if changed_regions_count:
                 self.logger.info("Измененные регионы:")
-                for region in changed_regions:
+                for region in updated_processed_regions:
                     self.logger.info(f"- {region}")
 
         except Exception as e:
