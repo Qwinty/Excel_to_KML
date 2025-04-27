@@ -24,6 +24,7 @@ def sort_coordinates(coords):
     centroid = calculate_centroid(coords)
     return sorted(coords, key=lambda coord: calculate_angle(coord, centroid))
 
+
 def setup_logging(output_dir=None):
     """Настраивает систему логирования"""
     logs_dir = Path("logs")
@@ -36,6 +37,7 @@ def setup_logging(output_dir=None):
     logging.basicConfig(
         level=logging.DEBUG,
         format='%(asctime)s - %(levelname)s - [%(name)s] %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S',
         handlers=[
             logging.FileHandler(log_file, encoding='utf-8'),
             logging.StreamHandler()
