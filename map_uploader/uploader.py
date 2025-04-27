@@ -15,7 +15,8 @@ class YandexMapAutomation:
         if not os.path.exists(self.cookies_dir):
             os.makedirs(self.cookies_dir)
 
-        self.cookies_file = os.path.join(self.cookies_dir, "yandex_cookies.pkl")
+        self.cookies_file = os.path.join(
+            self.cookies_dir, "yandex_cookies.pkl")
 
         options = uc.ChromeOptions()
         options.add_argument('--start-maximized')
@@ -24,7 +25,8 @@ class YandexMapAutomation:
         options.add_argument('--disable-dev-shm-usage')
 
         self.session_dir = os.path.abspath("browser_session")
-        self.driver = uc.Chrome(options=options, user_data_dir=self.session_dir)
+        self.driver = uc.Chrome(
+            options=options, user_data_dir=self.session_dir)
         self.wait = WebDriverWait(self.driver, 15)
 
     def load_cookies(self, domain):
@@ -109,7 +111,8 @@ class YandexMapAutomation:
 
             # Wait for the import button to be clickable (up to 20 seconds)
             import_button = self.wait.until(
-                EC.element_to_be_clickable((By.XPATH, "//span[contains(text(), 'К импорту')]"))
+                EC.element_to_be_clickable(
+                    (By.XPATH, "//span[contains(text(), 'К импорту')]"))
             )
 
             # Click the import button
@@ -117,7 +120,8 @@ class YandexMapAutomation:
 
             # Wait for file input to be present
             file_input = self.wait.until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='file']"))
+                EC.presence_of_element_located(
+                    (By.CSS_SELECTOR, "input[type='file']"))
             )
 
             # Send the file path to the input
@@ -125,7 +129,8 @@ class YandexMapAutomation:
 
             # Wait for upload to complete (you might need to adjust the selector)
             self.wait.until(
-                EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'upload-success')]"))
+                EC.presence_of_element_located(
+                    (By.XPATH, "//div[contains(@class, 'upload-success')]"))
             )
 
             print(f"Successfully uploaded KML file: {filename}")
@@ -151,7 +156,8 @@ def main():
             print("Successfully navigated to Yandex Map Constructor")
 
             # Add a delay to keep the browser open for a while
-            input("Press Enter to close the browser")  # Adjust the delay as needed
+            # Adjust the delay as needed
+            input("Press Enter to close the browser")
 
         else:
             print("Failed to navigate to Yandex Map Constructor")

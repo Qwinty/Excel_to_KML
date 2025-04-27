@@ -20,9 +20,11 @@ class WaterObjectsProcessor:
         self.logger = setup_logging()
         self.logger.info("Инициализация WaterObjectsProcessor")
         self.logger.info(f"Входной файл: {self.input_file}")
-        self.logger.info(f"Директория для разделенных регионов: {self.output_dir}")
+        self.logger.info(
+            f"Директория для разделенных регионов: {self.output_dir}")
         self.logger.info(f"Файл истории: {self.history_file}")
-        self.logger.info(f"Директория отчетов об изменениях: {self.changes_dir}")
+        self.logger.info(
+            f"Директория отчетов об изменениях: {self.changes_dir}")
 
     def get_column_widths(self, input_file):
         """
@@ -296,16 +298,20 @@ class WaterObjectsProcessor:
             return
 
         os.makedirs(anomalous_xlsx_dir, exist_ok=True)
-        safe_region_name = region_name.strip().replace(' ', '_').replace('/', '_') # Санитизация имени файла
-        output_filename = os.path.join(anomalous_xlsx_dir, f"ANO_{safe_region_name}.xlsx")
+        safe_region_name = region_name.strip().replace(
+            ' ', '_').replace('/', '_')  # Санитизация имени файла
+        output_filename = os.path.join(
+            anomalous_xlsx_dir, f"ANO_{safe_region_name}.xlsx")
 
         try:
             # Добавляем заголовки обратно
-            final_df = pd.concat([header_rows, anomalous_df], ignore_index=True)
+            final_df = pd.concat(
+                [header_rows, anomalous_df], ignore_index=True)
 
             # Сохраняем в Excel
             final_df.to_excel(output_filename, index=False, header=False)
-            self.logger.info(f"Аномальные данные для региона '{region_name}' сохранены в {output_filename}")
+            self.logger.info(
+                f"Аномальные данные для региона '{region_name}' сохранены в {output_filename}")
 
             # Применяем форматирование (если ширина столбцов известна)
             if column_widths is not None:
@@ -313,16 +319,19 @@ class WaterObjectsProcessor:
                 # Предполагаем, что она последняя
                 max_col_index = final_df.shape[1] - 1
                 # Используем ширину предпоследней колонки или значение по умолчанию
-                last_col_width = column_widths.get(max_col_index -1, 20) if max_col_index > 0 else 20
-                extended_column_widths = {**column_widths, max_col_index: last_col_width}
+                last_col_width = column_widths.get(
+                    max_col_index - 1, 20) if max_col_index > 0 else 20
+                extended_column_widths = {
+                    **column_widths, max_col_index: last_col_width}
                 self.apply_formatting(output_filename, extended_column_widths)
             else:
                 # Если исходной ширины нет, применяем только объединение ячеек заголовка
                 self.apply_formatting(output_filename, None)
 
         except Exception as e:
-            self.logger.error(f"Ошибка при сохранении аномального XLSX файла {output_filename}: {e}")
-            raise # Передаем исключение выше для логгирования в process_file
+            self.logger.error(
+                f"Ошибка при сохранении аномального XLSX файла {output_filename}: {e}")
+            raise  # Передаем исключение выше для логгирования в process_file
 
     def process_file(self):
         """Основной метод обработки файла"""
@@ -370,16 +379,20 @@ class WaterObjectsProcessor:
             # Обрабатываем каждый регион
             for region_name, current_region_df in all_regions_data.items():
                 processed_regions_count += 1
-                self.logger.info(f"Обработка региона: {region_name} ({processed_regions_count}/{len(all_regions_data)})")
+                self.logger.info(
+                    f"Обработка региона: {region_name} ({processed_regions_count}/{len(all_regions_data)})")
 
                 # ---- Разделение на валидные и аномальные данные (Task 2.1, 2.2) ----
-                if current_region_df.shape[0] <= 2: # Только заголовок
-                    self.logger.info(f"Регион '{region_name}' не содержит данных, пропуск.")
+                if current_region_df.shape[0] <= 2:  # Только заголовок
+                    self.logger.info(
+                        f"Регион '{region_name}' не содержит данных, пропуск.")
                     continue
 
                 header_rows = current_region_df.iloc[0:2]
-                data_rows_df = current_region_df.iloc[2:].copy() # Работаем с копией
-                coord_col_index = 4 # Индекс колонки "Место водопользования" (E), 0-based
+                # Работаем с копией
+                data_rows_df = current_region_df.iloc[2:].copy()
+                # Индекс колонки "Место водопользования" (E), 0-based
+                coord_col_index = 4
 
                 valid_rows = []
                 anomalous_rows = []
@@ -395,21 +408,22 @@ class WaterObjectsProcessor:
                         coord_str = str(coord_str).strip()
                         # Проверка 2: Есть ли маркеры?
                         if 'м.' not in coord_str and '°' not in coord_str:
-                             # Не считаем ошибкой, если строка явно не похожа на координаты
-                             # Это может быть адрес.
-                             # parse_coordinates сама вернет [], None
-                             pass # Пропускаем к parse_coordinates
+                            # Не считаем ошибкой, если строка явно не похожа на координаты
+                            # Это может быть адрес.
+                            # parse_coordinates сама вернет [], None
+                            pass  # Пропускаем к parse_coordinates
 
                         # Проверка 3: Парсинг и валидация
-                        parsed_coords, error_reason = parse_coordinates(coord_str)
+                        parsed_coords, error_reason = parse_coordinates(
+                            coord_str)
 
                         if error_reason is not None:
                             # parse_coordinates вернула ошибку
                             anomaly_reason = error_reason
                         elif parsed_coords is None:
-                             # Не должно происходить при новой логике parse_coordinates,
-                             # но на всякий случай
-                             anomaly_reason = "Неизвестная ошибка парсинга"
+                            # Не должно происходить при новой логике parse_coordinates,
+                            # но на всякий случай
+                            anomaly_reason = "Неизвестная ошибка парсинга"
                         # else: # Успешный парсинг (parsed_coords - список, возможно пустой)
                             # Строка валидна с точки зрения формата/диапазона
 
@@ -429,21 +443,26 @@ class WaterObjectsProcessor:
                     anomalous_df = pd.DataFrame(list(anomalous_data))
                     anomalous_df['Причина аномалии'] = list(reasons)
                 else:
-                    anomalous_df = pd.DataFrame(columns=data_rows_df.columns.tolist() + ['Причина аномалии'])
+                    anomalous_df = pd.DataFrame(
+                        columns=data_rows_df.columns.tolist() + ['Причина аномалии'])
 
-                self.logger.info(f"Регион '{region_name}': Найдено валидных строк: {len(valid_df)}, аномальных: {len(anomalous_df)}")
+                self.logger.info(
+                    f"Регион '{region_name}': Найдено валидных строк: {len(valid_df)}, аномальных: {len(anomalous_df)}")
 
                 # ---- Сохранение аномальных данных (Task 2.3, 2.4) ----
                 if not anomalous_df.empty:
                     try:
-                        self.save_anomalous_xlsx(region_name, anomalous_df, header_rows, column_widths, anomalous_xlsx_dir)
+                        self.save_anomalous_xlsx(
+                            region_name, anomalous_df, header_rows, column_widths, anomalous_xlsx_dir)
                     except Exception as e:
-                        self.logger.error(f"Ошибка при сохранении ANO_*.xlsx для региона '{region_name}': {e}")
+                        self.logger.error(
+                            f"Ошибка при сохранении ANO_*.xlsx для региона '{region_name}': {e}")
                 # ---- Конец сохранения аномальных ----
 
                 # ---- Обработка валидных данных ----
                 if valid_df.empty:
-                    self.logger.info(f"В регионе '{region_name}' не найдено валидных строк для дальнейшей обработки.")
+                    self.logger.info(
+                        f"В регионе '{region_name}' не найдено валидных строк для дальнейшей обработки.")
                     # Если и аномальных нет, регион пуст. Если были аномальные, они сохранены.
                     # Если регион был в previous_regions_data, он считается удаленным/очищенным?
                     # Текущая логика сравнения ниже обработает это как изменение (все старые удалены).
@@ -451,7 +470,8 @@ class WaterObjectsProcessor:
                     current_valid_region_df = header_rows.copy()
                 else:
                     # Собираем валидный DataFrame с заголовками
-                    current_valid_region_df = pd.concat([header_rows, valid_df], ignore_index=True)
+                    current_valid_region_df = pd.concat(
+                        [header_rows, valid_df], ignore_index=True)
 
                 # ---- Сравнение и сохранение ИЗМЕНЕННЫХ валидных данных ----
                 region_changed = False
@@ -462,14 +482,16 @@ class WaterObjectsProcessor:
                         current_valid_region_df, previous_regions_data[region_name]
                     )
                     if has_changes:
-                        self.logger.info(f"Обнаружены изменения в ВАЛИДНЫХ данных региона: {region_name}")
+                        self.logger.info(
+                            f"Обнаружены изменения в ВАЛИДНЫХ данных региона: {region_name}")
                         changed_regions_count += 1
                         region_changed = True
                         # Сохраняем отчет об изменениях (только для валидных данных)
                         self.save_changes_report(
                             region_name, new_objects, removed_objects, modified_objects)
                     else:
-                        self.logger.info(f"Валидные данные в регионе '{region_name}' не изменились.")
+                        self.logger.info(
+                            f"Валидные данные в регионе '{region_name}' не изменились.")
                 else:
                     # Новый регион
                     self.logger.info(f"Обнаружен новый регион: {region_name}")
@@ -481,20 +503,24 @@ class WaterObjectsProcessor:
                 # Сохраняем .xlsx и .kml для региона, ТОЛЬКО если он новый или изменился,
                 # и ТОЛЬКО если в нем есть валидные данные
                 if region_changed and not valid_df.empty:
-                    self.logger.info(f"Сохранение валидных данных для региона: {region_name}")
+                    self.logger.info(
+                        f"Сохранение валидных данных для региона: {region_name}")
                     output_xlsx_file = os.path.join(self.output_dir,
-                                                f"{region_name.strip().replace(' ', '_')}.xlsx")
+                                                    f"{region_name.strip().replace(' ', '_')}.xlsx")
                     output_kml_file = os.path.join(kml_output_dir,
-                                                f"{region_name.strip().replace(' ', '_')}.kml")
+                                                   f"{region_name.strip().replace(' ', '_')}.kml")
 
                     # Сохраняем XLSX
                     try:
-                        current_valid_region_df.to_excel(output_xlsx_file, index=False, header=False)
+                        current_valid_region_df.to_excel(
+                            output_xlsx_file, index=False, header=False)
                         # Применяем форматирование XLSX
                         if column_widths is not None:
-                             self.apply_formatting(output_xlsx_file, column_widths)
+                            self.apply_formatting(
+                                output_xlsx_file, column_widths)
                     except Exception as e:
-                        self.logger.error(f"Ошибка при сохранении XLSX для региона '{region_name}': {e}")
+                        self.logger.error(
+                            f"Ошибка при сохранении XLSX для региона '{region_name}': {e}")
 
                     # Создаем KML из валидного DataFrame
                     try:
@@ -502,18 +528,23 @@ class WaterObjectsProcessor:
                         # Это обходной путь, т.к. create_kml_from_coordinates ожидает openpyxl sheet
                         # TODO: Рефакторинг create_kml_from_coordinates для приема DataFrame
                         with pd.ExcelWriter('temp_kml_sheet.xlsx', engine='openpyxl') as writer:
-                            current_valid_region_df.to_excel(writer, sheet_name='Sheet1', index=False, header=False)
+                            current_valid_region_df.to_excel(
+                                writer, sheet_name='Sheet1', index=False, header=False)
                         wb = load_workbook('temp_kml_sheet.xlsx')
                         sheet = wb.active
                         create_kml_from_coordinates(sheet, output_kml_file)
-                        os.remove('temp_kml_sheet.xlsx') # Удаляем временный файл
-                        self.logger.info(f"KML файл для региона '{region_name}' создан: {output_kml_file}")
+                        # Удаляем временный файл
+                        os.remove('temp_kml_sheet.xlsx')
+                        self.logger.info(
+                            f"KML файл для региона '{region_name}' создан: {output_kml_file}")
                     except Exception as e:
-                        self.logger.error(f"Ошибка при создании KML для региона '{region_name}': {e}")
+                        self.logger.error(
+                            f"Ошибка при создании KML для региона '{region_name}': {e}")
                         if os.path.exists('temp_kml_sheet.xlsx'):
                             os.remove('temp_kml_sheet.xlsx')
                 elif not valid_df.empty:
-                     self.logger.info(f"Валидные данные региона '{region_name}' не изменились, сохранение пропущено.")
+                    self.logger.info(
+                        f"Валидные данные региона '{region_name}' не изменились, сохранение пропущено.")
 
                 # ---- Конец обработки валидных данных ----
 
@@ -531,12 +562,14 @@ class WaterObjectsProcessor:
             # Давайте записывать все, где были изменения (включая только аномальные)
             # history['changed_regions'] = changed_regions # Старая логика
             # Собираем список регионов, где были хоть какие-то изменения или аномалии
-            updated_processed_regions = list(all_regions_data.keys()) # Placeholder
+            updated_processed_regions = list(
+                all_regions_data.keys())  # Placeholder
             # TODO: Уточнить, что должно попадать в history['changed_regions']
-            history['processed_regions'] = updated_processed_regions # Записываем все обработанные
+            # Записываем все обработанные
+            history['processed_regions'] = updated_processed_regions
 
             # Сохраняем копию текущего файла в историю
-            history_dir = os.path.join("input", "history") # Изменен путь
+            history_dir = os.path.join("input", "history")  # Изменен путь
             os.makedirs(history_dir, exist_ok=True)
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             history_file = os.path.join(

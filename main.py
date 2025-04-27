@@ -54,7 +54,8 @@ def batch_convert(dir):
 
 
 def main():
-    user_input = input("1. Single convert \n2. Batch convert separated_regions\n")
+    user_input = input(
+        "1. Single convert \n2. Batch convert separated_regions\n")
     if user_input == "1":
         file_name = choose_file()
         if not file_name:
@@ -64,13 +65,15 @@ def main():
         # Specify which "№ п/п" values should have their coordinates sorted
         sort_numbers = []  # Add the specific numbers you want to sort
         filename = file_name.rsplit(".", 1)[0] + ".kml"
-        create_kml_from_coordinates(workbook.active, output_file=filename, sort_numbers=sort_numbers)
+        create_kml_from_coordinates(
+            workbook.active, output_file=filename, sort_numbers=sort_numbers)
 
     elif user_input == "2":
         batch_convert("output/separated_regions")
 
     else:
         print("Invalid input. Please enter 1 or 2.")
+
 
 if __name__ == '__main__':
     main()

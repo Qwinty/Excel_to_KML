@@ -1,5 +1,6 @@
 import unittest
-from xlsx_to_kml import parse_coordinates  # Replace 'your_module' with the actual module name
+# Replace 'your_module' with the actual module name
+from xlsx_to_kml import parse_coordinates
 
 
 class TestParseCoordinates(unittest.TestCase):
@@ -26,7 +27,8 @@ class TestParseCoordinates(unittest.TestCase):
         ]
 
         result_coords, error_reason = parse_coordinates(input_data)
-        self.assertIsNone(error_reason, f"Expected no error, but got: {error_reason}")
+        self.assertIsNone(
+            error_reason, f"Expected no error, but got: {error_reason}")
         self.assertEqual(result_coords, expected_output)
 
     def test_parse_coordinates_case2(self):
@@ -65,8 +67,10 @@ class TestParseCoordinates(unittest.TestCase):
         ]
 
         result_coords, error_reason = parse_coordinates(input_data)
-        self.assertIsNone(error_reason, f"Expected no error, but got: {error_reason}")
-        self.assertEqual(len(result_coords), len(expected_output), f"Expected {len(expected_output)} coords, got {len(result_coords)}")
+        self.assertIsNone(
+            error_reason, f"Expected no error, but got: {error_reason}")
+        self.assertEqual(len(result_coords), len(
+            expected_output), f"Expected {len(expected_output)} coords, got {len(result_coords)}")
         for i, (res, exp) in enumerate(zip(result_coords, expected_output)):
             self.assertEqual(res, exp, f"Mismatch at index {i}")
         # self.assertEqual(result_coords, expected_output) # Use element-wise compare instead
@@ -80,7 +84,8 @@ class TestParseCoordinates(unittest.TestCase):
         ]
 
         result_coords, error_reason = parse_coordinates(input_data)
-        self.assertIsNone(error_reason, f"Expected no error, but got: {error_reason}")
+        self.assertIsNone(
+            error_reason, f"Expected no error, but got: {error_reason}")
         self.assertEqual(result_coords, expected_output)
 
     def test_parse_coordinates_case4(self):
@@ -93,7 +98,8 @@ class TestParseCoordinates(unittest.TestCase):
         ]
 
         result_coords, error_reason = parse_coordinates(input_data)
-        self.assertIsNone(error_reason, f"Expected no error, but got: {error_reason}")
+        self.assertIsNone(
+            error_reason, f"Expected no error, but got: {error_reason}")
         self.assertEqual(result_coords, expected_output)
 
 
