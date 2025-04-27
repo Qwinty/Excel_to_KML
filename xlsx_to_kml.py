@@ -22,12 +22,30 @@ def create_transformer(proj4_str: str) -> Transformer:
     return Transformer.from_crs(crs, "EPSG:4326", always_xy=True)
 
 
-# Определяем строки Proj4
-proj4_strings = json.load(open("data/proj4.json", "r", encoding="utf-8"))
-
-# Создаем трансформеры
-transformers = {name: create_transformer(
-    proj4) for name, proj4 in proj4_strings.items()}
+# Определяем строки Proj4 и создаем трансформеры
+try:
+    with open("data/proj4.json", "r", encoding="utf-8") as f:
+        proj4_strings = json.load(f)
+    # Создаем трансформеры
+    transformers = {name: create_transformer(
+        proj4) for name, proj4 in proj4_strings.items()}
+except FileNotFoundError:
+    logger.critical("Critical Error: Could not find 'data/proj4.json'. This file is required for coordinate transformations. Ensure it exists in the 'data' directory relative to the application.")
+    print("[bold red]Критическая ошибка: Не найден файл 'data/proj4.json'.[/bold red]")
+    print("[bold red]Этот файл необходим для преобразования координат. Убедитесь, что он находится в папке 'data' рядом с программой.[/bold red]")
+    # Exit or raise a custom exception if the program cannot function without it
+    raise SystemExit("Missing essential data file: data/proj4.json")
+except json.JSONDecodeError:
+    logger.critical(
+        "Critical Error: Could not parse 'data/proj4.json'. Check the file format.")
+    print("[bold red]Критическая ошибка: Не удалось прочитать файл 'data/proj4.json'. Проверьте формат файла.[/bold red]")
+    raise SystemExit("Invalid format for essential data file: data/proj4.json")
+except Exception as e:
+    logger.critical(
+        f"Critical Error: An unexpected error occurred while loading projection data: {e}", exc_info=True)
+    print(
+        f"[bold red]Критическая ошибка: Непредвиденная ошибка при загрузке данных проекций: {e}[/bold red]")
+    raise SystemExit("Unexpected error loading projection data")
 
 
 def haversine_distance(lat1, lon1, lat2, lon2):
@@ -353,8 +371,7 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
             continue
         main_name = row[indices["name"]
                         ] if indices["name"] != -1 else f"Row {row_idx}"
-        logger.debug(
-            f"------------\n№ п/п {main_name} | Строка Excel: {row_idx}")
+        logger.info(f"------------")
 
         # Вызываем обновленную функцию парсинга
         coords_array, error_reason = parse_coordinates(coords_str)

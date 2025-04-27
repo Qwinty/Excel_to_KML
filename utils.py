@@ -3,6 +3,7 @@ import math
 import random
 from datetime import datetime
 from pathlib import Path
+import colorlog  # Import colorlog
 
 
 def generate_random_color() -> str:
@@ -26,11 +27,22 @@ def sort_coordinates(coords):
 
 
 def setup_logging(output_dir=None):
-    """Настраивает систему логирования"""
+    """Настраивает систему логирования с цветным выводом в консоль."""
     # Check if the root logger already has handlers - if so, it's already configured
-    if logging.root.handlers:
+    root_logger = logging.getLogger()
+    if root_logger.hasHandlers():
+        # Return the specific logger if already set up
         return logging.getLogger(__name__)
 
+    # --- Configuration ---
+    log_level = logging.DEBUG
+    log_format_plain = '%(asctime)s - %(levelname)s - [%(name)s] %(message)s'
+    log_format_color = (
+        '%(log_color)s%(asctime)s - %(levelname)s - [%(name)s]%(reset)s %(message)s'
+    )
+    date_format = '%Y-%m-%d %H:%M:%S'
+
+    # --- Directory Setup ---
     logs_dir = Path("logs")
     if output_dir:
         logs_dir = Path(output_dir) / "logs"
@@ -40,28 +52,47 @@ def setup_logging(output_dir=None):
     log_file = logs_dir / f"log_{timestamp}.log"
     error_warning_file = logs_dir / f"errors_warnings_{timestamp}.log"
 
-    # Configure the root logger with all logs
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format='%(asctime)s - %(levelname)s - [%(name)s] %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S',
-        handlers=[
-            logging.FileHandler(log_file, encoding='utf-8'),
-            logging.StreamHandler()
-        ]
+    # --- Formatters ---
+    plain_formatter = logging.Formatter(log_format_plain, date_format)
+    colored_formatter = colorlog.ColoredFormatter(
+        log_format_color,
+        datefmt=date_format,
+        reset=True,
+        log_colors={
+            'DEBUG':    'cyan',
+            'INFO':     'green',
+            'WARNING':  'yellow',
+            'ERROR':    'red',
+            'CRITICAL': 'red,bg_white',
+        },
+        secondary_log_colors={},
+        style='%'
     )
 
-    # Create a combined handler for errors and warnings
+    # --- Handlers ---
+    # Console Handler (Colored)
+    console_handler = colorlog.StreamHandler()
+    console_handler.setFormatter(colored_formatter)
+    console_handler.setLevel(log_level)  # Handle all levels in console
+
+    # Main File Handler (Plain)
+    main_file_handler = logging.FileHandler(log_file, encoding='utf-8')
+    main_file_handler.setFormatter(plain_formatter)
+    main_file_handler.setLevel(log_level)  # Log all levels to main file
+
+    # Error/Warning File Handler (Plain)
     error_warning_handler = logging.FileHandler(
         error_warning_file, encoding='utf-8')
-    # This captures both WARNING and ERROR/CRITICAL
+    error_warning_handler.setFormatter(plain_formatter)
+    # Log only WARNING and above
     error_warning_handler.setLevel(logging.WARNING)
-    error_warning_handler.setFormatter(logging.Formatter(
-        '%(asctime)s - %(levelname)s - [%(name)s] %(message)s',
-        '%Y-%m-%d %H:%M:%S'
-    ))
 
-    # Add the handler to the root logger
-    logging.getLogger('').addHandler(error_warning_handler)
+    # --- Root Logger Setup ---
+    # Set root level to lowest level needed by any handler
+    root_logger.setLevel(log_level)
+    root_logger.addHandler(console_handler)
+    root_logger.addHandler(main_file_handler)
+    root_logger.addHandler(error_warning_handler)
 
+    # Return the specific logger for the calling module
     return logging.getLogger(__name__)
