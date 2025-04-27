@@ -27,13 +27,20 @@ def sort_coordinates(coords):
 
 def setup_logging(output_dir=None):
     """Настраивает систему логирования"""
+    # Check if the root logger already has handlers - if so, it's already configured
+    if logging.root.handlers:
+        return logging.getLogger(__name__)
+
     logs_dir = Path("logs")
     if output_dir:
         logs_dir = Path(output_dir) / "logs"
     logs_dir.mkdir(exist_ok=True)
 
-    log_file = logs_dir / f"log_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    log_file = logs_dir / f"log_{timestamp}.log"
+    error_warning_file = logs_dir / f"errors_warnings_{timestamp}.log"
 
+    # Configure the root logger with all logs
     logging.basicConfig(
         level=logging.DEBUG,
         format='%(asctime)s - %(levelname)s - [%(name)s] %(message)s',
@@ -43,4 +50,18 @@ def setup_logging(output_dir=None):
             logging.StreamHandler()
         ]
     )
+
+    # Create a combined handler for errors and warnings
+    error_warning_handler = logging.FileHandler(
+        error_warning_file, encoding='utf-8')
+    # This captures both WARNING and ERROR/CRITICAL
+    error_warning_handler.setLevel(logging.WARNING)
+    error_warning_handler.setFormatter(logging.Formatter(
+        '%(asctime)s - %(levelname)s - [%(name)s] %(message)s',
+        '%Y-%m-%d %H:%M:%S'
+    ))
+
+    # Add the handler to the root logger
+    logging.getLogger('').addHandler(error_warning_handler)
+
     return logging.getLogger(__name__)

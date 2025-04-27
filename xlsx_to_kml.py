@@ -12,11 +12,6 @@ from pyproj import CRS, Transformer
 # Import necessary functions and the setup function from utils
 from utils import generate_random_color, sort_coordinates, setup_logging
 
-# Ensure logging is configured before getting the logger
-# Check if the root logger has any handlers. If not, setup logging.
-if not logging.root.handlers:
-    setup_logging()
-
 # Get the logger instance for this module
 logger = logging.getLogger(__name__)
 
@@ -136,7 +131,6 @@ def process_coordinates(input_string, transformer) -> Tuple[Optional[List[Tuple[
     is_anomalous, reason, anomalous_points = detect_coordinate_anomalies(
         results)
     if is_anomalous:
-        logger.warning(f"{reason} Строка: '{input_string}'")
         return None, reason
 
     return results, None
