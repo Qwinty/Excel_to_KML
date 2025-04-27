@@ -24,15 +24,17 @@ def sort_coordinates(coords):
     centroid = calculate_centroid(coords)
     return sorted(coords, key=lambda coord: calculate_angle(coord, centroid))
 
-def setup_logging():
+def setup_logging(output_dir=None):
     """Настраивает систему логирования"""
     logs_dir = Path("logs")
+    if output_dir:
+        logs_dir = Path(output_dir) / "logs"
     logs_dir.mkdir(exist_ok=True)
 
-    log_file = logs_dir / f"separate_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+    log_file = logs_dir / f"log_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
 
     logging.basicConfig(
-        level=logging.INFO,
+        level=logging.DEBUG,
         format='%(asctime)s - %(levelname)s - [%(name)s] %(message)s',
         handlers=[
             logging.FileHandler(log_file, encoding='utf-8'),

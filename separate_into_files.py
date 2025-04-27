@@ -17,7 +17,7 @@ class WaterObjectsProcessor:
         self.output_dir = os.path.join(output_dir, "separated_regions")
         self.history_file = os.path.join(output_dir, "processing_history.json")
         self.changes_dir = os.path.join(output_dir, "changes_reports")
-        self.logger = setup_logging(output_dir)
+        self.logger = setup_logging()
         self.logger.info("Инициализация WaterObjectsProcessor")
         self.logger.info(f"Входной файл: {self.input_file}")
         self.logger.info(f"Директория для разделенных регионов: {self.output_dir}")
