@@ -317,8 +317,6 @@ def save_region_file_optimized(header_data, region_data, bvu_folder_path, region
 
         # 2) Применение объединений через повторное открытие
         if header_merged_ranges:
-            logging.info(
-                "      Применение объединений заголовка через reopen...")
             wb_norm = openpyxl.load_workbook(filepath)
             ws_norm = wb_norm.active
             for rng in header_merged_ranges:
@@ -328,7 +326,6 @@ def save_region_file_optimized(header_data, region_data, bvu_folder_path, region
                     logging.warning(
                         "        Не удалось объединить %s: %s", rng, e)
             wb_norm.save(filepath)
-            logging.info("      Объединения применены и файл перезаписан.")
 
     except Exception as e:
         logging.exception(

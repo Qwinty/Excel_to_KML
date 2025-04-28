@@ -64,7 +64,7 @@ def haversine_distance(lat1, lon1, lat2, lon2):
     return c * r
 
 
-def detect_coordinate_anomalies(coordinates, threshold_km=5):
+def detect_coordinate_anomalies(coordinates, threshold_km=10):
     """
     Detect anomalous coordinates in a sequence by looking for points that are
     significantly further away from the majority of other points.
@@ -105,7 +105,7 @@ def detect_coordinate_anomalies(coordinates, threshold_km=5):
     if anomalous_points:
         anomaly_details = ', '.join([f"{point_name} ({lat}, {lon})"
                                      for _, point_name, lon, lat in anomalous_points])
-        reason = f"Обнаружены аномальные координаты, значительно удаленные от других: {anomaly_details}"
+        reason = f"Обнаружены аномальные координаты, значительно удаленные от других"
         return True, reason, anomalous_points
 
     return False, None, []
@@ -358,7 +358,7 @@ def get_column_indices(sheet) -> dict:
     original_names = {key: value[0] for key, value in columns.items()}
     for key, value in indices.items():
         if value == -1:
-            print(
+            logger.debug(
                 f"Столбец '{original_names[key]}' (или его альтернативы) не найден.")
 
     return indices
@@ -564,6 +564,8 @@ def save_anomalies_to_excel(anomalies: List[dict], original_basename: str, outpu
                     logger.warning(
                         f"Could not determine length for cell value {cell.value} in column {column}: {e}")
         adjusted_width = (max_length + 2)
+        if adjusted_width > 64:
+            adjusted_width = 64
         ws.column_dimensions[column].width = adjusted_width
 
     try:
