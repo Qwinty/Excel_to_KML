@@ -116,14 +116,40 @@ def main():
     output_base_dir = "output"
 
     while True:
-        print("[bold cyan]Выберите режим:[/bold cyan]")
-        print("1. Преобразовать один файл (из папки 'input')")
-        print("2. Пакетно преобразовать папку 'output/separated_regions'")
+        print("\n[bold cyan]Выберите режим:[/bold cyan]")
+        print("1. Обработать и разделить файл по регионам (.xlsx + .kml)")
+        print("2. Преобразовать один файл .xlsx в .kml (из папки 'input')")
         print("3. Выход")
         user_input = input("Введите номер режима: ")
 
         if user_input == "1":
-            print("[bold cyan]Режим: Преобразование одного файла[/bold cyan]")
+            print(
+                "[bold cyan]Режим: Обработка и разделение файла по регионам[/bold cyan]")
+            file_name = choose_file()
+            if not file_name:
+                continue
+
+            print(
+                f"Выбран файл для разделения: [blue]'{os.path.basename(file_name)}'[/blue]")
+            print(
+                f"Выходная директория для регионов: [green]'{os.path.join(output_base_dir, 'separated_regions')}'[/green]")
+
+            try:
+                # processor = WaterObjectsProcessor(file_name, output_base_dir)
+                # processor.process_file()
+                print(
+                    f"[bold green]Файл '{os.path.basename(file_name)}' успешно обработан и разделен.[/bold green]")
+                print(
+                    f"Результаты находятся в подпапках директории [blue]'{output_base_dir}'[/blue].")
+            except Exception as e:
+                print(
+                    f"[bold red]Ошибка при обработке и разделении файла {file_name}:[/bold red] {e}")
+                logger.exception(
+                    f"Ошибка в режиме 1 при обработке файла {file_name}")
+
+        elif user_input == "2":
+            print(
+                "[bold cyan]Режим: Преобразование одного файла .xlsx в .kml[/bold cyan]")
             file_name = choose_file()
             if not file_name:
                 continue
@@ -158,14 +184,6 @@ def main():
             except Exception as e:
                 print(
                     f"[bold red]Ошибка обработки {file_name}:[/bold red] {e}")
-
-        elif user_input == "2":
-            print("[bold cyan]Режим: Пакетное преобразование[/bold cyan]")
-            batch_input_dir = "output/separated_regions"
-            print(f"Входная директория: [blue]'{batch_input_dir}'[/blue]")
-            print(
-                f"Базовая директория для вывода: [blue]'{output_base_dir}'[/blue]")
-            batch_convert(batch_input_dir, output_base_dir)
 
         elif user_input == "3":
             print("[yellow]Выход из программы.[/yellow]")

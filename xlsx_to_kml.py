@@ -2,9 +2,10 @@ import glob
 import json
 import re
 import math
+import os
 from typing import List, Tuple, Optional
 import simplekml
-from openpyxl import load_workbook
+from openpyxl import load_workbook, Workbook
 import logging
 
 from pyproj import CRS, Transformer
@@ -95,16 +96,14 @@ def detect_coordinate_anomalies(coordinates, threshold_km=5):
         distances.append((i, avg_distance))
 
     # Find points that are much further away from others
-    avg_of_avgs = sum(d for _, d in distances) / len(distances)
-
     for idx, avg_dist in distances:
-        # If a point's average distance to others is much larger than overall average
-        if avg_dist > threshold_km and avg_dist > 3 * avg_of_avgs:
+        # If a point's average distance to others is larger than the threshold
+        if avg_dist > threshold_km:
             point_name, lon, lat = coordinates[idx]
             anomalous_points.append((idx, point_name, lon, lat))
 
     if anomalous_points:
-        anomaly_details = ', '.join([f"точка {point_name} ({lat}, {lon})"
+        anomaly_details = ', '.join([f"{point_name} ({lat}, {lon})"
                                      for _, point_name, lon, lat in anomalous_points])
         reason = f"Обнаружены аномальные координаты, значительно удаленные от других: {anomaly_details}"
         return True, reason, anomalous_points
@@ -306,34 +305,61 @@ def parse_coordinates(coord_str: str) -> Tuple[Optional[List[Tuple[str, float, f
     return result, None
 
 
-def find_column_index(sheet, target_name: str) -> int:
-    """Находит индекс столбца для заданного имени заголовка в строках 1-4."""
-    for row in sheet.iter_rows(min_row=1, max_row=4, values_only=True):
+def find_column_index(sheet, target_names: List[str], exact_match: bool = False) -> int:
+    """Находит индекс столбца для любого из заданных имен заголовков в строках 1-5.
+
+    Args:
+        sheet: Лист Excel для поиска.
+        target_names: Список имен заголовков для поиска.
+        exact_match: Если True, требуется точное совпадение заголовка, иначе ищет подстроку (по умолчанию False).
+
+    Returns:
+        Индекс столбца или -1, если не найдено.
+    """
+    target_names_lower = [name.lower() for name in target_names]
+    for row in sheet.iter_rows(min_row=1, max_row=5, values_only=True):
         for idx, cell in enumerate(row):
-            if cell and target_name.lower() in str(cell).lower():
-                return idx
+            if cell:
+                cell_str_lower = str(cell).lower()
+                for target_name_lower in target_names_lower:
+                    if (exact_match and cell_str_lower == target_name_lower) or \
+                       (not exact_match and target_name_lower in cell_str_lower):
+                        return idx
     return -1
 
 
 def get_column_indices(sheet) -> dict:
     """Получает индексы всех необходимых столбцов."""
     columns = {
-        "coord": "Место водопользования",
-        "name": "№ п/п",
-        "organ": "Уполномоченный орган",
-        "additional_name": "Наименование водного объекта",
-        "goal": "Цель водопользования",
-        "vid": "Вид водопользования",
-        "owner": "Наименование",
-        "start_date": "Дата начала водопользования",
-        "end_date": "Дата окончания водопользования"
+        "name": ["№ п/п"],
+        "coord": ["Место водопользования"],
+        "organ": ["Уполномоченный орган"],
+        "additional_name": ["Наименование водного объекта"],
+        "goal": ["Цель водопользования"],
+        "vid": ["Вид водопользования"],
+        "owner": ["Наименование"],
+        "inn": ["ИНН"],
+        "start_date": ["Дата начала водопользования"],
+        "end_date": ["Дата окончания водопользования", "Дата прекращения действия"]
     }
-    indices = {key: find_column_index(sheet, value)
-               for key, value in columns.items()}
 
+    # Dictionary to specify which columns need exact matching
+    exact_matches = {
+        "owner": True
+    }
+
+    indices = {}
+    for key, value in columns.items():
+        # Use exact_match parameter if specified for this key
+        exact = exact_matches.get(key, False)
+        indices[key] = find_column_index(sheet, value, exact_match=exact)
+
+    # Use the first name from the list for reporting missing columns
+    original_names = {key: value[0] for key, value in columns.items()}
     for key, value in indices.items():
         if value == -1:
-            print(f"Столбец '{columns[key]}' не найден.")
+            print(
+                f"Столбец '{original_names[key]}' (или его альтернативы) не найден.")
 
     return indices
 
@@ -347,10 +373,11 @@ def create_kml_point(kml, name: str, coords: Tuple[float, float], description: s
     point.style.labelstyle.scale = 0.8
 
 
-def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_numbers: List[int] = None) -> None:
-    """Создает KML-файл из листа с координатами."""
+def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_numbers: Optional[List[int]] = None) -> None:
+    """Создает KML-файл из листа с координатами и сохраняет аномалии в отдельный файл."""
     kml = simplekml.Kml()
     indices = get_column_indices(sheet)
+    anomalies_list = []  # Initialize list to store anomalies
 
     # Default min_row value
     min_row = 5
@@ -381,6 +408,13 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
             # Логирование уже произошло внутри parse_coordinates
             logger.warning(
                 f"Строка {row_idx} (№ п/п {main_name}) пропущена из-за ошибки парсинга: {error_reason}")
+            # Add anomaly details to the list
+            anomalies_list.append({
+                "row_index": row_idx,
+                "main_name": main_name,
+                "reason": error_reason,
+                "coords_str": coords_str
+            })
             continue  # Переходим к следующей строке Excel
 
         # Если coords_array это пустой список, значит парсинг прошел успешно, но валидных координат не найдено.
@@ -403,10 +437,11 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
                 ("additional_name", "Наименование водного объекта"),
                 ("goal", "Цель водопользования"),
                 ("vid", "Вид водопользования"),
-                ("coord", "Место водопользования"),
                 ("owner", "Владелец"),
+                ("inn", "ИНН"),
                 ("start_date", "Дата начала водопользования"),
-                ("end_date", "Дата окончания водопользования")
+                ("end_date", "Дата окончания водопользования"),
+                ("coord", "Место водопользования")
             ]:
                 if indices[key] != -1 and row[indices[key]]:
                     # Форматируем даты без времени, если это даты начала или окончания водопользования
@@ -472,3 +507,70 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
                         index += 1
 
     kml.save(output_file)
+
+    if anomalies_list and output_file:
+        # Use current dir if output_file has no path
+        output_dir = os.path.dirname(output_file) or '.'
+        original_basename = os.path.basename(output_file)
+        save_anomalies_to_excel(anomalies_list, original_basename, output_dir)
+    elif anomalies_list and not output_file:
+        logger.warning(
+            "Anomalies were detected, but the original filename was not provided. Anomalies will not be saved to a separate file.")
+
+
+def save_anomalies_to_excel(anomalies: List[dict], original_basename: str, output_directory: str) -> None:
+    """Saves detected anomalies to a separate Excel file in the specified output directory."""
+    if not anomalies:
+        return  # Nothing to save
+
+    # Construct the output filename using the original basename
+    name, ext = os.path.splitext(original_basename)
+    output_filename = f"ANO_{name}.xlsx"
+    # Place it in the output directory
+    output_path = os.path.join(output_directory, output_filename)
+
+    logger.info(f"Saving {len(anomalies)} anomalies to '{output_path}'...")
+
+    # Create a new workbook and select the active worksheet
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Anomalies"
+
+    # Write headers
+    headers = ["Строка в оригинальном файле", "№ п/п", "Причина", "Координаты"]
+    ws.append(headers)
+
+    # Write anomaly data
+    for anomaly in anomalies:
+        ws.append([
+            anomaly.get("row_index", "N/A"),
+            anomaly.get("main_name", "N/A"),
+            anomaly.get("reason", "N/A"),
+            anomaly.get("coords_str", "N/A"),
+        ])
+
+    # Adjust column widths (optional, for better readability)
+    for col in ws.columns:
+        max_length = 0
+        column = col[0].column_letter  # Get the column name
+        for cell in col:
+            # Check if cell.value is not None and convert to string
+            if cell.value is not None:
+                try:
+                    value_str = str(cell.value)
+                    if len(value_str) > max_length:
+                        max_length = len(value_str)
+                except Exception as e:
+                    logger.warning(
+                        f"Could not determine length for cell value {cell.value} in column {column}: {e}")
+        adjusted_width = (max_length + 2)
+        ws.column_dimensions[column].width = adjusted_width
+
+    try:
+        wb.save(output_path)
+        logger.info(f"Anomalies successfully saved to '{output_path}'.")
+    except Exception as e:
+        logger.error(
+            f"Failed to save anomalies to '{output_path}': {e}", exc_info=True)
+        print(
+            f"[bold red]Ошибка при сохранении файла аномалий '{output_path}': {e}[/bold red]")
