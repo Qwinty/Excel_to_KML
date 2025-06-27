@@ -76,7 +76,7 @@ def main():
 
         if user_input == "1":
             print(
-                "[bold cyan]Режим: Разделение файла и преобразование в KML[/bold cyan]")
+                "\n[bold cyan]Режим: Разделение файла и преобразование в KML[/bold cyan]")
             input_file = choose_file()
             if not input_file:
                 continue
@@ -139,6 +139,7 @@ def main():
                         f"Создана базовая папка для KML: {kml_output_dir}")
 
                 conversion_errors = 0
+                anomaly_files_generated = 0  # Initialize counter
 
                 # --- Temporarily suppress console logging --- START
                 root_logger = logging.getLogger()
@@ -198,9 +199,11 @@ def main():
                                 # Load workbook (ensure data_only=True)
                                 workbook = load_workbook(
                                     filename=xlsx_file_path, data_only=True)
-                                # Convert to KML
-                                create_kml_from_coordinates(
+                                # Convert to KML and capture return value
+                                created_anomaly_file = create_kml_from_coordinates(
                                     workbook.active, output_file=kml_file_abs_path)
+                                if created_anomaly_file:
+                                    anomaly_files_generated += 1  # Increment counter
 
                             except Exception as e:
                                 conversion_errors += 1
@@ -237,9 +240,17 @@ def main():
                     print(
                         f"KML файлы находятся в папках внутри [blue]'{kml_output_dir}'[/blue]. Проверьте лог-файл ({logger.handlers[0].baseFilename if logger.handlers else 'log'}) для деталей ошибок.")
 
+                # Report the number of anomaly files generated
+                if anomaly_files_generated > 0:
+                    print(
+                        f"[cyan]Сгенерировано файлов с аномалиями (ANO_*.xlsx):[/cyan] {anomaly_files_generated}")
+                else:
+                    print(
+                        f"[cyan]Файлы с аномалиями (ANO_*.xlsx) не генерировались.[/cyan]")
+
         elif user_input == "2":
             print(
-                "[bold cyan]Режим: Преобразование одного файла .xlsx в .kml[/bold cyan]")
+                "\n[bold cyan]Режим: Преобразование одного файла .xlsx в .kml[/bold cyan]")
             file_name = choose_file()
             if not file_name:
                 continue
@@ -280,7 +291,7 @@ def main():
                     f"Ошибка в режиме 2 при обработке файла {file_name}")
 
         elif user_input == "3":
-            print("[yellow]Выход из программы.[/yellow]")
+            print("\n[yellow]Выход из программы.[/yellow]")
             break
 
         else:

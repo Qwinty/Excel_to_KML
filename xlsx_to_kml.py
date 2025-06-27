@@ -373,8 +373,8 @@ def create_kml_point(kml, name: str, coords: Tuple[float, float], description: s
     point.style.labelstyle.scale = 0.8
 
 
-def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_numbers: Optional[List[int]] = None) -> None:
-    """Создает KML-файл из листа с координатами и сохраняет аномалии в отдельный файл."""
+def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_numbers: Optional[List[int]] = None) -> bool:
+    """Создает KML-файл из листа с координатами и сохраняет аномалии в отдельный файл. Returns True on success, False otherwise."""
     kml = simplekml.Kml()
     indices = get_column_indices(sheet)
     anomalies_list = []  # Initialize list to store anomalies
@@ -508,20 +508,25 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
 
     kml.save(output_file)
 
+    anomaly_file_created = False  # Initialize return value
     if anomalies_list and output_file:
         # Use current dir if output_file has no path
         output_dir = os.path.dirname(output_file) or '.'
         original_basename = os.path.basename(output_file)
-        save_anomalies_to_excel(anomalies_list, original_basename, output_dir)
+        # Capture the return value from save_anomalies_to_excel
+        anomaly_file_created = save_anomalies_to_excel(
+            anomalies_list, original_basename, output_dir)
     elif anomalies_list and not output_file:
         logger.warning(
             "Anomalies were detected, but the original filename was not provided. Anomalies will not be saved to a separate file.")
 
+    return anomaly_file_created  # Return the status
 
-def save_anomalies_to_excel(anomalies: List[dict], original_basename: str, output_directory: str) -> None:
-    """Saves detected anomalies to a separate Excel file in the specified output directory."""
+
+def save_anomalies_to_excel(anomalies: List[dict], original_basename: str, output_directory: str) -> bool:
+    """Saves detected anomalies to a separate Excel file in the specified output directory. Returns True on success, False otherwise."""
     if not anomalies:
-        return  # Nothing to save
+        return False  # Nothing to save
 
     # Construct the output filename using the original basename
     name, ext = os.path.splitext(original_basename)
@@ -571,8 +576,10 @@ def save_anomalies_to_excel(anomalies: List[dict], original_basename: str, outpu
     try:
         wb.save(output_path)
         logger.info(f"Anomalies successfully saved to '{output_path}'.")
+        return True  # Return True on successful save
     except Exception as e:
         logger.error(
             f"Failed to save anomalies to '{output_path}': {e}", exc_info=True)
         print(
             f"[bold red]Ошибка при сохранении файла аномалий '{output_path}': {e}[/bold red]")
+        return False  # Return False on error
