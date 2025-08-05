@@ -5,16 +5,17 @@ import math
 import os
 from typing import List, Tuple, Optional
 import simplekml
-from openpyxl import load_workbook, Workbook
-import logging
+from openpyxl import Workbook
+from utils import setup_logging
+
 
 from pyproj import CRS, Transformer
 
 # Import necessary functions and the setup function from utils
 from utils import generate_random_color, sort_coordinates, setup_logging
 
-# Get the logger instance for this module
-logger = logging.getLogger(__name__)
+# Set up logging
+logger = setup_logging()
 
 
 def create_transformer(proj4_str: str) -> Transformer:
@@ -172,18 +173,25 @@ def parse_coordinates(coord_str: str) -> Tuple[Optional[List[Tuple[str, float, f
     if not coord_str:
         return [], None  # Строка состояла только из пробелов
 
-    # Проверка на МСК координаты
-    if ' м.' in coord_str or ', м.' in coord_str or coord_str.endswith('м.'):
-        # Попытка найти МСК систему в строке
-        found_msk = False
-        for key, transformer in transformers.items():
-            if key in coord_str:
-                logger.debug(f"Обнаружена система координат МСК: {key}")
-                return process_coordinates(coord_str, transformer)
-        # Если 'м.' есть, но система не опознана
-        reason = f"Обнаружены координаты 'м.', но не найдена известная система координат МСК в строке."
-        logger.warning(f"{reason} Строка: '{coord_str[:50]}'")
-        return None, reason
+    # Если обнаружена система координат ГСК-2011, то приоритетно обрабатываем её как ДМС,
+    # даже если в строке позже встречаются координаты МСК с метрами.
+    if 'гск' in coord_str.lower():
+        logger.debug("Обнаружена система координат ГСК-2011. Приоритетная обработка как ДМС.")
+        # Продолжаем, не переходя в блок обработки МСК (метровых координат)
+    else:
+        # Проверка на МСК координаты (метры). Выполняется только если ГСК не обнаружена
+        # и в строке НЕТ градусных координат (символа "°"). При наличии обоих форматов
+        # приоритизируем градусные координаты.
+        if (' м.' in coord_str or ', м.' in coord_str or coord_str.endswith('м.')) and '°' not in coord_str:
+            # Попытка найти МСК систему в строке
+            for key, transformer in transformers.items():
+                if key in coord_str:
+                    logger.debug(f"Обнаружена система координат МСК: {key}")
+                    return process_coordinates(coord_str, transformer)
+            # Если 'м.' есть, но система не опознана
+            reason = "Обнаружены координаты 'м.', но не найдена известная система координат МСК в строке."
+            logger.warning(f"{reason} Строка: '{coord_str[:50]}'")
+            return None, reason
 
     # Проверка на ДМС координаты
     if '°' not in coord_str:
@@ -474,7 +482,7 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
                     sorted_coords = [(lon, lat)
                                      for _, lon, lat in coords_array]
 
-                polygon.outerboundaryis = sorted_coords
+                polygon.outerboundaryis = sorted_coords # type: ignore
                 polygon.style.linestyle.color = color
                 polygon.style.linestyle.width = 3
                 polygon.style.polystyle.color = simplekml.Color.changealphaint(

@@ -102,6 +102,23 @@ class TestParseCoordinates(unittest.TestCase):
             error_reason, f"Expected no error, but got: {error_reason}")
         self.assertEqual(result_coords, expected_output)
 
+    def test_parse_coordinates_case5_gsk_priority(self):
+        input_data = """
+        МСК-02 зона 1  Республика Башкортостан, Уфимский район, Булгаковский сельсовет, д.Камышлы; ГСК-2011: 1. 54°31'20,037"СШ 55°56'36,135"ВД, 2. 54°31'19,76"СШ 55°56'35,77"ВД, 3. 54°31'18,87"СШ 55°56'35,07"ВД, 4. 54°31'18,936"СШ 55°56'34,754"ВД, 5. 54°31'19,84"СШ 55°56'35,459"ВД, 6. 54°31'20,144"СШ 55°56'35,928"ВД; 1: 1359018.948м., 635084.551м.2: 1359012.494м., 635075.902м.3: 1359000.26м., 635048.22м.4: 1358994.55м., 635050.188м.5: 1359006.869м., 635078.303м.6: 1359015.183м., 635087.811м.
+        """
+        expected_output = [
+            ('т.1', 55.943371, 54.522233),
+            ('т.2', 55.943269, 54.522156),
+            ('т.3', 55.943075, 54.521908),
+            ('т.4', 55.942987, 54.521927),
+            ('т.5', 55.943183, 54.522178),
+            ('т.6', 55.943313, 54.522262)
+        ]
+        self.maxDiff = None
+        result_coords, error_reason = parse_coordinates(input_data)
+        self.assertIsNone(error_reason, f"Expected no error, but got: {error_reason}")
+        self.assertEqual(result_coords, expected_output)
+
 
 if __name__ == '__main__':
     unittest.main()

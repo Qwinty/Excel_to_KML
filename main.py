@@ -166,7 +166,7 @@ def main():
                         TextColumn(
                             "[progress.percentage]{task.percentage:>3.0f}%"),
                         # Show count
-                        TextColumn("({task.completed}/{task.total} файлов)"),
+                        TextColumn("({task.completed}/{task.total} файлов) ETA:"),
                         TimeRemainingColumn(),  # Estimated time remaining
                         transient=True  # Clear progress bar on exit
                     ) as progress:

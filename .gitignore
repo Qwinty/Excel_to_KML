@@ -170,3 +170,6 @@ cython_debug/
 *.kml
 *.xls
 map_uploader/browser_session
+# Syncthing caches
+.stversions
+~syncthing*
