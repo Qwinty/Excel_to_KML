@@ -1,5 +1,6 @@
 import glob
 import json
+import logging
 import re
 import math
 import os
@@ -65,7 +66,7 @@ def haversine_distance(lat1, lon1, lat2, lon2):
     return c * r
 
 
-def detect_coordinate_anomalies(coordinates, threshold_km=10):
+def detect_coordinate_anomalies(coordinates, threshold_km=20):
     """
     Detect anomalous coordinates in a sequence by looking for points that are
     significantly further away from the majority of other points.
@@ -113,44 +114,63 @@ def detect_coordinate_anomalies(coordinates, threshold_km=10):
 
 
 def process_coordinates(input_string, transformer) -> Tuple[Optional[List[Tuple[str, float, float]]], Optional[str]]:
-    # Извлекаем координаты из строки
-    coordinates = re.findall(
-        r'(\d+):\s*([-\d.]+)\s*м\.,\s*([-\d.]+)\s*м\.', input_string)
+    """Processes a string with metric coordinates, transforming them and checking for validity."""
+    logger.debug(f"-- Начало обработки МСК для строки: '{input_string[:70]}...' --")
+    
+    msk_regex = r'(\d+):\s*([-\d.]+)\s*м\.,\s*([-\d.]+)\s*м\.'
+    logger.debug(f"1. Поиск координат МСК с помощью regex")
+    coordinates = re.findall(msk_regex, input_string)
+    
+    if not coordinates:
+        logger.debug("  - Координаты МСК не найдены. Возвращаем пустой результат.")
+        return [], None
+
+    logger.debug(f"2. Найдено {len(coordinates)} совпадений: {coordinates}")
     results = []
     for i, x_str, y_str in coordinates:
+        logger.debug(f"\n-- Обработка совпадения {i}: x='{x_str}', y='{y_str}' --")
         try:
             x = float(x_str)
             y = float(y_str)
+            logger.debug(f"  - Конвертировано в float: x={x}, y={y}")
+
             if x == 0 and y == 0:
-                logger.debug(f"Пропуск нулевых координат МСК: {x}, {y}")
+                logger.debug("  - Нулевые координаты (0,0). Пропуск.")
                 continue
-            # Трансформация может вызвать исключение
-            # Note: y, x order might be specific to the projection
+            
+            logger.debug("  - Трансформация в WGS84...")
             lon, lat = transformer.transform(y, x)
+            logger.debug(f"    - Результат трансформации: lon={lon}, lat={lat}")
 
-            # Проверка диапазона (Task 3)
             if not (-90 <= lat <= 90 and -180 <= lon <= 180):
-                reason = f"Координаты МСК вне допустимого диапазона WGS84 ({lat=}, {lon=}) после трансформации."
-                logger.warning(
-                    f"{reason} Исходные: {x=}, {y=}. Строка: '{input_string}'")
-                return None, reason  # Возвращаем ошибку для всей строки
+                reason = f"Координаты МСК вне допустимого диапазона WGS84 (lat={lat}, lon={lon}) после трансформации."
+                logger.warning(f"{reason} Исходные: x={x}, y={y}.")
+                return None, reason
 
-            results.append((f"точка {i}", round(lon, 6), round(lat, 6)))
+            rounded_lon, rounded_lat = round(lon, 6), round(lat, 6)
+            point_name = f"точка {i}"
+            results.append((point_name, rounded_lon, rounded_lat))
+            logger.debug(f"  - Координаты валидны и добавлены в результат: Имя='{point_name}', Lon={rounded_lon}, Lat={rounded_lat}")
+
         except Exception as e:
-            reason = f"Ошибка трансформации МСК координат: {e}. Исходные: {x_str}, {y_str}."
-            logger.warning(f"{reason} Строка: '{input_string}'")
-            return None, reason  # Ошибка трансформации делает всю строку аномальной
+            reason = f"Ошибка трансформации МСК координат: {e}. Исходные: x='{x_str}', y='{y_str}'."
+            logger.error(reason)
+            return None, reason
 
+    logger.debug(f"\n3. Финальная проверка обработанных МСК...")
     if not results:
-        # Если были найдены маркеры 'м.', но после фильтрации (0,0) не осталось валидных точек
-        return [], None  # Успешный парсинг, но нет валидных данных
+        logger.debug("  - После фильтрации (например, нулевых координат) не осталось валидных точек.")
+        return [], None
+    
+    if len(results) >= 3:
+        logger.debug("  - Запуск детектора аномалий для >= 3 точек.")
+        is_anomalous, reason, _ = detect_coordinate_anomalies(results)
+        if is_anomalous:
+            logger.warning(f"  - Детектор аномалий сообщил: {reason}")
+            return None, reason
+        logger.debug("  - Аномалий не обнаружено.")
 
-    # Check for anomalous coordinates
-    is_anomalous, reason, anomalous_points = detect_coordinate_anomalies(
-        results)
-    if is_anomalous:
-        return None, reason
-
+    logger.debug(f"4. Обработка МСК успешно завершена. Найдено {len(results)} валидных координат.")
     return results, None
 
 
@@ -164,154 +184,129 @@ def parse_coordinates(coord_str: str) -> Tuple[Optional[List[Tuple[str, float, f
     """
     if not coord_str or not isinstance(coord_str, str):
         logger.debug("Пустая или нестроковая строка координат")
-        # Не считаем это ошибкой формата, просто нет данных для парсинга.
-        # Функция вызывается только если строка *потенциально* содержит координаты.
-        # Возвращаем пустой список, а не ошибку.
         return [], None
 
     coord_str = coord_str.strip()
-    if not coord_str:
-        return [], None  # Строка состояла только из пробелов
+    logger.debug(f"1. Исходная строка после удаления пробелов: '{coord_str}'")
 
-    # Если обнаружена система координат ГСК-2011, то приоритетно обрабатываем её как ДМС,
-    # даже если в строке позже встречаются координаты МСК с метрами.
+    if not coord_str:
+        logger.debug("Строка пуста после удаления пробелов. Возвращаем пустой результат.")
+        return [], None
+
+    logger.debug("2. Проверка типа координат...")
+
     if 'гск' in coord_str.lower():
-        logger.debug("Обнаружена система координат ГСК-2011. Приоритетная обработка как ДМС.")
-        # Продолжаем, не переходя в блок обработки МСК (метровых координат)
+        logger.debug("  - Обнаружен маркер 'гск'. Приоритет отдается парсингу ДМС (градусы, минуты, секунды).")
     else:
-        # Проверка на МСК координаты (метры). Выполняется только если ГСК не обнаружена
-        # и в строке НЕТ градусных координат (символа "°"). При наличии обоих форматов
-        # приоритизируем градусные координаты.
+        logger.debug("  - Маркер 'гск' не найден.")
         if (' м.' in coord_str or ', м.' in coord_str or coord_str.endswith('м.')) and '°' not in coord_str:
-            # Попытка найти МСК систему в строке
+            logger.debug("  - Обнаружен маркер 'м.' и отсутствует маркер '°'. Попытка парсинга как МСК (метровые).")
             for key, transformer in transformers.items():
                 if key in coord_str:
-                    logger.debug(f"Обнаружена система координат МСК: {key}")
+                    logger.debug(f"    - Найдена известная система координат: '{key}'. Вызов process_coordinates.")
                     return process_coordinates(coord_str, transformer)
-            # Если 'м.' есть, но система не опознана
             reason = "Обнаружены координаты 'м.', но не найдена известная система координат МСК в строке."
             logger.warning(f"{reason} Строка: '{coord_str[:50]}'")
             return None, reason
 
-    # Проверка на ДМС координаты
+    logger.debug("3. Проверка на наличие маркера ДМС ('°')...")
     if '°' not in coord_str:
-        # Если нет ни 'м.', ни '°', считаем формат некорректным для координат
-        # Это может быть просто адрес или описание без координат
-        # Не логируем как ошибку, просто возвращаем пустой список, т.к. координат нет.
-        logger.debug(
-            f"Строка не содержит маркеров координат ('м.', '°'): '{coord_str}'")
-        return [], None  # Нет данных для парсинга
+        logger.debug("  - Маркер '°' не найден. Предполагается, что в строке нет координат. Возвращаем пустой результат.")
+        return [], None
 
-    # Парсинг ДМС
+    logger.debug("  - Маркер '°' найден. Начинается парсинг ДМС.")
     parts = coord_str.split(';')
-    result = []
-    has_valid_dms = False  # Флаг, что хотя бы одни ДМС координаты были успешно распознаны
+    logger.debug(f"4. Строка разделена на {len(parts)} частей по символу ';': {parts}")
 
-    for part in [p.strip() for p in parts if p.strip()]:
-        # Reset name for each part - default to empty
+    result = []
+    has_valid_dms = False
+
+    for i, part in enumerate([p.strip() for p in parts if p.strip()]):
+        logger.debug(f"\n-- Обработка части {i+1}: '{part}' --")
         point_prefix = ""
-        # Регулярное выражение для ДМС: ddd° mm' ss.s" - поддерживает и обычные апострофы/кавычки, и Unicode символы ′/′′
-        coords_match = re.findall(
-            r'(\d+)°\s*(\d+)[\'′]\s*(\d+(?:[.,]\d+)?)[\"″′′]', part)
+        dms_regex = r'(\d+)°\s*(\d+)[\'′]\s*(\d+(?:[.,]\d+)?)[\"″′′]'
+        logger.debug(f"  - Поиск ДМС с помощью regex: {dms_regex}")
+        coords_match = re.findall(dms_regex, part)
 
         if not coords_match:
-            # Часть строки не содержит ДМС, пропускаем её
-            # logger.debug(f"Часть строки не содержит ДМС координат: '{part}'")
+            logger.debug("  - Совпадений ДМС не найдено в этой части. Пропуск.")
             continue
+        logger.debug(f"  - Найдено {len(coords_match)} совпадений ДМС: {coords_match}")
 
-        # Ищем имя только если есть явные маркеры "точка" или "выпуск"
         if "выпуск" in part.lower():
-            # Ищем точное совпадение с номером
             match = re.search(r'(выпуск\s+№?\s*\d+)', part, re.IGNORECASE)
             if match:
-                point_prefix = match.group(1).strip()  # e.g., "выпуск №1"
+                point_prefix = match.group(1).strip()
+                logger.debug(f"  - Извлечен префикс имени: '{point_prefix}'")
         elif "точка" in part.lower():
-            # Ищем точное совпадение с номером
             match = re.search(r'(точка\s*\d+)', part, re.IGNORECASE)
             if match:
-                point_prefix = match.group(1).strip()  # e.g., "точка 1"
-        # Если явных маркеров с номерами нет, point_prefix остается ""
+                point_prefix = match.group(1).strip()
+                logger.debug(f"  - Извлечен префикс имени: '{point_prefix}'")
 
-        # Ожидаем 2 или кратное 2 количество совпадений (широта, долгота)
         if len(coords_match) % 2 != 0:
-            reason = f"Нечетное количество найденных ДМС координат в части: {len(coords_match)}. Ожидается пара (широта, долгота)."
-            logger.warning(f"{reason}")
+            reason = f"Нечетное количество найденных ДМС координат ({len(coords_match)}). Ожидается пара (широта, долгота)."
+            logger.warning(reason)
             return None, reason
 
         if len(coords_match) >= 2:
-            has_valid_dms = True  # Нашли хотя бы одну пару ДМС
-
-            for i in range(0, len(coords_match), 2):
+            has_valid_dms = True
+            logger.debug("  - Найдено достаточное количество совпадений для формирования пар координат.")
+            for j in range(0, len(coords_match), 2):
                 try:
-                    lat_parts = coords_match[i]
-                    lon_parts = coords_match[i+1]
+                    lat_parts = coords_match[j]
+                    lon_parts = coords_match[j+1]
+                    logger.debug(f"    - Пара {j//2 + 1}: Широта (parts)={lat_parts}, Долгота (parts)={lon_parts}")
 
-                    # Конвертируем широту и долготу в десятичные градусы
-                    lat = sum(float(x.replace(',', '.')) / (60 ** j)
-                              for j, x in enumerate(lat_parts))
-                    lon = sum(float(x.replace(',', '.')) / (60 ** j)
-                              for j, x in enumerate(lon_parts))
+                    lat = sum(float(x.replace(',', '.')) / (60 ** k) for k, x in enumerate(lat_parts))
+                    lon = sum(float(x.replace(',', '.')) / (60 ** k) for k, x in enumerate(lon_parts))
+                    logger.debug(f"      - Конвертировано в десятичные: lat={lat}, lon={lon}")
 
-                    # Определяем знак
-                    lat = -lat if "ЮШ" in part or "S" in part else lat
-                    lon = -lon if "ЗД" in part or "W" in part else lon
+                    if "ЮШ" in part or "S" in part:
+                        lat = -lat
+                        logger.debug("      - Обнаружен южный идентификатор (ЮШ/S). Широта инвертирована.")
+                    if "ЗД" in part or "W" in part:
+                        lon = -lon
+                        logger.debug("      - Обнаружен западный идентификатор (ЗД/W). Долгота инвертирована.")
 
-                    # Проверка диапазона (Task 3)
                     if not (-90 <= lat <= 90 and -180 <= lon <= 180):
-                        reason = f"Координаты ДМС вне допустимого диапазона WGS84 ({lat=}, {lon=})."
-                        logger.warning(f"{reason}")
-                        return None, reason  # Вся строка аномальна
+                        reason = f"Координаты ДМС вне допустимого диапазона WGS84 (lat={lat}, lon={lon})."
+                        logger.warning(reason)
+                        return None, reason
 
-                    # --- Revised Point Naming ---
-                    # Start with prefix (or empty)
                     point_specific_name = point_prefix
-                    # If there are multiple pairs in this part AND we extracted a prefix (e.g., "точка 1")
-                    # append a sub-index (e.g., "точка 1.1", "точка 1.2")
                     if len(coords_match) > 2 and point_prefix:
-                        point_specific_name = f"{point_prefix}.{i // 2 + 1}"
-                    # If multiple pairs and NO prefix, use simple index (e.g., "т.1", "т.2")
+                        point_specific_name = f"{point_prefix}.{j // 2 + 1}"
                     elif len(coords_match) > 2 and not point_prefix:
-                        point_specific_name = f"т.{i // 2 + 1}"
-                    # If only one pair (len(coords_match) == 2), point_specific_name remains the prefix (or empty)
+                        point_specific_name = f"т.{j // 2 + 1}"
+                    logger.debug(f"      - Итоговое имя точки: '{point_specific_name.strip()}'")
 
-                    if lat != 0 or lon != 0:  # Пропускаем нулевые координаты
-                        result.append((point_specific_name.strip(),
-                                      round(lon, 6), round(lat, 6)))
+                    if lat != 0 or lon != 0:
+                        result.append((point_specific_name.strip(), round(lon, 6), round(lat, 6)))
+                        logger.debug("      - Координаты не нулевые и добавлены в результат.")
                     else:
-                        logger.debug(
-                            f"Пропуск нулевых ДМС координат: {lat=}, {lon=}")
-
-                except ValueError as e:
-                    reason = f"Ошибка конвертации ДМС координат в числа: {e}."
-                    logger.warning(
-                        f"{reason} Часть строки: '{part}'. Вся строка: '{coord_str[:50]}'")
-                    return None, reason  # Ошибка конвертации делает строку аномальной
+                        logger.debug("      - Координаты нулевые и пропущены.")
                 except Exception as e:
-                    reason = f"Непредвиденная ошибка при обработке ДМС координат: {e}."
-                    logger.warning(
-                        f"{reason} Часть строки: '{part}'. Вся строка: '{coord_str[:50]}'")
-                    return None, reason  # Любая ошибка делает строку аномальной
+                    reason = f"Внутренняя ошибка при обработке пары ДМС: {e}."
+                    logger.error(reason)
+                    return None, reason
 
-    # Если мы дошли сюда, парсинг ДМС прошел без фатальных ошибок
-    # Если были найдены маркеры '°', но не распознано ни одной валидной пары ДМС
-    # Или если были части с ДМС, но все они дали (0,0) и были отброшены
+    logger.debug("\n5. Финальная проверка...")
     if '°' in coord_str and not has_valid_dms:
-        # Это странно: есть градусы, но нет валидных координат. Возможно, ошибка формата, которую regex не поймал.
         reason = "Обнаружен маркер '°', но не найдено валидных пар ДМС координат."
         logger.warning(f"{reason} Строка: '{coord_str[:50]}'")
-        # Считать ли это ошибкой или просто пустым результатом? ТЗ 2.1.1 - вернуть маркер ошибки.
         return None, reason
 
-    # Check for anomalous coordinates
     if result and len(result) >= 3:
-        is_anomalous, reason, anomalous_points = detect_coordinate_anomalies(
-            result)
+        logger.debug("  - Запуск детектора аномалий для >= 3 точек.")
+        is_anomalous, reason, _ = detect_coordinate_anomalies(result)
         if is_anomalous:
+            logger.warning(f"  - Детектор аномалий сообщил: {reason}")
             return None, reason
+        logger.debug("  - Аномалий не обнаружено.")
 
-    # Успешный парсинг (возможно, с пустым результатом, если координаты были (0,0) или не найдены)
+    logger.debug(f"6. Парсинг успешно завершен. Найдено {len(result)} валидных координат.")
     return result, None
-
 
 def find_column_index(sheet, target_names: List[str], exact_match: bool = False) -> int:
     """Находит индекс столбца для любого из заданных имен заголовков в строках 1-5.
@@ -463,12 +458,14 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
                         desc.append(f"{column_name}: {date_str}")
                     else:
                         desc.append(f"{column_name}: {row[indices[key]]}")
+                    desc.append("\nРазработано rudi.ru")
             description = '\n'.join(desc)
 
             # Проверяем, есть ли 16-й столбец
 
             # Проверяем, есть ли более 3 точек и 16-й столбец не равен нулю или пуст
-            if len(coords_array) > 3 and row[indices["goal"]] != "Сброс сточных вод":
+            skip_terms = ["Сброс сточных", "Забор (изъятие)"]
+            if len(coords_array) > 3 and not any(term in row[indices["goal"]] for term in skip_terms):
                 logger.debug(
                     f"Строка {row_idx} (№ п/п {main_name}): Создание полигона")
                 # Создаем полигон
@@ -591,3 +588,35 @@ def save_anomalies_to_excel(anomalies: List[dict], original_basename: str, outpu
         print(
             f"[bold red]Ошибка при сохранении файла аномалий '{output_path}': {e}[/bold red]")
         return False  # Return False on error
+
+if __name__ == "__main__":
+    # Ensure the logger is at DEBUG level for the console when in debug mode
+    # This is a bit of a hack, but it ensures debug messages are seen without changing the global config
+    for handler in logger.root.handlers:
+        if isinstance(handler, logging.StreamHandler):
+            handler.setLevel(logging.DEBUG)
+
+    print("--- Режим отладки парсера координат ---")
+    print("Введите строку для парсинга. Для выхода введите 'exit' или 'quit'.")
+
+    while True:
+        input_string = input("> ")
+        if input_string.lower() in ["exit", "quit"]:
+            break
+
+        if not input_string:
+            continue
+
+        logger.info(f"--- Начало парсинга строки: '{input_string}' ---")
+        coords, reason = parse_coordinates(input_string)
+        print("\n--- Итоговый результат ---")
+
+        if reason:
+            print(f"Ошибка: {reason}")
+        elif not coords:
+            print("Координаты не найдены или являются нулевыми.")
+        else:
+            print(f"Успешно найдено {len(coords)} координат:")
+            for i, (name, lon, lat) in enumerate(coords):
+                print(f"  {i+1}. Имя: '{name}', Долгота: {lon}, Широта: {lat}")
+        print("--------------------------\n")
