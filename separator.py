@@ -1,7 +1,8 @@
 import openpyxl
 import re
 from pathlib import Path
-from openpyxl.utils import get_column_letter
+from openpyxl.utils import get_column_letter  # type: ignore[attr-defined]
+from openpyxl.styles import Font
 import logging  # Импортируем модуль логирования
 import time
 from utils import setup_logging  # Import the setup function
@@ -113,6 +114,14 @@ def split_excel_file_by_merges(input_path, output_base_dir, header_rows_count, m
         )
     ]
 
+    # --- Вставка инструкции ---
+    instruction_display = "Инструкция по использованию KML"
+    instruction_url = "https://www.rudi.ru/kml-instruction.php"
+    num_cols = len(header_rows_data[0]) if header_rows_data else merge_cols[1]
+    instruction_row = [instruction_display] + [None] * (num_cols - 1)
+    # Вставляем инструкцию как 3-ю строку (индекс 2)
+    header_rows_data.insert(2, instruction_row)  # type: ignore[arg-type]
+
     # Ширины столбцов
     source_col_widths = {
         openpyxl.utils.column_index_from_string(col_letter): dim.width
@@ -120,11 +129,29 @@ def split_excel_file_by_merges(input_path, output_base_dir, header_rows_count, m
         if dim.width
     }
 
-    # Слияния внутри шапки
-    header_merged_ranges = [
-        str(rng) for rng in all_merged_ranges
-        if rng.min_row <= header_rows_count
-    ]
+    # --- Корректировка слияний в шапке ---
+    header_merged_ranges = []
+    # 1. Добавляем новое слияние для строки с инструкцией (строка 3)
+    min_col_letter = get_column_letter(merge_cols[0])
+    max_col_letter = get_column_letter(merge_cols[1])
+    header_merged_ranges.append(f"{min_col_letter}3:{max_col_letter}3")
+
+    # 2. Обрабатываем существующие слияния из оригинальной шапки
+    for rng in all_merged_ranges:
+        # Работаем только со слияниями из оригинальной шапки
+        if rng.min_row <= header_rows_count:
+            new_min_row, new_max_row = rng.min_row, rng.max_row
+            
+            # Сдвигаем вниз все, что было на 3-й строке и ниже
+            if new_min_row >= 3:
+                new_min_row += 1
+                new_max_row += 1
+            
+            # Собираем новую координату в виде строки
+            new_coord = f"{get_column_letter(rng.min_col)}{new_min_row}:{get_column_letter(rng.max_col)}{new_max_row}"
+            header_merged_ranges.append(new_coord)
+    
+
 
     meta_wb.close()
 
@@ -325,6 +352,16 @@ def save_region_file_optimized(header_data, region_data, bvu_folder_path, region
                 except Exception as e:
                     logging.warning(
                         "        Не удалось объединить %s: %s", rng, e)
+
+            # --- Добавление гиперссылки на строку инструкции ---
+            try:
+                link_cell = ws_norm.cell(row=3, column=1)
+                link_cell.value = "Инструкция по использованию KML"
+                link_cell.hyperlink = "https://www.rudi.ru/kml-instruction.php"
+                link_cell.font = Font(color="0000FF", underline="single")
+            except Exception as e:
+                logging.warning("        Не удалось добавить гиперссылку: %s", e)
+
             wb_norm.save(filepath)
 
     except Exception as e:

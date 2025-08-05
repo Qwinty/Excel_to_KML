@@ -30,8 +30,7 @@ try:
     with open("data/proj4.json", "r", encoding="utf-8") as f:
         proj4_strings = json.load(f)
     # Создаем трансформеры
-    transformers = {name: create_transformer(
-        proj4) for name, proj4 in proj4_strings.items()}
+    transformers = {name: create_transformer(proj4) for name, proj4 in proj4_strings.items()}
 except FileNotFoundError:
     logger.critical("Critical Error: Could not find 'data/proj4.json'. This file is required for coordinate transformations. Ensure it exists in the 'data' directory relative to the application.")
     print("[bold red]Критическая ошибка: Не найден файл 'data/proj4.json'.[/bold red]")
@@ -458,8 +457,9 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
                         desc.append(f"{column_name}: {date_str}")
                     else:
                         desc.append(f"{column_name}: {row[indices[key]]}")
-                    desc.append("\nРазработано rudi.ru")
+            
             description = '\n'.join(desc)
+            description += "\n == Разработано RUDI.ru =="
 
             # Проверяем, есть ли 16-й столбец
 
