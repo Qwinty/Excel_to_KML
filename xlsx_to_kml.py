@@ -217,80 +217,109 @@ def parse_coordinates(coord_str: str) -> Tuple[Optional[List[Tuple[str, float, f
     parts = coord_str.split(';')
     logger.debug(f"4. Строка разделена на {len(parts)} частей по символу ';': {parts}")
 
-    result = []
-    has_valid_dms = False
-
+    # Сначала собираем все DMS координаты из всех частей
+    all_dms_coords = []
+    dms_regex = r'(\d+)[°º]\s*(\d+)[\'′΄]\s*(\d+(?:[.,]\d+)?)[\"″′′˝]'
+    
     for i, part in enumerate([p.strip() for p in parts if p.strip()]):
         logger.debug(f"\n-- Обработка части {i+1}: '{part}' --")
-        point_prefix = ""
-        dms_regex = r'(\d+)°\s*(\d+)[\'′]\s*(\d+(?:[.,]\d+)?)[\"″′′]'
         logger.debug(f"  - Поиск ДМС с помощью regex: {dms_regex}")
         coords_match = re.findall(dms_regex, part)
+        
+        if coords_match:
+            logger.debug(f"  - Найдено {len(coords_match)} совпадений ДМС: {coords_match}")
+            # Добавляем информацию о том, откуда взята координата (для определения широты/долготы)
+            for coord in coords_match:
+                coord_info = {
+                    'coord': coord,
+                    'part': part,
+                    'part_index': i
+                }
+                all_dms_coords.append(coord_info)
+        else:
+            logger.debug("  - Совпадений ДМС не найдено в этой части.")
+    
+    logger.debug(f"\n5. Собрано всего ДМС координат: {len(all_dms_coords)}")
+    
+    if not all_dms_coords:
+        logger.debug("  - ДМС координаты не найдены. Возвращаем пустой результат.")
+        return [], None
+    
+    # Проверяем четность количества координат
+    if len(all_dms_coords) % 2 != 0:
+        reason = f"Нечетное количество найденных ДМС координат ({len(all_dms_coords)}). Ожидается пара (широта, долгота)."
+        logger.warning(reason)
+        return None, reason
 
-        if not coords_match:
-            logger.debug("  - Совпадений ДМС не найдено в этой части. Пропуск.")
-            continue
-        logger.debug(f"  - Найдено {len(coords_match)} совпадений ДМС: {coords_match}")
+    result = []
+    has_valid_dms = True
+    
+    # Формируем пары координат
+    for j in range(0, len(all_dms_coords), 2):
+        try:
+            lat_info = all_dms_coords[j]
+            lon_info = all_dms_coords[j+1]
+            
+            lat_parts = lat_info['coord']
+            lon_parts = lon_info['coord']
+            
+            logger.debug(f"\n-- Пара {j//2 + 1}: --")
+            logger.debug(f"  - Широта (parts)={lat_parts} из части '{lat_info['part'][:50]}...'")
+            logger.debug(f"  - Долгота (parts)={lon_parts} из части '{lon_info['part'][:50]}...'")
 
-        if "выпуск" in part.lower():
-            match = re.search(r'(выпуск\s+№?\s*\d+)', part, re.IGNORECASE)
-            if match:
-                point_prefix = match.group(1).strip()
-                logger.debug(f"  - Извлечен префикс имени: '{point_prefix}'")
-        elif "точка" in part.lower():
-            match = re.search(r'(точка\s*\d+)', part, re.IGNORECASE)
-            if match:
-                point_prefix = match.group(1).strip()
-                logger.debug(f"  - Извлечен префикс имени: '{point_prefix}'")
+            lat = sum(float(x.replace(',', '.')) / (60 ** k) for k, x in enumerate(lat_parts))
+            lon = sum(float(x.replace(',', '.')) / (60 ** k) for k, x in enumerate(lon_parts))
+            logger.debug(f"  - Конвертировано в десятичные: lat={lat}, lon={lon}")
 
-        if len(coords_match) % 2 != 0:
-            reason = f"Нечетное количество найденных ДМС координат ({len(coords_match)}). Ожидается пара (широта, долгота)."
-            logger.warning(reason)
+            # Проверяем индикаторы направления в обеих частях
+            combined_text = lat_info['part'] + " " + lon_info['part']
+            
+            if "ЮШ" in combined_text or "S" in combined_text:
+                lat = -lat
+                logger.debug("  - Обнаружен южный идентификатор (ЮШ/S). Широта инвертирована.")
+            if "ЗД" in combined_text or "W" in combined_text:
+                lon = -lon
+                logger.debug("  - Обнаружен западный идентификатор (ЗД/W). Долгота инвертирована.")
+
+            if not (-90 <= lat <= 90 and -180 <= lon <= 180):
+                reason = f"Координаты ДМС вне допустимого диапазона WGS84 (lat={lat}, lon={lon})."
+                logger.warning(reason)
+                return None, reason
+
+            # Определяем имя точки из контекста
+            point_name = f"точка {j//2 + 1}"
+            
+            # Ищем номер точки в тексте
+            for info in [lat_info, lon_info]:
+                part = info['part']
+                # Поиск номера точки
+                point_match = re.search(r'(\d+)\.\s*\d+°', part)
+                if point_match:
+                    point_num = point_match.group(1)
+                    point_name = f"точка {point_num}"
+                    break
+                    
+                # Альтернативный поиск "точка N"
+                alt_match = re.search(r'точка\s*(\d+)', part, re.IGNORECASE)
+                if alt_match:
+                    point_num = alt_match.group(1)
+                    point_name = f"точка {point_num}"
+                    break
+
+            logger.debug(f"  - Итоговое имя точки: '{point_name}'")
+
+            if lat != 0 or lon != 0:
+                result.append((point_name, round(lon, 6), round(lat, 6)))
+                logger.debug("  - Координаты не нулевые и добавлены в результат.")
+            else:
+                logger.debug("  - Координаты нулевые и пропущены.")
+                
+        except Exception as e:
+            reason = f"Внутренняя ошибка при обработке пары ДМС: {e}."
+            logger.error(reason)
             return None, reason
 
-        if len(coords_match) >= 2:
-            has_valid_dms = True
-            logger.debug("  - Найдено достаточное количество совпадений для формирования пар координат.")
-            for j in range(0, len(coords_match), 2):
-                try:
-                    lat_parts = coords_match[j]
-                    lon_parts = coords_match[j+1]
-                    logger.debug(f"    - Пара {j//2 + 1}: Широта (parts)={lat_parts}, Долгота (parts)={lon_parts}")
-
-                    lat = sum(float(x.replace(',', '.')) / (60 ** k) for k, x in enumerate(lat_parts))
-                    lon = sum(float(x.replace(',', '.')) / (60 ** k) for k, x in enumerate(lon_parts))
-                    logger.debug(f"      - Конвертировано в десятичные: lat={lat}, lon={lon}")
-
-                    if "ЮШ" in part or "S" in part:
-                        lat = -lat
-                        logger.debug("      - Обнаружен южный идентификатор (ЮШ/S). Широта инвертирована.")
-                    if "ЗД" in part or "W" in part:
-                        lon = -lon
-                        logger.debug("      - Обнаружен западный идентификатор (ЗД/W). Долгота инвертирована.")
-
-                    if not (-90 <= lat <= 90 and -180 <= lon <= 180):
-                        reason = f"Координаты ДМС вне допустимого диапазона WGS84 (lat={lat}, lon={lon})."
-                        logger.warning(reason)
-                        return None, reason
-
-                    point_specific_name = point_prefix
-                    if len(coords_match) > 2 and point_prefix:
-                        point_specific_name = f"{point_prefix}.{j // 2 + 1}"
-                    elif len(coords_match) > 2 and not point_prefix:
-                        point_specific_name = f"т.{j // 2 + 1}"
-                    logger.debug(f"      - Итоговое имя точки: '{point_specific_name.strip()}'")
-
-                    if lat != 0 or lon != 0:
-                        result.append((point_specific_name.strip(), round(lon, 6), round(lat, 6)))
-                        logger.debug("      - Координаты не нулевые и добавлены в результат.")
-                    else:
-                        logger.debug("      - Координаты нулевые и пропущены.")
-                except Exception as e:
-                    reason = f"Внутренняя ошибка при обработке пары ДМС: {e}."
-                    logger.error(reason)
-                    return None, reason
-
-    logger.debug("\n5. Финальная проверка...")
+    logger.debug("\n6. Финальная проверка...")
     if '°' in coord_str and not has_valid_dms:
         reason = "Обнаружен маркер '°', но не найдено валидных пар ДМС координат."
         logger.warning(f"{reason} Строка: '{coord_str[:50]}'")
@@ -304,7 +333,7 @@ def parse_coordinates(coord_str: str) -> Tuple[Optional[List[Tuple[str, float, f
             return None, reason
         logger.debug("  - Аномалий не обнаружено.")
 
-    logger.debug(f"6. Парсинг успешно завершен. Найдено {len(result)} валидных координат.")
+    logger.debug(f"7. Парсинг успешно завершен. Найдено {len(result)} валидных координат.")
     return result, None
 
 def find_column_index(sheet, target_names: List[str], exact_match: bool = False) -> int:

@@ -78,15 +78,6 @@
     pip install -r requirements.txt
     ```
 
-    **Зависимости:**
-
-    - `pandas`
-    - `openpyxl`
-    - `undetected_chromedriver`
-    - `pyproj`
-    - `simplekml`
-    - `selenium`
-
     Рекомендуется Python 3.9+.
 
 3. **Подготовка данных:**
