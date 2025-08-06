@@ -1,9 +1,13 @@
 import glob
 import os
 import logging
-from dataclasses import dataclass
+import time
+import multiprocessing
+from concurrent.futures import ProcessPoolExecutor, as_completed
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional, List
+from typing import Optional, List, Dict, Tuple, Any
+from collections import defaultdict
 
 from openpyxl import load_workbook
 from rich.console import Console
@@ -14,7 +18,7 @@ from rich.progress import Progress, BarColumn, TextColumn, TimeRemainingColumn, 
 from rich.text import Text
 from rich import traceback
 
-from xlsx_to_kml import create_kml_from_coordinates, parse_coordinates, process_coordinates, transformers, create_transformer
+from xlsx_to_kml import create_kml_from_coordinates, parse_coordinates, process_coordinates, transformers, create_transformer, ConversionResult
 from separator import split_excel_file_by_merges
 from utils import setup_logging
 
@@ -35,9 +39,356 @@ class Config:
     single_kml_output_dir: str = "output/kml_single"
     header_rows_count: int = 5
     merge_columns: tuple = (1, 7)  # Columns A-G
+    max_parallel_workers: Optional[int] = None  # None = auto-detect based on CPU count
+    suppress_debug_in_parallel: bool = True  # Suppress debug logging during parallel processing for better performance
 
 # Global config instance
 config = Config()
+
+# --- Statistics Data Structures ---
+# ConversionResult is now imported from xlsx_to_kml
+
+@dataclass
+class ProcessingStats:
+    """Aggregate statistics for the entire processing session."""
+    start_time: float = field(default_factory=time.time)
+    regions_detected: int = 0
+    files_created: List[str] = field(default_factory=list)
+    file_results: Dict[str, ConversionResult] = field(default_factory=dict)
+    conversion_errors: int = 0
+    anomaly_files_generated: int = 0
+    
+    def add_file_result(self, result: ConversionResult):
+        """Add a file conversion result to the statistics."""
+        self.file_results[result.filename] = result
+    
+    def get_processing_time(self) -> float:
+        """Get total processing time in seconds."""
+        return time.time() - self.start_time
+    
+    def get_total_stats(self) -> Dict[str, int]:
+        """Calculate aggregate statistics across all files."""
+        totals = {
+            'total_files': len(self.file_results),
+            'total_rows': 0,
+            'successful_rows': 0,
+            'failed_rows': 0,
+            'anomaly_rows': 0
+        }
+        
+        for result in self.file_results.values():
+            totals['total_rows'] += result.total_rows
+            totals['successful_rows'] += result.successful_rows
+            totals['failed_rows'] += result.failed_rows
+            totals['anomaly_rows'] += result.anomaly_rows
+        
+        return totals
+    
+    def get_most_problematic_files(self, top_n: int = 5) -> List[ConversionResult]:
+        """Get the most problematic files sorted by failure rate."""
+        files_with_issues = [
+            result for result in self.file_results.values() 
+            if result.total_rows > 0 and result.failure_rate > 0
+        ]
+        
+        # Sort by failure rate (highest first)
+        sorted_files = sorted(files_with_issues, key=lambda x: x.failure_rate, reverse=True)
+        return sorted_files[:top_n]
+    
+    def calculate_quality_score(self) -> Dict[str, Any]:
+        """Calculate data quality scores."""
+        totals = self.get_total_stats()
+        
+        if totals['total_rows'] == 0:
+            return {'parsing': 0, 'completeness': 0, 'consistency': 0, 'overall': 0}
+        
+        # Coordinate parsing score (0-100)
+        parsing_score = (totals['successful_rows'] / totals['total_rows']) * 100
+        
+        # Data completeness score (simplified - based on rows with any data)
+        # For now, assume any processed row has some completeness
+        completeness_score = max(0, 100 - (totals['failed_rows'] / totals['total_rows']) * 50)
+        
+        # Format consistency score (based on error variety)
+        all_errors = []
+        for result in self.file_results.values():
+            all_errors.extend(result.error_reasons)
+        
+        # Simple consistency metric: fewer unique error types = more consistent
+        unique_errors = len(set(all_errors)) if all_errors else 0
+        
+        # Analyze error types for user-friendly display
+        error_analysis = None
+        if all_errors:
+            from collections import Counter
+            import re
+            
+            # Group similar errors by pattern
+            grouped_errors = Counter()
+            error_patterns = {
+                r'Нечетное количество найденных ДМС координат \(\d+\)': 'Нечетное количество найденных ДМС координат',
+                r'Нечетное количество найденных ЛМС координат \(\d+\)': 'Нечетное количество найденных ЛМС координат', 
+                r'Координаты ДМС вне допустимого диапазона WGS84 \(lat=[-\d.]+, lon=[-\d.]+\)': 'Координаты ДМС вне допустимого диапазона WGS84',
+                r'Координаты МСК вне допустимого диапазона WGS84 \(lat=[-\d.]+, lon=[-\d.]+\)': 'Координаты МСК вне допустимого диапазона WGS84',
+                r'Ошибка трансформации МСК координат: .+': 'Ошибка трансформации МСК координат',
+                r'Обнаружены аномальные координаты, значительно удаленные от других': 'Обнаружены аномальные координаты, значительно удаленные от других'
+            }
+            
+            for error in all_errors:
+                grouped = False
+                for pattern, group_name in error_patterns.items():
+                    if re.match(pattern, error):
+                        grouped_errors[group_name] += 1
+                        grouped = True
+                        break
+                if not grouped:
+                    # If no pattern matches, use the original error (truncated)
+                    display_error = error[:80] + "..." if len(error) > 80 else error
+                    grouped_errors[display_error] += 1
+            
+            error_analysis = {
+                'total_errors': len(all_errors),
+                'unique_types': len(grouped_errors),
+                'top_errors': grouped_errors.most_common(10)  # Top 10 most frequent error groups
+            }
+        
+        # More reasonable penalty: max penalty should be around 50%, not 100%
+        # This way, even with many error types, we don't go to 0%
+        consistency_score = max(20, 100 - (unique_errors * 2))  # 2% penalty per unique error type, minimum 20%
+        
+        # Overall weighted score
+        overall = (parsing_score * 0.5 + completeness_score * 0.3 + consistency_score * 0.2)
+        
+        return {
+            'parsing': round(parsing_score, 1),
+            'completeness': round(completeness_score, 1),
+            'consistency': round(consistency_score, 1),
+            'overall': round(overall, 1),
+            'error_analysis': error_analysis
+        }
+
+
+def process_file_worker(args: Tuple[str, str, str, str, bool]) -> Tuple[bool, str, Optional[ConversionResult], Optional[str]]:
+    """
+    Worker function for parallel file processing.
+    
+    Args:
+        args: Tuple containing (xlsx_file_path, kml_file_path, xlsx_output_dir, kml_output_dir, suppress_debug)
+    
+    Returns:
+        Tuple of (success, filename, conversion_result, error_message)
+    """
+    xlsx_file_path, kml_file_path, xlsx_output_dir, kml_output_dir, suppress_debug = args
+    
+    # Conditionally suppress detailed debug logging during parallel processing
+    original_levels = {}
+    original_root_level = None
+    
+    if suppress_debug:
+        # Target multiple potential logger names
+        logger_names = ['xlsx_to_kml', 'utils', '__main__']
+        
+        for logger_name in logger_names:
+            target_logger = logging.getLogger(logger_name)
+            original_levels[logger_name] = target_logger.level
+            target_logger.setLevel(logging.ERROR)  # Only show warnings and errors
+        
+        # Also suppress root logger debug output
+        root_logger = logging.getLogger()
+        original_root_level = root_logger.level
+        if original_root_level < logging.WARNING:
+            root_logger.setLevel(logging.WARNING)
+    
+    try:
+        # Extract filename for logging
+        filename = Path(xlsx_file_path).name
+        
+        # Ensure the target directory for the KML file exists
+        Path(kml_file_path).parent.mkdir(parents=True, exist_ok=True)
+        
+        # Load workbook (ensure data_only=True)
+        workbook = load_workbook(filename=xlsx_file_path, data_only=True, read_only=True)
+        
+        # Perform KML conversion
+        conversion_result = create_kml_from_coordinates(
+            workbook.active, 
+            output_file=kml_file_path,
+            filename=filename
+        )
+        
+        return True, filename, conversion_result, None
+        
+    except Exception as e:
+        filename = Path(xlsx_file_path).name if xlsx_file_path else "Unknown"
+        error_message = f"Error converting {filename}: {str(e)}"
+        return False, filename, None, error_message
+    finally:
+        # Restore original logging levels if they were modified
+        if suppress_debug and original_levels:
+            for logger_name, original_level in original_levels.items():
+                logging.getLogger(logger_name).setLevel(original_level)
+            
+            # Restore root logger level if it was modified
+            if original_root_level is not None and original_root_level < logging.WARNING:
+                logging.getLogger().setLevel(original_root_level)
+
+
+def display_error_analysis(error_analysis: Dict[str, Any]):
+    """Display error analysis in a user-friendly table format."""
+    if not error_analysis or not error_analysis.get('top_errors'):
+        return
+    
+    error_table = Table(show_header=True, header_style="bold yellow")
+    error_table.add_column("№", width=3, justify="center")
+    error_table.add_column("Тип ошибки", min_width=40)
+    error_table.add_column("Количество", justify="right", style="red")
+    error_table.add_column("Процент", justify="right", style="bright_yellow")
+    
+    total_errors = error_analysis['total_errors']
+    
+    for i, (error_type, count) in enumerate(error_analysis['top_errors'], 1):
+        percentage = (count / total_errors) * 100
+        # Truncate very long error messages for better display
+        display_error = error_type[:60] + "..." if len(error_type) > 60 else error_type
+        error_table.add_row(
+            str(i),
+            display_error,
+            str(count),
+            f"{percentage:.1f}%"
+        )
+    
+    # Summary row
+    if len(error_analysis['top_errors']) < error_analysis['unique_types']:
+        remaining_types = error_analysis['unique_types'] - len(error_analysis['top_errors'])
+        remaining_count = total_errors - sum(count for _, count in error_analysis['top_errors'])
+        remaining_percentage = (remaining_count / total_errors) * 100 if total_errors > 0 else 0
+        
+        error_table.add_row(
+            "...",
+            f"Другие типы ошибок ({remaining_types} типов)",
+            str(remaining_count),
+            f"{remaining_percentage:.1f}%",
+            style="dim"
+        )
+    
+    console.print(Panel(
+        error_table,
+        title=f"🔍 Анализ ошибок ({error_analysis['unique_types']} уникальных типов, {total_errors} всего)",
+        border_style="yellow"
+    ))
+
+
+def display_processing_statistics(stats: ProcessingStats):
+    """Display comprehensive processing statistics using Rich components."""
+    if not stats.file_results:
+        console.print("[yellow]Нет данных для отображения статистики.[/yellow]")
+        return
+    
+    totals = stats.get_total_stats()
+    processing_time = stats.get_processing_time()
+    quality_scores = stats.calculate_quality_score()
+    
+    # Format processing time
+    if processing_time < 60:
+        time_str = f"{processing_time:.1f}с"
+    else:
+        minutes = int(processing_time // 60)
+        seconds = int(processing_time % 60)
+        time_str = f"{minutes}м {seconds}с"
+    
+    # 1. Processing Summary
+    success_rate = (totals['successful_rows'] / totals['total_rows'] * 100) if totals['total_rows'] > 0 else 0
+    
+    summary_table = Table(show_header=False, box=None, padding=(0, 1))
+    summary_table.add_column("Параметр", style="bold", width=25)
+    summary_table.add_column("Значение", style="green")
+    
+    summary_table.add_row("Файлов обнаружено:", f"{stats.regions_detected} регионов")
+    if stats.anomaly_files_generated > 0:
+        summary_table.add_row("Файлы с аномалиями:", f"{stats.anomaly_files_generated} создано")
+    summary_table.add_row("Объектов обработано:", f"{totals['total_rows']} строк → {totals['successful_rows']} успешно ({success_rate:.1f}%)")
+    summary_table.add_row("Время обработки:", time_str)
+    
+    console.print(Panel(
+        summary_table,
+        title="📊 Сводка обработки",
+        border_style="cyan"
+    ))
+    
+    # 2. Most Problematic Files (only if there are issues)
+    problematic_files = stats.get_most_problematic_files(5)
+    if problematic_files:
+        problem_table = Table(show_header=True, header_style="bold red")
+        problem_table.add_column("№", width=3, justify="center")
+        problem_table.add_column("Файл", min_width=30)
+        problem_table.add_column("Проблемные строки", justify="right", style="red")
+        problem_table.add_column("Процент", justify="right", style="yellow")
+        
+        for i, result in enumerate(problematic_files, 1):
+            # Use only failed_rows since it already contains all problematic rows
+            problem_table.add_row(
+                str(i),
+                result.filename,
+                f"{result.failed_rows}/{result.total_rows} объектов",
+                f"{result.failure_rate:.1f}%"
+            )
+        
+        console.print(Panel(
+            problem_table,
+            title="⚠️ Наиболее проблемные файлы",
+            border_style="red"
+        ))
+    
+    # 3. Data Quality Score
+    quality_table = Table(show_header=False, box=None, padding=(0, 1))
+    quality_table.add_column("Критерий", style="bold", width=25)
+    quality_table.add_column("Оценка", style="white", width=8, justify="right")
+    quality_table.add_column("Прогресс", min_width=25)
+    
+    # Create progress bars for each quality metric
+    def create_progress_bar(value: float, width: int = 20) -> str:
+        filled = int(value / 5)  # Each block represents 5%
+        empty = width - filled
+        return "█" * filled + "▌" * (1 if value % 5 >= 2.5 else 0) + "░" * (empty - (1 if value % 5 >= 2.5 else 0))
+    
+    # Overall quality score with color coding
+    overall_score = quality_scores['overall']
+    if overall_score >= 90:
+        overall_color = "green"
+        overall_grade = "Отлично"
+    elif overall_score >= 80:
+        overall_color = "bright_green"
+        overall_grade = "Хорошо"
+    elif overall_score >= 70:
+        overall_color = "yellow"
+        overall_grade = "Удовлетворительно"
+    elif overall_score >= 60:
+        overall_color = "bright_red"
+        overall_grade = "Плохо"
+    else:
+        overall_color = "red"
+        overall_grade = "Очень плохо"
+    
+    console.print(Panel(
+        f"[bold {overall_color}]Общая оценка качества: {overall_score:.0f}/100 ({overall_grade})[/bold {overall_color}]\n\n"
+        f"• Парсинг координат: {quality_scores['parsing']:.1f}% {create_progress_bar(quality_scores['parsing'])} ({quality_scores['parsing']:.0f}/100)\n"
+        f"• Полнота данных: {quality_scores['completeness']:.1f}% {create_progress_bar(quality_scores['completeness'])} ({quality_scores['completeness']:.0f}/100)\n"
+        f"• Согласованность форматов: {quality_scores['consistency']:.1f}% {create_progress_bar(quality_scores['consistency'])} ({quality_scores['consistency']:.0f}/100)",
+        title="🎯 Оценка качества данных",
+        border_style="blue"
+    ))
+    
+    # 4. Error Analysis Table (if there are errors to analyze)
+    if quality_scores.get('error_analysis'):
+        console.print()  # Add spacing
+        display_error_analysis(quality_scores['error_analysis'])
+    
+    # 5. Additional info if there were conversion errors
+    if stats.conversion_errors > 0:
+        console.print(f"[yellow]⚠️ Дополнительно: {stats.conversion_errors} файлов не удалось обработать из-за критических ошибок.[/yellow]")
+
+
+
 
 
 def choose_file() -> Optional[str]:
@@ -336,6 +687,9 @@ def main():
 
             input_filename = Path(input_file).name
             
+            # Initialize statistics collection
+            processing_stats = ProcessingStats()
+            
             # Display processing info
             info_table = Table(show_header=False, box=None)
             info_table.add_column("Параметр", style="bold", width=30)
@@ -367,6 +721,11 @@ def main():
                     header_rows_count=config.header_rows_count,
                     merge_cols=config.merge_columns
                 )
+                
+                # Count regions created
+                separated_files = list(Path(config.xlsx_output_dir).rglob('*.xlsx'))
+                processing_stats.regions_detected = len(separated_files)
+                processing_stats.files_created = [str(f) for f in separated_files]
                 
                 separation_success = True
                 
@@ -415,7 +774,6 @@ def main():
                 logger.info(f"Создана базовая папка для KML: {config.kml_output_dir}")
 
                 conversion_errors = 0
-                anomaly_files_generated = 0
 
                 # --- Temporarily suppress console logging --- START
                 root_logger = logging.getLogger()
@@ -450,42 +808,74 @@ def main():
                         task = progress.add_task(
                             "Преобразование в KML...", total=len(separated_files))
 
-                        # Loop through files
+                        # Prepare arguments for parallel processing
+                        worker_args = []
                         for xlsx_file_path in separated_files:
-                            current_file = xlsx_file_path.name
-                            
-                            # Print filename on separate line to avoid jittering
-                            console.print(f"[dim]Обработка: [cyan]{current_file}[/cyan][/dim]")
-                            
-                            try:
                                 # Determine the relative path from the separated base dir
-                                relative_path = xlsx_file_path.relative_to(Path(config.xlsx_output_dir))
+                            relative_path = xlsx_file_path.relative_to(Path(config.xlsx_output_dir))
                                 # Construct the corresponding KML output path
-                                kml_file_rel_path = relative_path.with_suffix('.kml')
-                                kml_file_abs_path = Path(config.kml_output_dir) / kml_file_rel_path
-
-                                # Ensure the target directory for the KML file exists
-                                kml_file_abs_path.parent.mkdir(parents=True, exist_ok=True)
-
-                                # Logger Debug will go to file but not console now
-                                logger.debug(f"Конвертация '{xlsx_file_path}' -> '{kml_file_abs_path}'")
-
-                                # Load workbook (ensure data_only=True)
-                                workbook = load_workbook(filename=str(xlsx_file_path), data_only=True)
-                                # Convert to KML and capture return value
-                                created_anomaly_file = create_kml_from_coordinates(
-                                    workbook.active, output_file=str(kml_file_abs_path))
-                                if created_anomaly_file:
-                                    anomaly_files_generated += 1
-
-                            except Exception as e:
-                                conversion_errors += 1
-                                # Store error for later display (don't interrupt progress)
-                                error_msg = f"Ошибка преобразования {current_file}: {e}"
-                                logger.error(f"Ошибка при конвертации {xlsx_file_path} в KML: {e}", exc_info=True)
-                            finally:
-                                # Advance progress bar regardless of success/failure for this file
-                                progress.advance(task)
+                            kml_file_rel_path = relative_path.with_suffix('.kml')
+                            kml_file_abs_path = Path(config.kml_output_dir) / kml_file_rel_path
+                            
+                            worker_args.append((
+                                str(xlsx_file_path),
+                                str(kml_file_abs_path),
+                                config.xlsx_output_dir,
+                                config.kml_output_dir,
+                                config.suppress_debug_in_parallel
+                            ))
+                        
+                        # Determine the number of workers based on configuration and CPU count
+                        if config.max_parallel_workers is not None:
+                            max_workers = min(len(separated_files), config.max_parallel_workers)
+                        else:
+                            max_workers = min(len(separated_files), multiprocessing.cpu_count())
+                        
+                        console.print(f"[dim]Запуск параллельной обработки с {max_workers} потоками...[/dim]")
+                        if config.suppress_debug_in_parallel:
+                            console.print(f"[dim]Отладочные сообщения подавлены для повышения производительности[/dim]")
+                        
+                        # Process files in parallel
+                        with ProcessPoolExecutor(max_workers=max_workers) as executor:
+                            # Submit all tasks
+                            future_to_file = {
+                                executor.submit(process_file_worker, args): args[0] 
+                                for args in worker_args
+                            }
+                            
+                            # Process completed tasks as they finish
+                            for future in as_completed(future_to_file):
+                                file_path = future_to_file[future]
+                                filename = Path(file_path).name
+                                
+                                try:
+                                    success, processed_filename, conversion_result, error_message = future.result()
+                                    
+                                    # Print filename on separate line
+                                    if success:
+                                        console.print(f"[dim]Завершено: [green]{processed_filename}[/green][/dim]")
+                                        
+                                        # Add result to processing statistics
+                                        if conversion_result is not None:
+                                            processing_stats.add_file_result(conversion_result)
+                                            
+                                            # Count anomaly files (check if anomaly file was created)
+                                            if conversion_result.anomaly_file_created:
+                                                processing_stats.anomaly_files_generated += 1
+                                    else:
+                                        console.print(f"[dim]Ошибка: [red]{processed_filename}[/red][/dim]")
+                                        conversion_errors += 1
+                                        processing_stats.conversion_errors += 1
+                                        logger.error(f"Ошибка при конвертации {file_path} в KML: {error_message}")
+                                        
+                                except Exception as e:
+                                    console.print(f"[dim]Критическая ошибка: [red]{filename}[/red][/dim]")
+                                    conversion_errors += 1
+                                    processing_stats.conversion_errors += 1
+                                    logger.error(f"Критическая ошибка при обработке {file_path}: {e}", exc_info=True)
+                                finally:
+                                    # Advance progress bar regardless of success/failure for this file
+                                    progress.advance(task)
 
                 finally:
                     # --- Restore console logging level --- START
@@ -512,7 +902,7 @@ def main():
                     if logger.handlers:
                         for handler in logger.handlers:
                             if hasattr(handler, 'baseFilename'):
-                                log_file_path = str(handler.baseFilename)
+                                log_file_path = str(getattr(handler, 'baseFilename', 'неизвестен'))
                                 break
                     
                     console.print(Panel(
@@ -524,17 +914,10 @@ def main():
                         title="⚠️ Преобразование завершено с ошибками",
                         border_style="yellow"
                     ))
-
-                # Report anomaly files in a separate info panel
-                if anomaly_files_generated > 0:
-                    console.print(Panel(
-                        f"[cyan]📊 Сгенерировано файлов с аномалиями:[/cyan] [bold]{anomaly_files_generated}[/bold]\n\n"
-                        "[dim]Файлы с аномалиями (ANO_*.xlsx) содержат строки с проблемами парсинга координат.[/dim]",
-                        title="📊 Статистика аномалий",
-                        border_style="cyan"
-                    ))
-                else:
-                    console.print("[dim]ℹ️ Файлы с аномалиями (ANO_*.xlsx) не генерировались.[/dim]")
+                
+                # Display comprehensive statistics
+                console.print("\n")
+                display_processing_statistics(processing_stats)
 
         elif user_input == "2":
             console.print(Panel(
@@ -550,7 +933,7 @@ def main():
                 continue
 
             input_path = Path(file_name)
-            
+
             # Ensure the output directory exists
             Path(config.single_kml_output_dir).mkdir(parents=True, exist_ok=True)
 
@@ -572,20 +955,34 @@ def main():
             ))
 
             try:
+                # Initialize statistics for single file mode
+                single_stats = ProcessingStats()
+                single_stats.regions_detected = 1  # Single file = 1 "region"
+                
                 with console.status("[cyan]Преобразование файла в KML...[/cyan]", spinner="dots"):
-                    # Ensure reading only data, not formulas
+                # Ensure reading only data, not formulas
                     workbook = load_workbook(filename=str(input_path), data_only=True)
 
-                    # Convert to KML
-                    created_anomaly_file = create_kml_from_coordinates(
-                        workbook.active, output_file=str(output_filename))
+                    # Use enhanced conversion function that collects statistics
+                    conversion_result = create_kml_from_coordinates(
+                        workbook.active, 
+                        output_file=str(output_filename),
+                        filename=input_path.name
+                    )
+                    
+                    # Add result to statistics
+                    single_stats.add_file_result(conversion_result)
+                    
+                    # Count anomaly files
+                    if conversion_result.anomaly_file_created:
+                        single_stats.anomaly_files_generated += 1
                 
                 # Success message
                 success_msg = f"[bold green]✅ Преобразование завершено успешно![/bold green]\n\n"
                 success_msg += f"Входной файл: [cyan]{input_path.name}[/cyan]\n"
                 success_msg += f"Выходной файл: [blue]{output_filename}[/blue]"
                 
-                if created_anomaly_file:
+                if conversion_result.anomaly_file_created:
                     success_msg += f"\n\n[yellow]📊 Создан файл с аномалиями[/yellow]"
                 
                 console.print(Panel(
@@ -593,6 +990,10 @@ def main():
                     title="🎉 Готово",
                     border_style="green"
                 ))
+                
+                # Display comprehensive statistics for single file
+                console.print("\n")
+                display_processing_statistics(single_stats)
                 
             except Exception as e:
                 console.print(Panel(
@@ -617,4 +1018,6 @@ def main():
 
 
 if __name__ == '__main__':
+    # Support for Windows multiprocessing
+    multiprocessing.freeze_support()
     main()

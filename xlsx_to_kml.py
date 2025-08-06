@@ -4,6 +4,8 @@ import logging
 import re
 import math
 import os
+import time
+from dataclasses import dataclass, field
 from typing import List, Tuple, Optional
 import simplekml
 from openpyxl import Workbook
@@ -17,6 +19,41 @@ from utils import generate_random_color, sort_coordinates, setup_logging
 
 # Set up logging
 logger = setup_logging()
+
+# --- Compiled Regex Patterns ---
+# Compile regex patterns for better performance
+MSK_COORD_PATTERN = re.compile(r'(\d+):\s*([-\d.]+)\s*м\.,\s*([-\d.]+)\s*м\.')
+DMS_COORD_PATTERN = re.compile(r'(\d+)[°º]\s*(\d+)[\'′΄]\s*(\d+(?:[.,]\d+)?)[\"″′′˝]')
+POINT_NUMBER_PATTERN = re.compile(r'(\d+)\.\s*\d+°')
+ALT_POINT_PATTERN = re.compile(r'точка\s*(\d+)', re.IGNORECASE)
+
+# --- Statistics Data Structure ---
+@dataclass
+class ConversionResult:
+    """Result of converting a single file to KML."""
+    filename: str
+    total_rows: int = 0
+    successful_rows: int = 0
+    failed_rows: int = 0
+    anomaly_rows: int = 0
+    error_reasons: List[str] = field(default_factory=list)
+    processing_time: float = 0.0
+    anomaly_file_created: bool = False
+    
+    @property
+    def success_rate(self) -> float:
+        """Calculate success rate as percentage."""
+        if self.total_rows == 0:
+            return 0.0
+        return (self.successful_rows / self.total_rows) * 100
+    
+    @property
+    def failure_rate(self) -> float:
+        """Calculate failure rate as percentage."""
+        if self.total_rows == 0:
+            return 0.0
+        # failed_rows already includes all the problematic rows, no need to add anomaly_rows
+        return (self.failed_rows / self.total_rows) * 100
 
 
 def create_transformer(proj4_str: str) -> Transformer:
@@ -116,9 +153,8 @@ def process_coordinates(input_string, transformer) -> Tuple[Optional[List[Tuple[
     """Processes a string with metric coordinates, transforming them and checking for validity."""
     logger.debug(f"-- Начало обработки МСК для строки: '{input_string[:70]}...' --")
     
-    msk_regex = r'(\d+):\s*([-\d.]+)\s*м\.,\s*([-\d.]+)\s*м\.'
     logger.debug(f"1. Поиск координат МСК с помощью regex")
-    coordinates = re.findall(msk_regex, input_string)
+    coordinates = MSK_COORD_PATTERN.findall(input_string)
     
     if not coordinates:
         logger.debug("  - Координаты МСК не найдены. Возвращаем пустой результат.")
@@ -219,12 +255,11 @@ def parse_coordinates(coord_str: str) -> Tuple[Optional[List[Tuple[str, float, f
 
     # Сначала собираем все DMS координаты из всех частей
     all_dms_coords = []
-    dms_regex = r'(\d+)[°º]\s*(\d+)[\'′΄]\s*(\d+(?:[.,]\d+)?)[\"″′′˝]'
     
     for i, part in enumerate([p.strip() for p in parts if p.strip()]):
         logger.debug(f"\n-- Обработка части {i+1}: '{part}' --")
-        logger.debug(f"  - Поиск ДМС с помощью regex: {dms_regex}")
-        coords_match = re.findall(dms_regex, part)
+        logger.debug(f"  - Поиск ДМС с помощью regex")
+        coords_match = DMS_COORD_PATTERN.findall(part)
         
         if coords_match:
             logger.debug(f"  - Найдено {len(coords_match)} совпадений ДМС: {coords_match}")
@@ -293,14 +328,14 @@ def parse_coordinates(coord_str: str) -> Tuple[Optional[List[Tuple[str, float, f
             for info in [lat_info, lon_info]:
                 part = info['part']
                 # Поиск номера точки
-                point_match = re.search(r'(\d+)\.\s*\d+°', part)
+                point_match = POINT_NUMBER_PATTERN.search(part)
                 if point_match:
                     point_num = point_match.group(1)
                     point_name = f"точка {point_num}"
                     break
                     
                 # Альтернативный поиск "точка N"
-                alt_match = re.search(r'точка\s*(\d+)', part, re.IGNORECASE)
+                alt_match = ALT_POINT_PATTERN.search(part)
                 if alt_match:
                     point_num = alt_match.group(1)
                     point_name = f"точка {point_num}"
@@ -404,8 +439,24 @@ def create_kml_point(kml, name: str, coords: Tuple[float, float], description: s
     point.style.labelstyle.scale = 0.8
 
 
-def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_numbers: Optional[List[int]] = None) -> bool:
-    """Создает KML-файл из листа с координатами и сохраняет аномалии в отдельный файл. Returns True on success, False otherwise."""
+def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_numbers: Optional[List[int]] = None, filename: Optional[str] = None) -> ConversionResult:
+    """Создает KML-файл из листа с координатами и сохраняет аномалии в отдельный файл. 
+    
+    Args:
+        sheet: Excel worksheet to process
+        output_file: Path for output KML file
+        sort_numbers: Optional list of numbers for coordinate sorting
+        filename: Name of the source file for statistics
+        
+    Returns:
+        ConversionResult: Detailed statistics about the conversion process
+    """
+    start_time = time.time()
+    
+    # Initialize statistics
+    stats = ConversionResult(
+        filename=filename or os.path.basename(output_file)
+    )
     kml = simplekml.Kml()
     indices = get_column_indices(sheet)
     anomalies_list = []  # Initialize list to store anomalies
@@ -425,8 +476,12 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
     # Используем определенное значение min_row в цикле
     for row_idx, row in enumerate(sheet.iter_rows(min_row=min_row, values_only=True), start=min_row):
         coords_str = row[indices["coord"]] if indices["coord"] != -1 else None
-        if not isinstance(coords_str, str):
+        if not isinstance(coords_str, str) or not coords_str.strip():
             continue
+            
+        # Count this as a data row
+        stats.total_rows += 1
+        
         main_name = row[indices["name"]
                         ] if indices["name"] != -1 else f"Row {row_idx}"
         logger.info(f"------------")
@@ -439,6 +494,12 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
             # Логирование уже произошло внутри parse_coordinates
             logger.warning(
                 f"Строка {row_idx} (№ п/п {main_name}) пропущена из-за ошибки парсинга: {error_reason}")
+            
+            # Update statistics
+            stats.failed_rows += 1
+            stats.error_reasons.append(error_reason)
+            # Note: anomaly_rows will be set later based on whether anomaly file was actually created
+            
             # Add anomaly details to the list
             anomalies_list.append({
                 "row_index": row_idx,
@@ -453,8 +514,13 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
         if not coords_array:
             logger.debug(
                 f"Строка {row_idx} (№ п/п {main_name}) не содержит валидных координат для KML.")
+            # Count as successful parsing even though no coordinates found
+            stats.successful_rows += 1
             continue  # Нет точек для добавления в KML
 
+        # Count as successful row
+        stats.successful_rows += 1
+        
         logger.info(
             f"Строка {row_idx} (№ п/п {main_name}): Распознано {len(coords_array)} точек.")
 
@@ -542,19 +608,31 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
 
     kml.save(output_file)
 
-    anomaly_file_created = False  # Initialize return value
+    # Handle anomaly file creation
     if anomalies_list and output_file:
         # Use current dir if output_file has no path
         output_dir = os.path.dirname(output_file) or '.'
         original_basename = os.path.basename(output_file)
         # Capture the return value from save_anomalies_to_excel
-        anomaly_file_created = save_anomalies_to_excel(
+        stats.anomaly_file_created = save_anomalies_to_excel(
             anomalies_list, original_basename, output_dir)
+        # Set anomaly_rows to the actual number of anomalies found
+        stats.anomaly_rows = len(anomalies_list)
     elif anomalies_list and not output_file:
         logger.warning(
             "Anomalies were detected, but the original filename was not provided. Anomalies will not be saved to a separate file.")
+        stats.anomaly_rows = len(anomalies_list)
 
-    return anomaly_file_created  # Return the status
+    # Finalize statistics
+    stats.processing_time = time.time() - start_time
+    
+    return stats
+
+
+def create_kml_from_coordinates_legacy(sheet, output_file: str = "output.kml", sort_numbers: Optional[List[int]] = None) -> bool:
+    """Legacy wrapper that maintains backward compatibility. Returns True if anomaly file was created."""
+    result = create_kml_from_coordinates(sheet, output_file, sort_numbers)
+    return result.anomaly_file_created
 
 
 def save_anomalies_to_excel(anomalies: List[dict], original_basename: str, output_directory: str) -> bool:
