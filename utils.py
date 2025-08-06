@@ -6,6 +6,24 @@ from pathlib import Path
 import colorlog  # Import colorlog
 
 
+class FilenameLoggerAdapter(logging.LoggerAdapter):
+    """Logger adapter that automatically includes filename in log messages."""
+    
+    def __init__(self, logger, filename=None):
+        self.filename = filename
+        super().__init__(logger, {})
+    
+    def set_filename(self, filename):
+        """Update the filename for subsequent log messages."""
+        self.filename = filename
+    
+    def process(self, msg, kwargs):
+        """Process the logging message to include filename."""
+        if self.filename:
+            return f"- {self.filename} - {msg}", kwargs
+        return msg, kwargs
+
+
 def generate_random_color() -> str:
     """Рандомный цвет в KML формате."""
     return f'{random.randint(0, 255):02x}{random.randint(0, 255):02x}{random.randint(0, 255):02x}'
@@ -26,13 +44,18 @@ def sort_coordinates(coords):
     return sorted(coords, key=lambda coord: calculate_angle(coord, centroid))
 
 
-def setup_logging(output_dir=None):
-    """Настраивает систему логирования с цветным выводом в консоль."""
+def setup_logging(output_dir=None, console_level=logging.DEBUG):
+    """Настраивает систему логирования с цветным выводом в консоль.
+    
+    Args:
+        output_dir: Directory for log files (default: 'logs')
+        console_level: Logging level for console output (default: DEBUG)
+    """
     # Check if the root logger already has handlers - if so, it's already configured
     root_logger = logging.getLogger()
     if root_logger.hasHandlers():
-        # Return the specific logger if already set up
-        return logging.getLogger(__name__)
+        # Return the root logger if already set up
+        return root_logger
 
     # --- Configuration ---
     log_level = logging.DEBUG
@@ -73,7 +96,7 @@ def setup_logging(output_dir=None):
     # Console Handler (Colored)
     console_handler = colorlog.StreamHandler()
     console_handler.setFormatter(colored_formatter)
-    console_handler.setLevel(log_level)  # Handle all levels in console
+    console_handler.setLevel(console_level)  # Use the parameter for console level
 
     # Main File Handler (Plain)
     main_file_handler = logging.FileHandler(log_file, encoding='utf-8')
@@ -94,5 +117,5 @@ def setup_logging(output_dir=None):
     root_logger.addHandler(main_file_handler)
     root_logger.addHandler(error_warning_handler)
 
-    # Return the specific logger for the calling module
-    return logging.getLogger(__name__)
+    # Return the root logger that was just configured
+    return root_logger

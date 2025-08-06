@@ -5,7 +5,7 @@ from openpyxl.utils import get_column_letter  # type: ignore[attr-defined]
 from openpyxl.styles import Font
 import logging  # Импортируем модуль логирования
 import time
-from utils import setup_logging  # Import the setup function
+
 
 # --- Configuration ---
 INPUT_FILE = './input/BigTable (Trimmed).xlsx'
@@ -16,7 +16,8 @@ FULL_WIDTH_MERGE_COLUMNS = (1, 7)  # Столбцы A-G
 
 
 # --- Setup Logging using the utility function ---
-logger = setup_logging()
+# Get logger for this module (configuration will be handled by main.py)
+logger = logging.getLogger(__name__)
 # --- End Logging Setup ---
 
 

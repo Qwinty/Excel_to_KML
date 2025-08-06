@@ -9,16 +9,13 @@ from dataclasses import dataclass, field
 from typing import List, Tuple, Optional
 import simplekml
 from openpyxl import Workbook
-from utils import setup_logging
-
-
 from pyproj import CRS, Transformer
 
-# Import necessary functions and the setup function from utils
-from utils import generate_random_color, sort_coordinates, setup_logging
+# Import necessary functions from utils
+from utils import generate_random_color, sort_coordinates, FilenameLoggerAdapter
 
-# Set up logging
-logger = setup_logging()
+# Get logger for this module (configuration will be handled by main.py)
+logger = logging.getLogger(__name__)
 
 # --- Compiled Regex Patterns ---
 # Compile regex patterns for better performance
@@ -453,6 +450,9 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
     """
     start_time = time.time()
     
+    # Create logger adapter with filename for automatic inclusion in log messages
+    file_logger = FilenameLoggerAdapter(logger, filename)
+    
     # Initialize statistics
     stats = ConversionResult(
         filename=filename or os.path.basename(output_file)
@@ -462,7 +462,7 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
     anomalies_list = []  # Initialize list to store anomalies
 
     # Default min_row value
-    min_row = 5
+    min_row = 6
 
     # Check rows 2..5 using iter_rows()
     for row in sheet.iter_rows(min_row=2, max_row=5):
@@ -484,7 +484,7 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
         
         main_name = row[indices["name"]
                         ] if indices["name"] != -1 else f"Row {row_idx}"
-        logger.info(f"------------")
+        file_logger.info(f"------------")
 
         # Вызываем обновленную функцию парсинга
         coords_array, error_reason = parse_coordinates(coords_str)
@@ -492,7 +492,7 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
         # Если parse_coordinates вернула ошибку, пропускаем строку (она будет обработана как аномальная в другом модуле)
         if error_reason is not None:
             # Логирование уже произошло внутри parse_coordinates
-            logger.warning(
+            file_logger.warning(
                 f"Строка {row_idx} (№ п/п {main_name}) пропущена из-за ошибки парсинга: {error_reason}")
             
             # Update statistics
@@ -512,7 +512,7 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
         # Если coords_array это пустой список, значит парсинг прошел успешно, но валидных координат не найдено.
         # В этом случае просто пропускаем создание KML геометрии для этой строки.
         if not coords_array:
-            logger.debug(
+            file_logger.debug(
                 f"Строка {row_idx} (№ п/п {main_name}) не содержит валидных координат для KML.")
             # Count as successful parsing even though no coordinates found
             stats.successful_rows += 1
@@ -521,7 +521,7 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
         # Count as successful row
         stats.successful_rows += 1
         
-        logger.info(
+        file_logger.info(
             f"Строка {row_idx} (№ п/п {main_name}): Распознано {len(coords_array)} точек.")
 
         if coords_array:  # Убедимся еще раз, что список не пуст
@@ -561,7 +561,7 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
             # Проверяем, есть ли более 3 точек и 16-й столбец не равен нулю или пуст
             skip_terms = ["Сброс сточных", "Забор (изъятие)"]
             if len(coords_array) > 3 and not any(term in row[indices["goal"]] for term in skip_terms):
-                logger.debug(
+                file_logger.debug(
                     f"Строка {row_idx} (№ п/п {main_name}): Создание полигона")
                 # Создаем полигон
                 polygon = kml.newpolygon(name=f"№ п/п {main_name}")
@@ -585,7 +585,7 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
                 if len(coords_array) > 2 \
                         and all(name.startswith("точка") for name, _, _ in coords_array) \
                         and row[indices["goal"]] != "Сброс сточных вод":
-                    logger.debug(
+                    file_logger.debug(
                         f"Строка {row_idx} (№ п/п {main_name}): Создание линии")
                     line = kml.newlinestring(name=f"№ п/п {main_name}",
                                              coords=[(lon, lat) for _, lon, lat in coords_array])
@@ -596,7 +596,7 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
                     # Создаем отдельные точки, если линия не была создана
                     index = 1
                     for point_name, lon, lat in coords_array:
-                        logger.debug(f"  Точка: {point_name} ({lat}, {lon})")
+                        file_logger.debug(f"  Точка: {point_name} ({lat}, {lon})")
                         # print(f"{lat}, {lon}")
                         if row[indices["goal"]] == "Сброс сточных вод":
                             full_name = f"№ п/п {main_name} - сброс {index}"
@@ -619,7 +619,7 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
         # Set anomaly_rows to the actual number of anomalies found
         stats.anomaly_rows = len(anomalies_list)
     elif anomalies_list and not output_file:
-        logger.warning(
+        file_logger.warning(
             "Anomalies were detected, but the original filename was not provided. Anomalies will not be saved to a separate file.")
         stats.anomaly_rows = len(anomalies_list)
 
