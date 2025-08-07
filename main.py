@@ -323,7 +323,7 @@ def _display_processing_summary(stats: ProcessingStats, totals: Dict[str, int], 
 
 def _display_problematic_files(stats: ProcessingStats):
     """Display most problematic files if there are any issues."""
-    problematic_files = stats.get_most_problematic_files(5)
+    problematic_files = stats.get_most_problematic_files(7)
     if not problematic_files:
         return
 
@@ -343,7 +343,7 @@ def _display_problematic_files(stats: ProcessingStats):
 
     console.print(Panel(
         problem_table,
-        title="⚠️ Наиболее проблемные файлы",
+        title=f"⚠️ Наиболее проблемные файлы (топ {len(problematic_files)})",
         border_style="red"
     ))
 
