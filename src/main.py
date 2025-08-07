@@ -517,11 +517,15 @@ def _get_debug_mode_choice() -> str:
 
     console.print(mode_table)
 
-    return Prompt.ask(
-        "Введите номер режима",
-        choices=["1", "2", "3"],
-        show_choices=False
-    )
+    try:
+        return Prompt.ask(
+            "Введите номер режима",
+            choices=["1", "2", "3"],
+            show_choices=False
+        )
+    except (KeyboardInterrupt, EOFError):
+        console.print("\n[yellow]Ввод отменен. Возврат в главное меню.[/yellow]")
+        return "3"
 
 
 def _get_custom_proj4_transformer() -> Tuple[Optional[Any], Optional[str]]:
@@ -623,6 +627,11 @@ def _display_parsing_results(coords: Optional[List], reason: Optional[str]):
             result_table.add_row(str(i), name, f"{lon:.6f}", f"{lat:.6f}")
 
         console.print(result_table)
+        
+        # Добавляем координаты в формате для Geobridge (без рамки для удобства копирования)
+        console.print("\n[bold blue]📍 Формат для Geobridge:[/bold blue]")
+        for name, lon, lat in coords:
+            console.print(f"{lat}, {lon}")
 
     console.print()  # Add spacing
 
@@ -689,6 +698,8 @@ def debug_coordinate_parser():
             _run_coordinate_parsing_loop(
                 mode_choice, selected_transformer, selected_proj4_name)
 
+    except (KeyboardInterrupt, EOFError):
+        console.print("\n[yellow]Выход из режима отладки. Возврат в главное меню.[/yellow]")
     finally:
         _cleanup_debug_logging(console_handler, original_console_level)
 

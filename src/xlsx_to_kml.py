@@ -12,7 +12,7 @@ from openpyxl import Workbook
 from pyproj import CRS, Transformer
 
 # Import necessary functions from utils
-from utils import generate_random_color, sort_coordinates, FilenameLoggerAdapter
+from src.utils import generate_random_color, sort_coordinates, FilenameLoggerAdapter
 
 # Get logger for this module (configuration will be handled by main.py)
 logger = logging.getLogger(__name__)
@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 # Compile regex patterns for better performance
 MSK_COORD_PATTERN = re.compile(r'(\d+):\s*([-\d.]+)\s*м\.,\s*([-\d.]+)\s*м\.')
 DMS_COORD_PATTERN = re.compile(r'(\d+)[°º]\s*(\d+)[\'′΄]\s*(\d+(?:[.,]\d+)?)[\"″′′˝]')
-POINT_NUMBER_PATTERN = re.compile(r'(\d+)\.\s*\d+°')
+DMS_POINT_PATTERN = re.compile(r'(\d+)[:.]\s*(?=\d+[°º])')
 ALT_POINT_PATTERN = re.compile(r'точка\s*(\d+)', re.IGNORECASE)
 
 # --- Statistics Data Structure ---
@@ -252,12 +252,21 @@ def parse_coordinates(coord_str: str) -> Tuple[Optional[List[Tuple[str, float, f
 
     # Сначала собираем все DMS координаты из всех частей
     all_dms_coords = []
-    
+    point_numbers_by_part = {}
+
     for i, part in enumerate([p.strip() for p in parts if p.strip()]):
         logger.debug(f"\n-- Обработка части {i+1}: '{part}' --")
+
+        # Ищем все номера точек в этой части
+        point_numbers = DMS_POINT_PATTERN.findall(part)
+        if point_numbers:
+            logger.debug(
+                f"  - Найдено {len(point_numbers)} номеров точек (ДМС): {point_numbers}")
+            point_numbers_by_part[i] = point_numbers
+
         logger.debug(f"  - Поиск ДМС с помощью regex")
         coords_match = DMS_COORD_PATTERN.findall(part)
-        
+
         if coords_match:
             logger.debug(f"  - Найдено {len(coords_match)} совпадений ДМС: {coords_match}")
             # Добавляем информацию о том, откуда взята координата (для определения широты/долготы)
@@ -319,24 +328,23 @@ def parse_coordinates(coord_str: str) -> Tuple[Optional[List[Tuple[str, float, f
                 return None, reason
 
             # Определяем имя точки из контекста
-            point_name = f"точка {j//2 + 1}"
-            
-            # Ищем номер точки в тексте
-            for info in [lat_info, lon_info]:
-                part = info['part']
-                # Поиск номера точки
-                point_match = POINT_NUMBER_PATTERN.search(part)
-                if point_match:
-                    point_num = point_match.group(1)
-                    point_name = f"точка {point_num}"
-                    break
-                    
-                # Альтернативный поиск "точка N"
-                alt_match = ALT_POINT_PATTERN.search(part)
+            part_idx = lat_info['part_index']
+            pair_idx = j // 2
+            point_name = f"точка {pair_idx + 1}"  # Имя по умолчанию
+
+            # Пытаемся найти более конкретный номер точки
+            # 1. Из предварительно найденных номеров по шаблону "N."
+            part_point_numbers = point_numbers_by_part.get(part_idx, [])
+            if pair_idx < len(part_point_numbers):
+                point_num = part_point_numbers[pair_idx]
+                point_name = f"точка {point_num}"
+            else:
+                # 2. Альтернативный поиск по шаблону "точка N" в тексте части
+                # Этот поиск менее надежен, если в одной строке несколько "точка N"
+                alt_match = ALT_POINT_PATTERN.search(lat_info['part'])
                 if alt_match:
                     point_num = alt_match.group(1)
                     point_name = f"точка {point_num}"
-                    break
 
             logger.debug(f"  - Итоговое имя точки: '{point_name}'")
 
@@ -726,4 +734,8 @@ if __name__ == "__main__":
             print(f"Успешно найдено {len(coords)} координат:")
             for i, (name, lon, lat) in enumerate(coords):
                 print(f"  {i+1}. Имя: '{name}', Долгота: {lon}, Широта: {lat}")
+
+            print(f"\nФормат для GeoBridge")
+            for i, (name, lon, lat) in enumerate(coords):
+                print(f"{lat}, {lon}")
         print("--------------------------\n")
