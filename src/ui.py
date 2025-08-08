@@ -19,7 +19,7 @@ def display_welcome() -> None:
         "[bold magenta]Конвертер Excel в KML[/bold magenta]\n\n"
         "[dim]Преобразование файлов Excel с координатами в формат KML\n"
         "для использования в картографических приложениях[/dim]",
-        title="🗺️ Excel to KML Converter (RUDI.RU)",
+        title="Excel to KML Converter (RUDI.RU)",
         border_style="bright_blue",
         padding=(1, 2)
     ))

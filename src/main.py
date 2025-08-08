@@ -18,6 +18,7 @@ def main() -> None:
     # Configure logging once for the main process
     setup_logging(console_level=logging.DEBUG)
     logger = logging.getLogger(__name__)
+    logger.info("Запуск приложения Excel to KML Converter")
 
     config = Config()
 

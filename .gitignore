@@ -173,3 +173,6 @@ map_uploader/browser_session
 # Syncthing caches
 .stversions
 ~syncthing*
+
+KML_Converter*.rar
+KML_Converter*.zip

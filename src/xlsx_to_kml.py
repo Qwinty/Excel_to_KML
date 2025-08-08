@@ -63,6 +63,31 @@ def create_transformer(proj4_str: str) -> Transformer:
 try:
     with open("data/proj4.json", "r", encoding="utf-8") as f:
         proj4_strings = json.load(f)
+    # Автосоздание алиасов для МСК, где есть ровно одна зона: "МСК-06 зона 1" -> "МСК-06"
+    try:
+        zone_key_regex = re.compile(r'^(МСК-[^з]+?)\s+зона\s+\d+\b')
+        msk_groups: dict[str, list[str]] = {}
+
+        # Сгруппируем ключи по префиксу до слова "зона"
+        for name in list(proj4_strings.keys()):
+            match = zone_key_regex.match(name)
+            if match:
+                prefix = match.group(1).strip()
+                msk_groups.setdefault(prefix, []).append(name)
+
+        # Для групп, где только одна зона, добавим алиас без слова "зона"
+        for prefix, full_names in msk_groups.items():
+            if len(full_names) == 1:
+                alias_key = prefix
+                full_key = full_names[0]
+                if alias_key not in proj4_strings:
+                    proj4_strings[alias_key] = proj4_strings[full_key]
+                    logger.debug(
+                        f"Добавлен алиас проекции: '{alias_key}' -> '{full_key}'")
+    except Exception as e:
+        # Не мешаем запуску, если что-то пойдет не так с алиасами
+        logger.warning(f"Не удалось создать алиасы МСК без 'зона': {e}")
+
     # Создаем трансформеры
     transformers = {name: create_transformer(proj4) for name, proj4 in proj4_strings.items()}
 except FileNotFoundError:
@@ -377,7 +402,7 @@ def parse_coordinates(coord_str: str) -> Tuple[Optional[List[Tuple[str, float, f
     return result, None
 
 def find_column_index(sheet, target_names: List[str], exact_match: bool = False) -> int:
-    """Находит индекс столбца для любого из заданных имен заголовков в строках 1-5.
+    """Находит индекс столбца для любого из заданных имен заголовков в строках 1-8.
 
     Args:
         sheet: Лист Excel для поиска.
@@ -387,11 +412,13 @@ def find_column_index(sheet, target_names: List[str], exact_match: bool = False)
     Returns:
         Индекс столбца или -1, если не найдено.
     """
-    target_names_lower = [name.lower() for name in target_names]
-    for row in sheet.iter_rows(min_row=1, max_row=5, values_only=True):
+    target_names_lower = [str(name).lower().strip() for name in target_names]
+    # В некоторых файлах заголовки могут быть смещены ниже 5-й строки (многострочные шапки)
+    for row in sheet.iter_rows(min_row=1, max_row=8, values_only=True):
         for idx, cell in enumerate(row):
             if cell:
-                cell_str_lower = str(cell).lower()
+                # Нормализуем строку заголовка: приводим к нижнему регистру и убираем лишние пробелы/переводы строк
+                cell_str_lower = str(cell).lower().strip()
                 for target_name_lower in target_names_lower:
                     if (exact_match and cell_str_lower == target_name_lower) or \
                        (not exact_match and target_name_lower in cell_str_lower):

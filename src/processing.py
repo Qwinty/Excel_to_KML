@@ -43,6 +43,7 @@ def process_mode_1_full_processing(config: Config) -> None:
     if separation_success:
         _process_kml_conversion(processing_stats, config)
         display_processing_statistics(processing_stats)
+        _log_processing_summary(processing_stats)
 
 
 def _process_file_separation(input_file: str, input_filename: str, processing_stats: ProcessingStats, config: Config) -> bool:
@@ -279,16 +280,33 @@ def process_mode_2_single_file(config: Config) -> None:
             if conversion_result.anomaly_file_created:
                 single_stats.anomaly_files_generated += 1
 
-        success_msg = f"[bold green]✅ Преобразование завершено успешно![/bold green]\n\n"
+        # Build final status message considering possible warnings/errors during saving anomalies
+        had_anomalies = conversion_result.anomaly_rows > 0
+        anomaly_save_failed = had_anomalies and not conversion_result.anomaly_file_created
+        had_parsing_failures = conversion_result.failed_rows > 0
+
+        if anomaly_save_failed or had_parsing_failures:
+            status_header = "[bold yellow]⚠️ Преобразование завершено с предупреждениями[/bold yellow]\n\n"
+            panel_title = "⚠️ Преобразование завершено с предупреждениями"
+            panel_style = "yellow"
+        else:
+            status_header = "[bold green]✅ Преобразование завершено успешно![/bold green]\n\n"
+            panel_title = "🎉 Готово"
+            panel_style = "green"
+
+        success_msg = status_header
         success_msg += f"Входной файл: [cyan]{input_path.name}[/cyan]\n"
         success_msg += f"Выходной файл: [blue]{output_filename}[/blue]"
 
-        if conversion_result.anomaly_file_created:
-            success_msg += f"\n\n[yellow]📊 Создан файл с аномалиями[/yellow]"
+        if had_anomalies and conversion_result.anomaly_file_created:
+            success_msg += "\n\n[yellow]📊 Создан файл с аномалиями[/yellow]"
+        elif anomaly_save_failed:
+            success_msg += "\n\n[bold red]❌ Не удалось сохранить файл аномалий. Возможно, файл уже открыт или недостаточно прав на запись.[/bold red]"
 
-        console.print(Panel(success_msg, title="🎉 Готово", border_style="green"))
+        console.print(Panel(success_msg, title=panel_title, border_style=panel_style))
 
         display_processing_statistics(single_stats)
+        _log_processing_summary(single_stats)
 
     except Exception as e:
         console.print(Panel(
@@ -300,3 +318,38 @@ def process_mode_2_single_file(config: Config) -> None:
         logger.exception(f"Ошибка в режиме 2 при обработке файла {file_name}")
 
 
+
+def _log_processing_summary(stats: ProcessingStats) -> None:
+    """Log a plain-text summary of processing statistics to file logs.
+
+    Mirrors the key numbers shown in the Rich summary panel so they are
+    preserved in the log files.
+    """
+    try:
+        totals = stats.get_total_stats()
+        total_rows = totals.get('total_rows', 0)
+        successful_rows = totals.get('successful_rows', 0)
+        success_rate = (successful_rows / total_rows * 100) if total_rows > 0 else 0.0
+
+        # Format processing time similar to stats display
+        processing_time = stats.get_processing_time()
+        if processing_time < 60:
+            time_str = f"{processing_time:.1f}с"
+        else:
+            minutes = int(processing_time // 60)
+            seconds = int(processing_time % 60)
+            time_str = f"{minutes}м {seconds}с"
+
+        lines: List[str] = []
+        lines.append(f"Файлов обнаружено: {stats.regions_detected} регионов")
+        if stats.anomaly_files_generated > 0:
+            lines.append(f"Файлы с аномалиями: {stats.anomaly_files_generated} файла")
+        lines.append(
+            f"Объектов обработано: {total_rows} строк -> {successful_rows} успешно ({success_rate:.1f}%)"
+        )
+        lines.append(f"Время обработки: {time_str}")
+
+        logger.info("\n".join(["Сводка обработки:"] + lines))
+    except Exception:
+        # Do not let logging issues affect the main flow
+        logger.debug("Не удалось записать сводку обработки в лог.", exc_info=True)
