@@ -37,7 +37,8 @@ def process_mode_1_full_processing(config: Config) -> None:
     processing_stats = ProcessingStats()
 
     # Stage 1: Separation
-    separation_success = _process_file_separation(input_file, input_filename, processing_stats, config)
+    separation_success = _process_file_separation(
+        input_file, input_filename, processing_stats, config)
 
     # Stage 2: KML Conversion
     if separation_success:
@@ -53,7 +54,8 @@ def _process_file_separation(input_file: str, input_filename: str, processing_st
 
     try:
         Path(config.xlsx_output_dir).mkdir(parents=True, exist_ok=True)
-        logger.info(f"Создана папка для разделенных XLSX: {config.xlsx_output_dir}")
+        logger.info(
+            f"Создана папка для разделенных XLSX: {config.xlsx_output_dir}")
 
         split_excel_file_by_merges(
             input_path=input_file,
@@ -108,12 +110,14 @@ def _process_kml_conversion(processing_stats: ProcessingStats, config: Config) -
         ))
         return
 
-    console.print(f"[green]✓ Найдено {len(separated_files)} файлов .xlsx для преобразования.[/green]")
+    console.print(
+        f"[green]✓ Найдено {len(separated_files)} файлов .xlsx для преобразования.[/green]")
 
     Path(config.kml_output_dir).mkdir(parents=True, exist_ok=True)
     logger.info(f"Создана базовая папка для KML: {config.kml_output_dir}")
 
-    conversion_errors = _run_parallel_conversion(separated_files, processing_stats, config)
+    conversion_errors = _run_parallel_conversion(
+        separated_files, processing_stats, config)
     _report_conversion_results(separated_files, conversion_errors, config)
 
 
@@ -130,15 +134,19 @@ def _run_parallel_conversion(separated_files: List[Path], processing_stats: Proc
         console=console,
         transient=False
     ) as progress:
-        task = progress.add_task("Преобразование в KML...", total=len(separated_files))
+        task = progress.add_task(
+            "Преобразование в KML...", total=len(separated_files))
 
         worker_args = _prepare_worker_args(separated_files, config)
         max_workers = _determine_max_workers(separated_files, config)
 
-        console.print(f"[dim]Запуск параллельной обработки с {max_workers} потоками...[/dim]")
-        console.print(f"[dim]DEBUG/WARNING сообщения подавлены в консоли для повышения производительности[/dim]")
+        console.print(
+            f"[dim]Запуск параллельной обработки с {max_workers} потоками...[/dim]")
+        console.print(
+            f"[dim]DEBUG/WARNING сообщения подавлены в консоли для повышения производительности[/dim]")
 
-        from src.workers import process_file_worker  # ensure correct import in subprocess on Windows
+        # ensure correct import in subprocess on Windows
+        from src.workers import process_file_worker
 
         with ProcessPoolExecutor(
             max_workers=max_workers,
@@ -157,22 +165,27 @@ def _run_parallel_conversion(separated_files: List[Path], processing_stats: Proc
                     success, processed_filename, conversion_result, error_message = future.result()
 
                     if success:
-                        console.print(f"[dim]Завершено: [green]{processed_filename}[/green][/dim]")
+                        console.print(
+                            f"[dim]Завершено: [green]{processed_filename}[/green][/dim]")
                         if conversion_result is not None:
                             processing_stats.add_file_result(conversion_result)
                             if conversion_result.anomaly_file_created:
                                 processing_stats.anomaly_files_generated += 1
                     else:
-                        console.print(f"[dim]Ошибка: [red]{processed_filename}[/red][/dim]")
+                        console.print(
+                            f"[dim]Ошибка: [red]{processed_filename}[/red][/dim]")
                         conversion_errors += 1
                         processing_stats.conversion_errors += 1
-                        logger.error(f"Ошибка при конвертации {file_path} в KML: {error_message}")
+                        logger.error(
+                            f"Ошибка при конвертации {file_path} в KML: {error_message}")
 
                 except Exception as e:
-                    console.print(f"[dim]Критическая ошибка: [red]{filename}[/red][/dim]")
+                    console.print(
+                        f"[dim]Критическая ошибка: [red]{filename}[/red][/dim]")
                     conversion_errors += 1
                     processing_stats.conversion_errors += 1
-                    logger.error(f"Критическая ошибка при обработке {file_path}: {e}", exc_info=True)
+                    logger.error(
+                        f"Критическая ошибка при обработке {file_path}: {e}", exc_info=True)
                 finally:
                     progress.advance(task)
 
@@ -182,7 +195,8 @@ def _run_parallel_conversion(separated_files: List[Path], processing_stats: Proc
 def _prepare_worker_args(separated_files: List[Path], config: Config) -> List[Dict[str, Any]]:
     worker_args: List[Dict[str, Any]] = []
     for xlsx_file_path in separated_files:
-        relative_path = xlsx_file_path.relative_to(Path(config.xlsx_output_dir))
+        relative_path = xlsx_file_path.relative_to(
+            Path(config.xlsx_output_dir))
         kml_file_rel_path = relative_path.with_suffix('.kml')
         kml_file_abs_path = Path(config.kml_output_dir) / kml_file_rel_path
 
@@ -219,7 +233,8 @@ def _report_conversion_results(separated_files: List[Path], conversion_errors: i
         if logger_root.handlers:
             for handler in logger_root.handlers:
                 if hasattr(handler, 'baseFilename'):
-                    log_file_path = str(getattr(handler, 'baseFilename', 'неизвестен'))
+                    log_file_path = str(
+                        getattr(handler, 'baseFilename', 'неизвестен'))
                     break
 
         console.print(Panel(
@@ -248,7 +263,8 @@ def process_mode_2_single_file(config: Config) -> None:
 
     input_path = Path(file_name)
     Path(config.single_kml_output_dir).mkdir(parents=True, exist_ok=True)
-    output_filename = Path(config.single_kml_output_dir) / f"{input_path.stem}.kml"
+    output_filename = Path(config.single_kml_output_dir) / \
+        f"{input_path.stem}.kml"
 
     from rich.table import Table
 
@@ -258,10 +274,11 @@ def process_mode_2_single_file(config: Config) -> None:
     info_table.add_row("Входной файл:", input_path.name)
     info_table.add_row("Выходной файл:", str(output_filename))
 
-    console.print(Panel(info_table, title="ℹ️ Параметры преобразования", border_style="blue"))
+    console.print(
+        Panel(info_table, title="ℹ️ Параметры преобразования", border_style="blue"))
 
     from openpyxl import load_workbook
-    from src.xlsx_to_kml import create_kml_from_coordinates
+    from src.xlsx_to_kml import create_kml_from_coordinates, get_transformers
     from src.stats import ProcessingStats, display_processing_statistics
 
     try:
@@ -270,10 +287,17 @@ def process_mode_2_single_file(config: Config) -> None:
 
         with console.status("[cyan]Преобразование файла в KML...[/cyan]", spinner="dots"):
             workbook = load_workbook(filename=str(input_path), data_only=True)
+            # Load transformers lazily (cached in current process)
+            transformers = None
+            try:
+                transformers = get_transformers()
+            except Exception:
+                transformers = None
             conversion_result = create_kml_from_coordinates(
                 workbook.active,
                 output_file=str(output_filename),
-                filename=input_path.name
+                filename=input_path.name,
+                transformers=transformers
             )
 
             single_stats.add_file_result(conversion_result)
@@ -303,7 +327,8 @@ def process_mode_2_single_file(config: Config) -> None:
         elif anomaly_save_failed:
             success_msg += "\n\n[bold red]❌ Не удалось сохранить файл аномалий. Возможно, файл уже открыт или недостаточно прав на запись.[/bold red]"
 
-        console.print(Panel(success_msg, title=panel_title, border_style=panel_style))
+        console.print(Panel(success_msg, title=panel_title,
+                      border_style=panel_style))
 
         display_processing_statistics(single_stats)
         _log_processing_summary(single_stats)
@@ -318,7 +343,6 @@ def process_mode_2_single_file(config: Config) -> None:
         logger.exception(f"Ошибка в режиме 2 при обработке файла {file_name}")
 
 
-
 def _log_processing_summary(stats: ProcessingStats) -> None:
     """Log a plain-text summary of processing statistics to file logs.
 
@@ -329,7 +353,8 @@ def _log_processing_summary(stats: ProcessingStats) -> None:
         totals = stats.get_total_stats()
         total_rows = totals.get('total_rows', 0)
         successful_rows = totals.get('successful_rows', 0)
-        success_rate = (successful_rows / total_rows * 100) if total_rows > 0 else 0.0
+        success_rate = (successful_rows / total_rows *
+                        100) if total_rows > 0 else 0.0
 
         # Format processing time similar to stats display
         processing_time = stats.get_processing_time()
@@ -343,7 +368,8 @@ def _log_processing_summary(stats: ProcessingStats) -> None:
         lines: List[str] = []
         lines.append(f"Файлов обнаружено: {stats.regions_detected} регионов")
         if stats.anomaly_files_generated > 0:
-            lines.append(f"Файлы с аномалиями: {stats.anomaly_files_generated} файла")
+            lines.append(
+                f"Файлы с аномалиями: {stats.anomaly_files_generated} файла")
         lines.append(
             f"Объектов обработано: {total_rows} строк -> {successful_rows} успешно ({success_rate:.1f}%)"
         )
@@ -352,4 +378,5 @@ def _log_processing_summary(stats: ProcessingStats) -> None:
         logger.info("\n".join(["Сводка обработки:"] + lines))
     except Exception:
         # Do not let logging issues affect the main flow
-        logger.debug("Не удалось записать сводку обработки в лог.", exc_info=True)
+        logger.debug(
+            "Не удалось записать сводку обработки в лог.", exc_info=True)

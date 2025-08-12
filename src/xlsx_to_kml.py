@@ -7,6 +7,7 @@ import os
 import time
 from dataclasses import dataclass, field
 from typing import List, Tuple, Optional
+from functools import lru_cache
 import simplekml
 from openpyxl import Workbook
 from pyproj import CRS, Transformer
@@ -20,11 +21,14 @@ logger = logging.getLogger(__name__)
 # --- Compiled Regex Patterns ---
 # Compile regex patterns for better performance
 MSK_COORD_PATTERN = re.compile(r'(\d+):\s*([-\d.]+)\s*м\.,\s*([-\d.]+)\s*м\.')
-DMS_COORD_PATTERN = re.compile(r'(\d+)[°º]\s*(\d+)[\'′΄]\s*(\d+(?:[.,]\d+)?)[\"″′′˝]')
+DMS_COORD_PATTERN = re.compile(
+    r'(\d+)[°º]\s*(\d+)[\'′΄]\s*(\d+(?:[.,]\d+)?)[\"″′′˝]')
 DMS_POINT_PATTERN = re.compile(r'(\d+)[:.]\s*(?=\d+[°º])')
 ALT_POINT_PATTERN = re.compile(r'точка\s*(\d+)', re.IGNORECASE)
 
 # --- Statistics Data Structure ---
+
+
 @dataclass
 class ConversionResult:
     """Result of converting a single file to KML."""
@@ -36,14 +40,14 @@ class ConversionResult:
     error_reasons: List[str] = field(default_factory=list)
     processing_time: float = 0.0
     anomaly_file_created: bool = False
-    
+
     @property
     def success_rate(self) -> float:
         """Calculate success rate as percentage."""
         if self.total_rows == 0:
             return 0.0
         return (self.successful_rows / self.total_rows) * 100
-    
+
     @property
     def failure_rate(self) -> float:
         """Calculate failure rate as percentage."""
@@ -59,54 +63,72 @@ def create_transformer(proj4_str: str) -> Transformer:
     return Transformer.from_crs(crs, "EPSG:4326", always_xy=True)
 
 
-# Определяем строки Proj4 и создаем трансформеры
-try:
-    with open("data/proj4.json", "r", encoding="utf-8") as f:
-        proj4_strings = json.load(f)
-    # Автосоздание алиасов для МСК, где есть ровно одна зона: "МСК-06 зона 1" -> "МСК-06"
+@lru_cache(maxsize=None)
+def get_transformers(proj4_path: str = "data/proj4.json") -> dict[str, Transformer]:
+    """Лениво загружает и кэширует словарь трансформеров из файла proj4.json.
+
+    Аргументы:
+        proj4_path: Путь к JSON-файлу с описаниями проекций (Proj4).
+
+    Возвращает:
+        dict[str, Transformer]: Словарь {имя_системы: Transformer}
+    """
     try:
-        zone_key_regex = re.compile(r'^(МСК-[^з]+?)\s+зона\s+\d+\b')
-        msk_groups: dict[str, list[str]] = {}
+        with open(proj4_path, "r", encoding="utf-8") as f:
+            proj4_strings: dict[str, str] = json.load(f)
 
-        # Сгруппируем ключи по префиксу до слова "зона"
-        for name in list(proj4_strings.keys()):
-            match = zone_key_regex.match(name)
-            if match:
-                prefix = match.group(1).strip()
-                msk_groups.setdefault(prefix, []).append(name)
+        # Автосоздание алиасов для МСК, где есть ровно одна зона: "МСК-06 зона 1" -> "МСК-06"
+        try:
+            zone_key_regex = re.compile(r'^(МСК-[^з]+?)\s+зона\s+\d+\b')
+            msk_groups: dict[str, list[str]] = {}
 
-        # Для групп, где только одна зона, добавим алиас без слова "зона"
-        for prefix, full_names in msk_groups.items():
-            if len(full_names) == 1:
-                alias_key = prefix
-                full_key = full_names[0]
-                if alias_key not in proj4_strings:
-                    proj4_strings[alias_key] = proj4_strings[full_key]
-                    logger.debug(
-                        f"Добавлен алиас проекции: '{alias_key}' -> '{full_key}'")
+            # Сгруппируем ключи по префиксу до слова "зона"
+            for name in list(proj4_strings.keys()):
+                match = zone_key_regex.match(name)
+                if match:
+                    prefix = match.group(1).strip()
+                    msk_groups.setdefault(prefix, []).append(name)
+
+            # Для групп, где только одна зона, добавим алиас без слова "зона"
+            for prefix, full_names in msk_groups.items():
+                if len(full_names) == 1:
+                    alias_key = prefix
+                    full_key = full_names[0]
+                    if alias_key not in proj4_strings:
+                        proj4_strings[alias_key] = proj4_strings[full_key]
+                        logger.debug(
+                            f"Добавлен алиас проекции: '{alias_key}' -> '{full_key}'")
+        except Exception as e:
+            # Не мешаем запуску, если что-то пойдет не так с алиасами
+            logger.warning(f"Не удалось создать алиасы МСК без 'зона': {e}")
+
+        # Создаем трансформеры
+        transformers: dict[str, Transformer] = {
+            name: create_transformer(proj4)
+            for name, proj4 in proj4_strings.items()
+        }
+        return transformers
+
+    except FileNotFoundError:
+        logger.critical(
+            f"Critical Error: Could not find '{proj4_path}'. This file is required for coordinate transformations. Ensure it exists.")
+        print(
+            f"[bold red]Критическая ошибка: Не найден файл '{proj4_path}'.[/bold red]")
+        print("[bold red]Этот файл необходим для преобразования координат. Убедитесь, что он находится в папке 'data' рядом с программой.[/bold red]")
+        # Не выбрасываем SystemExit здесь, чтобы позволить тестам DMS и другим сценариям работать
+        raise
+    except json.JSONDecodeError:
+        logger.critical(
+            f"Critical Error: Could not parse '{proj4_path}'. Check the file format.")
+        print(
+            f"[bold red]Критическая ошибка: Не удалось прочитать файл '{proj4_path}'. Проверьте формат файла.[/bold red]")
+        raise
     except Exception as e:
-        # Не мешаем запуску, если что-то пойдет не так с алиасами
-        logger.warning(f"Не удалось создать алиасы МСК без 'зона': {e}")
-
-    # Создаем трансформеры
-    transformers = {name: create_transformer(proj4) for name, proj4 in proj4_strings.items()}
-except FileNotFoundError:
-    logger.critical("Critical Error: Could not find 'data/proj4.json'. This file is required for coordinate transformations. Ensure it exists in the 'data' directory relative to the application.")
-    print("[bold red]Критическая ошибка: Не найден файл 'data/proj4.json'.[/bold red]")
-    print("[bold red]Этот файл необходим для преобразования координат. Убедитесь, что он находится в папке 'data' рядом с программой.[/bold red]")
-    # Exit or raise a custom exception if the program cannot function without it
-    raise SystemExit("Missing essential data file: data/proj4.json")
-except json.JSONDecodeError:
-    logger.critical(
-        "Critical Error: Could not parse 'data/proj4.json'. Check the file format.")
-    print("[bold red]Критическая ошибка: Не удалось прочитать файл 'data/proj4.json'. Проверьте формат файла.[/bold red]")
-    raise SystemExit("Invalid format for essential data file: data/proj4.json")
-except Exception as e:
-    logger.critical(
-        f"Critical Error: An unexpected error occurred while loading projection data: {e}", exc_info=True)
-    print(
-        f"[bold red]Критическая ошибка: Непредвиденная ошибка при загрузке данных проекций: {e}[/bold red]")
-    raise SystemExit("Unexpected error loading projection data")
+        logger.critical(
+            f"Critical Error: An unexpected error occurred while loading projection data: {e}", exc_info=True)
+        print(
+            f"[bold red]Критическая ошибка: Непредвиденная ошибка при загрузке данных проекций: {e}[/bold red]")
+        raise
 
 
 def haversine_distance(lat1, lon1, lat2, lon2):
@@ -173,19 +195,22 @@ def detect_coordinate_anomalies(coordinates, threshold_km=20):
 
 def process_coordinates(input_string, transformer) -> Tuple[Optional[List[Tuple[str, float, float]]], Optional[str]]:
     """Processes a string with metric coordinates, transforming them and checking for validity."""
-    logger.debug(f"-- Начало обработки МСК для строки: '{input_string[:70]}...' --")
-    
+    logger.debug(
+        f"-- Начало обработки МСК для строки: '{input_string[:70]}...' --")
+
     logger.debug(f"1. Поиск координат МСК с помощью regex")
     coordinates = MSK_COORD_PATTERN.findall(input_string)
-    
+
     if not coordinates:
-        logger.debug("  - Координаты МСК не найдены. Возвращаем пустой результат.")
+        logger.debug(
+            "  - Координаты МСК не найдены. Возвращаем пустой результат.")
         return [], None
 
     logger.debug(f"2. Найдено {len(coordinates)} совпадений: {coordinates}")
     results = []
     for i, x_str, y_str in coordinates:
-        logger.debug(f"\n-- Обработка совпадения {i}: x='{x_str}', y='{y_str}' --")
+        logger.debug(
+            f"\n-- Обработка совпадения {i}: x='{x_str}', y='{y_str}' --")
         try:
             x = float(x_str)
             y = float(y_str)
@@ -194,10 +219,11 @@ def process_coordinates(input_string, transformer) -> Tuple[Optional[List[Tuple[
             if x == 0 and y == 0:
                 logger.debug("  - Нулевые координаты (0,0). Пропуск.")
                 continue
-            
+
             logger.debug("  - Трансформация в WGS84...")
             lon, lat = transformer.transform(y, x)
-            logger.debug(f"    - Результат трансформации: lon={lon}, lat={lat}")
+            logger.debug(
+                f"    - Результат трансформации: lon={lon}, lat={lat}")
 
             if not (-90 <= lat <= 90 and -180 <= lon <= 180):
                 reason = f"Координаты МСК вне допустимого диапазона WGS84 (lat={lat}, lon={lon}) после трансформации."
@@ -207,7 +233,8 @@ def process_coordinates(input_string, transformer) -> Tuple[Optional[List[Tuple[
             rounded_lon, rounded_lat = round(lon, 6), round(lat, 6)
             point_name = f"точка {i}"
             results.append((point_name, rounded_lon, rounded_lat))
-            logger.debug(f"  - Координаты валидны и добавлены в результат: Имя='{point_name}', Lon={rounded_lon}, Lat={rounded_lat}")
+            logger.debug(
+                f"  - Координаты валидны и добавлены в результат: Имя='{point_name}', Lon={rounded_lon}, Lat={rounded_lat}")
 
         except Exception as e:
             reason = f"Ошибка трансформации МСК координат: {e}. Исходные: x='{x_str}', y='{y_str}'."
@@ -216,9 +243,10 @@ def process_coordinates(input_string, transformer) -> Tuple[Optional[List[Tuple[
 
     logger.debug(f"\n3. Финальная проверка обработанных МСК...")
     if not results:
-        logger.debug("  - После фильтрации (например, нулевых координат) не осталось валидных точек.")
+        logger.debug(
+            "  - После фильтрации (например, нулевых координат) не осталось валидных точек.")
         return [], None
-    
+
     if len(results) >= 3:
         logger.debug("  - Запуск детектора аномалий для >= 3 точек.")
         is_anomalous, reason, _ = detect_coordinate_anomalies(results)
@@ -227,11 +255,16 @@ def process_coordinates(input_string, transformer) -> Tuple[Optional[List[Tuple[
             return None, reason
         logger.debug("  - Аномалий не обнаружено.")
 
-    logger.debug(f"4. Обработка МСК успешно завершена. Найдено {len(results)} валидных координат.")
+    logger.debug(
+        f"4. Обработка МСК успешно завершена. Найдено {len(results)} валидных координат.")
     return results, None
 
 
-def parse_coordinates(coord_str: str) -> Tuple[Optional[List[Tuple[str, float, float]]], Optional[str]]:
+def parse_coordinates(
+    coord_str: str,
+    transformers: Optional[dict[str, Transformer]] = None,
+    proj4_path: str = "data/proj4.json",
+) -> Tuple[Optional[List[Tuple[str, float, float]]], Optional[str]]:
     """Парсит строку с координатами, проверяет их валидность и возвращает список кортежей (имя, долгота, широта) или ошибку.
 
     Returns:
@@ -247,20 +280,32 @@ def parse_coordinates(coord_str: str) -> Tuple[Optional[List[Tuple[str, float, f
     logger.debug(f"1. Исходная строка после удаления пробелов: '{coord_str}'")
 
     if not coord_str:
-        logger.debug("Строка пуста после удаления пробелов. Возвращаем пустой результат.")
+        logger.debug(
+            "Строка пуста после удаления пробелов. Возвращаем пустой результат.")
         return [], None
 
     logger.debug("2. Проверка типа координат...")
 
     if 'гск' in coord_str.lower():
-        logger.debug("  - Обнаружен маркер 'гск'. Приоритет отдается парсингу ДМС (градусы, минуты, секунды).")
+        logger.debug(
+            "  - Обнаружен маркер 'гск'. Приоритет отдается парсингу ДМС (градусы, минуты, секунды).")
     else:
         logger.debug("  - Маркер 'гск' не найден.")
         if (' м.' in coord_str or ', м.' in coord_str or coord_str.endswith('м.')) and '°' not in coord_str:
-            logger.debug("  - Обнаружен маркер 'м.' и отсутствует маркер '°'. Попытка парсинга как МСК (метровые).")
+            logger.debug(
+                "  - Обнаружен маркер 'м.' и отсутствует маркер '°'. Попытка парсинга как МСК (метровые).")
+            # Ленивая загрузка трансформеров, если не переданы явно
+            if transformers is None:
+                try:
+                    transformers = get_transformers(proj4_path)
+                except Exception:
+                    reason = "Не удалось загрузить описания проекций для МСК."
+                    logger.warning(f"{reason} Строка: '{coord_str[:50]}'")
+                    return None, reason
             for key, transformer in transformers.items():
                 if key in coord_str:
-                    logger.debug(f"    - Найдена известная система координат: '{key}'. Вызов process_coordinates.")
+                    logger.debug(
+                        f"    - Найдена известная система координат: '{key}'. Вызов process_coordinates.")
                     return process_coordinates(coord_str, transformer)
             reason = "Обнаружены координаты 'м.', но не найдена известная система координат МСК в строке."
             logger.warning(f"{reason} Строка: '{coord_str[:50]}'")
@@ -268,12 +313,14 @@ def parse_coordinates(coord_str: str) -> Tuple[Optional[List[Tuple[str, float, f
 
     logger.debug("3. Проверка на наличие маркера ДМС ('°')...")
     if '°' not in coord_str:
-        logger.debug("  - Маркер '°' не найден. Предполагается, что в строке нет координат. Возвращаем пустой результат.")
+        logger.debug(
+            "  - Маркер '°' не найден. Предполагается, что в строке нет координат. Возвращаем пустой результат.")
         return [], None
 
     logger.debug("  - Маркер '°' найден. Начинается парсинг ДМС.")
     parts = coord_str.split(';')
-    logger.debug(f"4. Строка разделена на {len(parts)} частей по символу ';': {parts}")
+    logger.debug(
+        f"4. Строка разделена на {len(parts)} частей по символу ';': {parts}")
 
     # Сначала собираем все DMS координаты из всех частей
     all_dms_coords = []
@@ -293,7 +340,8 @@ def parse_coordinates(coord_str: str) -> Tuple[Optional[List[Tuple[str, float, f
         coords_match = DMS_COORD_PATTERN.findall(part)
 
         if coords_match:
-            logger.debug(f"  - Найдено {len(coords_match)} совпадений ДМС: {coords_match}")
+            logger.debug(
+                f"  - Найдено {len(coords_match)} совпадений ДМС: {coords_match}")
             # Добавляем информацию о том, откуда взята координата (для определения широты/долготы)
             for coord in coords_match:
                 coord_info = {
@@ -304,13 +352,14 @@ def parse_coordinates(coord_str: str) -> Tuple[Optional[List[Tuple[str, float, f
                 all_dms_coords.append(coord_info)
         else:
             logger.debug("  - Совпадений ДМС не найдено в этой части.")
-    
+
     logger.debug(f"\n5. Собрано всего ДМС координат: {len(all_dms_coords)}")
-    
+
     if not all_dms_coords:
-        logger.debug("  - ДМС координаты не найдены. Возвращаем пустой результат.")
+        logger.debug(
+            "  - ДМС координаты не найдены. Возвращаем пустой результат.")
         return [], None
-    
+
     # Проверяем четность количества координат
     if len(all_dms_coords) % 2 != 0:
         reason = f"Нечетное количество найденных ДМС координат ({len(all_dms_coords)}). Ожидается пара (широта, долгота)."
@@ -319,33 +368,40 @@ def parse_coordinates(coord_str: str) -> Tuple[Optional[List[Tuple[str, float, f
 
     result = []
     has_valid_dms = True
-    
+
     # Формируем пары координат
     for j in range(0, len(all_dms_coords), 2):
         try:
             lat_info = all_dms_coords[j]
             lon_info = all_dms_coords[j+1]
-            
+
             lat_parts = lat_info['coord']
             lon_parts = lon_info['coord']
-            
-            logger.debug(f"\n-- Пара {j//2 + 1}: --")
-            logger.debug(f"  - Широта (parts)={lat_parts} из части '{lat_info['part'][:50]}...'")
-            logger.debug(f"  - Долгота (parts)={lon_parts} из части '{lon_info['part'][:50]}...'")
 
-            lat = sum(float(x.replace(',', '.')) / (60 ** k) for k, x in enumerate(lat_parts))
-            lon = sum(float(x.replace(',', '.')) / (60 ** k) for k, x in enumerate(lon_parts))
-            logger.debug(f"  - Конвертировано в десятичные: lat={lat}, lon={lon}")
+            logger.debug(f"\n-- Пара {j//2 + 1}: --")
+            logger.debug(
+                f"  - Широта (parts)={lat_parts} из части '{lat_info['part'][:50]}...'")
+            logger.debug(
+                f"  - Долгота (parts)={lon_parts} из части '{lon_info['part'][:50]}...'")
+
+            lat = sum(float(x.replace(',', '.')) / (60 ** k)
+                      for k, x in enumerate(lat_parts))
+            lon = sum(float(x.replace(',', '.')) / (60 ** k)
+                      for k, x in enumerate(lon_parts))
+            logger.debug(
+                f"  - Конвертировано в десятичные: lat={lat}, lon={lon}")
 
             # Проверяем индикаторы направления в обеих частях
             combined_text = lat_info['part'] + " " + lon_info['part']
-            
+
             if "ЮШ" in combined_text or "S" in combined_text:
                 lat = -lat
-                logger.debug("  - Обнаружен южный идентификатор (ЮШ/S). Широта инвертирована.")
+                logger.debug(
+                    "  - Обнаружен южный идентификатор (ЮШ/S). Широта инвертирована.")
             if "ЗД" in combined_text or "W" in combined_text:
                 lon = -lon
-                logger.debug("  - Обнаружен западный идентификатор (ЗД/W). Долгота инвертирована.")
+                logger.debug(
+                    "  - Обнаружен западный идентификатор (ЗД/W). Долгота инвертирована.")
 
             if not (-90 <= lat <= 90 and -180 <= lon <= 180):
                 reason = f"Координаты ДМС вне допустимого диапазона WGS84 (lat={lat}, lon={lon})."
@@ -375,10 +431,11 @@ def parse_coordinates(coord_str: str) -> Tuple[Optional[List[Tuple[str, float, f
 
             if lat != 0 or lon != 0:
                 result.append((point_name, round(lon, 6), round(lat, 6)))
-                logger.debug("  - Координаты не нулевые и добавлены в результат.")
+                logger.debug(
+                    "  - Координаты не нулевые и добавлены в результат.")
             else:
                 logger.debug("  - Координаты нулевые и пропущены.")
-                
+
         except Exception as e:
             reason = f"Внутренняя ошибка при обработке пары ДМС: {e}."
             logger.error(reason)
@@ -398,8 +455,10 @@ def parse_coordinates(coord_str: str) -> Tuple[Optional[List[Tuple[str, float, f
             return None, reason
         logger.debug("  - Аномалий не обнаружено.")
 
-    logger.debug(f"7. Парсинг успешно завершен. Найдено {len(result)} валидных координат.")
+    logger.debug(
+        f"7. Парсинг успешно завершен. Найдено {len(result)} валидных координат.")
     return result, None
+
 
 def find_column_index(sheet, target_names: List[str], exact_match: bool = False) -> int:
     """Находит индекс столбца для любого из заданных имен заголовков в строках 1-8.
@@ -471,23 +530,30 @@ def create_kml_point(kml, name: str, coords: Tuple[float, float], description: s
     point.style.labelstyle.scale = 0.8
 
 
-def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_numbers: Optional[List[int]] = None, filename: Optional[str] = None) -> ConversionResult:
+def create_kml_from_coordinates(
+    sheet,
+    output_file: str = "output.kml",
+    sort_numbers: Optional[List[int]] = None,
+    filename: Optional[str] = None,
+    transformers: Optional[dict[str, Transformer]] = None,
+    proj4_path: str = "data/proj4.json",
+) -> ConversionResult:
     """Создает KML-файл из листа с координатами и сохраняет аномалии в отдельный файл. 
-    
+
     Args:
         sheet: Excel worksheet to process
         output_file: Path for output KML file
         sort_numbers: Optional list of numbers for coordinate sorting
         filename: Name of the source file for statistics
-        
+
     Returns:
         ConversionResult: Detailed statistics about the conversion process
     """
     start_time = time.time()
-    
+
     # Create logger adapter with filename for automatic inclusion in log messages
     file_logger = FilenameLoggerAdapter(logger, filename)
-    
+
     # Initialize statistics
     stats = ConversionResult(
         filename=filename or os.path.basename(output_file)
@@ -513,28 +579,32 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
         coords_str = row[indices["coord"]] if indices["coord"] != -1 else None
         if not isinstance(coords_str, str) or not coords_str.strip():
             continue
-            
+
         # Count this as a data row
         stats.total_rows += 1
-        
+
         main_name = row[indices["name"]
                         ] if indices["name"] != -1 else f"Row {row_idx}"
         file_logger.info(f"------------")
 
         # Вызываем обновленную функцию парсинга
-        coords_array, error_reason = parse_coordinates(coords_str)
+        coords_array, error_reason = parse_coordinates(
+            coords_str,
+            transformers=transformers,
+            proj4_path=proj4_path,
+        )
 
         # Если parse_coordinates вернула ошибку, пропускаем строку (она будет обработана как аномальная в другом модуле)
         if error_reason is not None:
             # Логирование уже произошло внутри parse_coordinates
             file_logger.warning(
                 f"Строка {row_idx} (№ п/п {main_name}) пропущена из-за ошибки парсинга: {error_reason}")
-            
+
             # Update statistics
             stats.failed_rows += 1
             stats.error_reasons.append(error_reason)
             # Note: anomaly_rows will be set later based on whether anomaly file was actually created
-            
+
             # Add anomaly details to the list
             anomalies_list.append({
                 "row_index": row_idx,
@@ -555,7 +625,7 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
 
         # Count as successful row
         stats.successful_rows += 1
-        
+
         file_logger.info(
             f"Строка {row_idx} (№ п/п {main_name}): Распознано {len(coords_array)} точек.")
 
@@ -587,7 +657,7 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
                         desc.append(f"{column_name}: {date_str}")
                     else:
                         desc.append(f"{column_name}: {row[indices[key]]}")
-            
+
             description = '\n'.join(desc)
             description += "\n == Разработано RUDI.ru =="
 
@@ -609,7 +679,7 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
                     sorted_coords = [(lon, lat)
                                      for _, lon, lat in coords_array]
 
-                polygon.outerboundaryis = sorted_coords # type: ignore
+                polygon.outerboundaryis = sorted_coords  # type: ignore
                 polygon.style.linestyle.color = color
                 polygon.style.linestyle.width = 3
                 polygon.style.polystyle.color = simplekml.Color.changealphaint(
@@ -631,7 +701,8 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
                     # Создаем отдельные точки, если линия не была создана
                     index = 1
                     for point_name, lon, lat in coords_array:
-                        file_logger.debug(f"  Точка: {point_name} ({lat}, {lon})")
+                        file_logger.debug(
+                            f"  Точка: {point_name} ({lat}, {lon})")
                         # print(f"{lat}, {lon}")
                         if row[indices["goal"]] == "Сброс сточных вод":
                             full_name = f"№ п/п {main_name} - сброс {index}"
@@ -660,7 +731,7 @@ def create_kml_from_coordinates(sheet, output_file: str = "output.kml", sort_num
 
     # Finalize statistics
     stats.processing_time = time.time() - start_time
-    
+
     return stats
 
 
@@ -730,6 +801,7 @@ def save_anomalies_to_excel(anomalies: List[dict], original_basename: str, outpu
         print(
             f"[bold red]Ошибка при сохранении файла аномалий '{output_path}': {e}[/bold red]")
         return False  # Return False on error
+
 
 if __name__ == "__main__":
     # Ensure the logger is at DEBUG level for the console when in debug mode
