@@ -14,6 +14,7 @@ from src.xlsx_to_kml import (
     ParseError,
     Point,
 )
+from src.config import Config
 from pyproj import Transformer
 
 
@@ -125,7 +126,8 @@ def _parse_coordinate_string(input_string: str, mode_choice: str, selected_trans
 
     try:
         if mode_choice == "1":
-            coords: List[Point] = parse_coordinates(input_string)
+            coords: List[Point] = parse_coordinates(
+                input_string, config=Config())
             return coords, None
         elif mode_choice == "2":
             if (' м.' in input_string or ', м.' in input_string or input_string.endswith('м.')) and '°' not in input_string:
@@ -133,10 +135,10 @@ def _parse_coordinate_string(input_string: str, mode_choice: str, selected_trans
                     raise ParseError(
                         "Не задан трансформер Proj4 для режима МСК.")
                 coords = process_coordinates(
-                    input_string, cast(Transformer, selected_transformer))
+                    input_string, cast(Transformer, selected_transformer), config=Config())
                 return coords, None
             else:
-                coords = parse_coordinates(input_string)
+                coords = parse_coordinates(input_string, config=Config())
                 return coords, None
     except ParseError as e:
         return None, str(e)

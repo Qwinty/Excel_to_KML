@@ -297,7 +297,8 @@ def process_mode_2_single_file(config: Config) -> None:
                 workbook.active,
                 output_file=str(output_filename),
                 filename=input_path.name,
-                transformers=transformers
+                transformers=transformers,
+                config=config
             )
 
             single_stats.add_file_result(conversion_result)

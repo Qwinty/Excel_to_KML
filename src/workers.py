@@ -6,6 +6,7 @@ from openpyxl import load_workbook
 
 from src.utils import setup_logging
 from src.xlsx_to_kml import create_kml_from_coordinates, ConversionResult, get_transformers
+from src.config import Config
 
 
 def initialize_worker_logging() -> None:
@@ -42,7 +43,8 @@ def process_file_worker(
             workbook.active,
             output_file=kml_file_path,
             filename=filename,
-            transformers=transformers
+            transformers=transformers,
+            config=Config()
         )
 
         return True, filename, conversion_result, None
