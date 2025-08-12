@@ -1,6 +1,8 @@
 import logging
+import json
 import re
 from typing import Dict, List, Tuple, Optional, cast
+from functools import lru_cache
 
 from pyproj import Transformer
 
@@ -96,6 +98,16 @@ def _derive_point_name(part_idx: int, pair_idx: int, mapping: Dict[int, List[str
     return name
 
 
+def _has_standalone_token(text: str, token: str) -> bool:
+    """Возвращает True, если в тексте встречается токен как отдельное слово/метка.
+
+    Учитываем кириллицу и латиницу. Например, ' ЗД' в координате
+    должно считаться, а 'ЮЗД-25' — нет.
+    """
+    pattern = rf"(?<![A-Za-zА-Яа-яЁё]){re.escape(token)}(?![A-Za-zА-Яа-яЁё])"
+    return re.search(pattern, text, flags=re.IGNORECASE) is not None
+
+
 def parse_dms_coordinates(coord_str: str) -> List[Point]:
     all_dms_coords, point_numbers_by_part = _extract_dms_matches(coord_str)
     if not all_dms_coords:
@@ -116,9 +128,13 @@ def parse_dms_coordinates(coord_str: str) -> List[Point]:
             lon = _dms_tuple_to_decimal(lon_parts)
 
             combined_text = f"{cast(str, lat_info['part'])} {cast(str, lon_info['part'])}"
-            if "ЮШ" in combined_text or "S" in combined_text:
+            if _has_standalone_token(combined_text, "ЮШ") or _has_standalone_token(combined_text, "S"):
+                logger.debug(
+                    f"  - ЮШ в строке. Преобразуем широту в отрицательную: {lat} -> {-lat}")
                 lat = -lat
-            if "ЗД" in combined_text or "W" in combined_text:
+            if _has_standalone_token(combined_text, "ЗД") or _has_standalone_token(combined_text, "W"):
+                logger.debug(
+                    f"  - ЗД в строке. Преобразуем долготу в отрицательную: {lon} -> {-lon}")
                 lon = -lon
 
             if not _validate_wgs84_range(lat, lon):
@@ -154,6 +170,68 @@ def process_coordinates(input_string: str, transformer: Transformer, config: Con
     return results
 
 
+# --- SK-42 support ---
+
+# PyProj pipeline for transforming SK-42 (Pulkovo 1942, Krassovsky) geographic
+# coordinates (degrees) to WGS84 geographic coordinates (degrees).
+_SK42_PIPELINE = (
+    "+proj=pipeline +step +proj=axisswap +order=2,1 "
+    "+step +proj=unitconvert +xy_in=deg +xy_out=rad "
+    "+step +proj=push +v_3 +step +proj=cart +ellps=krass "
+    "+step +proj=helmert +x=23.57 +y=-140.95 +z=-79.8 "
+    "+rx=0 +ry=-0.35 +rz=-0.79 +s=-0.22 +convention=coordinate_frame "
+    "+step +inv +proj=cart +ellps=WGS84 +step +proj=pop +v_3 "
+    "+step +proj=unitconvert +xy_in=rad +xy_out=deg "
+    "+step +proj=axisswap +order=2,1"
+)
+
+
+@lru_cache(maxsize=1)
+def _get_sk42_transformer() -> Transformer:
+    return Transformer.from_pipeline(_SK42_PIPELINE)
+
+
+@lru_cache(maxsize=1)
+def _load_objects_info(path: str = "data/objects_info.json") -> Dict[str, List[str]]:
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return cast(Dict[str, List[str]], json.load(f))
+    except FileNotFoundError:
+        logger.warning(
+            "Файл 'data/objects_info.json' не найден. SK-42 определение будет пропущено.")
+        return {}
+    except Exception as e:
+        logger.warning(
+            f"Не удалось загрузить 'data/objects_info.json' ({e}). SK-42 определение будет пропущено.")
+        return {}
+
+
+def _detect_system_key_for_string(coord_str: str) -> Optional[str]:
+    """Возвращает ключ системы координат из objects_info.json, если найдено точное совпадение строки."""
+    info = _load_objects_info()
+    coord_trimmed = coord_str.strip()
+    for system_key, entries in info.items():
+        for s in entries:
+            if s.strip() == coord_trimmed:
+                return system_key
+    return None
+
+
+def transform_points_sk42_to_wgs84(points: List[Point]) -> List[Point]:
+    transformer = _get_sk42_transformer()
+    transformed: List[Point] = []
+    for p in points:
+        # В pipeline ожидается порядок (lat, lon) и возвращает (lat, lon)
+        lat_wgs, lon_wgs = transformer.transform(p.lat, p.lon)
+        if not _validate_wgs84_range(lat_wgs, lon_wgs):
+            raise ParseError(
+                f"Координаты после преобразования СК-42→WGS84 вне диапазона (lat={lat_wgs}, lon={lon_wgs}).")
+        transformed.append(
+            Point(name=p.name, lon=round(lon_wgs, 6), lat=round(lat_wgs, 6))
+        )
+    return transformed
+
+
 def parse_coordinates(
     coord_str: str,
     transformers: Optional[dict[str, Transformer]] = None,
@@ -175,6 +253,31 @@ def parse_coordinates(
         return []
 
     logger.debug("2. Определение формата координат (детектор)...")
+
+    # 2.a. Точное совпадение строки с любым объектом из objects_info.json → определяем систему
+    system_key = _detect_system_key_for_string(coord_str)
+    if system_key:
+        logger.debug(
+            f"  - Строка найдена в 'objects_info.json'. Система координат: '{system_key}'.")
+        # Сейчас поддерживаем только СК-42
+        if system_key.strip().upper() == "СК-42":
+            logger.debug("    - Применяем преобразование СК-42→WGS84.")
+            dms_points = parse_dms_coordinates(coord_str)
+            if not dms_points:
+                return []
+            transformed_points = transform_points_sk42_to_wgs84(dms_points)
+            if len(transformed_points) >= 3:
+                is_anomalous, reason, _ = detect_coordinate_anomalies(
+                    transformed_points, threshold_km=config.anomaly_threshold_km)
+                if is_anomalous:
+                    logger.warning(f"  - Детектор аномалий сообщил: {reason}")
+                    raise ParseError(reason)
+            logger.debug(
+                f"7. Парсинг СК-42 успешно завершен. Найдено {len(transformed_points)} валидных координат.")
+            return transformed_points
+        else:
+            logger.debug(
+                "    - Для данной системы координат преобразование пока не настроено. Продолжаем обычный разбор.")
 
     if _should_prioritize_dms(coord_str):
         logger.debug("  - Обнаружен маркер 'гск'. Приоритет ДМС.")

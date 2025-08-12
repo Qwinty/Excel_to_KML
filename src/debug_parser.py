@@ -16,6 +16,7 @@ from src.xlsx_to_kml import (
 )
 from src.config import Config
 from pyproj import Transformer
+from src.xlsx_to_kml.parsing import parse_dms_coordinates, transform_points_sk42_to_wgs84
 
 
 console = Console()
@@ -53,20 +54,21 @@ def _get_debug_mode_choice() -> str:
 
     mode_table.add_row("1", "Автоматический режим (как в основной программе)")
     mode_table.add_row("2", "Ввести собственную proj4 строку")
-    mode_table.add_row("3", "Вернуться в главное меню")
+    mode_table.add_row("3", "СК-42 -> WGS-84")
+    mode_table.add_row("4", "Вернуться в главное меню")
 
     console.print(mode_table)
 
     try:
         return Prompt.ask(
             "Введите номер режима",
-            choices=["1", "2", "3"],
+            choices=["1", "2", "3", "4"],
             show_choices=False
         )
     except (KeyboardInterrupt, EOFError):
         console.print(
             "\n[yellow]Ввод отменен. Возврат в главное меню.[/yellow]")
-        return "3"
+        return "4"
 
 
 def _get_custom_proj4_transformer() -> Tuple[Optional[Any], Optional[str]]:
@@ -140,6 +142,13 @@ def _parse_coordinate_string(input_string: str, mode_choice: str, selected_trans
             else:
                 coords = parse_coordinates(input_string, config=Config())
                 return coords, None
+        elif mode_choice == "3":
+            # СК-42 -> WGS-84: парсим ДМС и применяем готовый хелпер трансформации
+            dms_points: List[Point] = parse_dms_coordinates(input_string)
+            if not dms_points:
+                return [], None
+            transformed = transform_points_sk42_to_wgs84(dms_points)
+            return transformed, None
     except ParseError as e:
         return None, str(e)
 
@@ -180,7 +189,14 @@ def _display_parsing_results(coords, reason):
 
 
 def _run_coordinate_parsing_loop(mode_choice: str, selected_transformer, selected_proj4_name):
-    mode_text = 'Автоматический' if mode_choice == '1' else f'Ручной ({selected_proj4_name})'
+    if mode_choice == '1':
+        mode_text = 'Автоматический'
+    elif mode_choice == '2':
+        mode_text = f'Ручной ({selected_proj4_name})'
+    elif mode_choice == '3':
+        mode_text = 'СК-42 → WGS-84'
+    else:
+        mode_text = 'Неизвестный'
 
     console.print(Panel(
         f"[bold green]Режим парсинга: {mode_text}[/bold green]\n\n"
@@ -224,7 +240,7 @@ def debug_coordinate_parser() -> None:
         while True:
             mode_choice = _get_debug_mode_choice()
 
-            if mode_choice == "3":
+            if mode_choice == "4":
                 break
 
             selected_transformer = None

@@ -11,7 +11,7 @@ from pyproj import Transformer
 from src.utils import generate_random_color, sort_coordinates, FilenameLoggerAdapter
 from src.config import Config
 
-from .models import ConversionResult, Point, ParseError
+from .models import ConversionResult, Point, ParseError, WaterUsageType, get_water_usage_type, generate_point_name
 from .parsing import parse_coordinates
 from .io_excel import get_column_indices
 from .io_kml import create_kml_point, create_kml_line, create_kml_polygon
@@ -176,8 +176,14 @@ def create_kml_from_coordinates(
             description = "\n".join(desc_parts)
             description += "\n == Разработано RUDI.ru =="
 
+            # Определяем тип водопользования один раз
+            goal_text = row[indices["goal"]] if indices["goal"] != -1 else ""
+            water_type = get_water_usage_type(goal_text)
+
             skip_terms = config.pipeline_skip_terms
-            if len(coords_array) > 3 and not any(term in row[indices["goal"]] for term in skip_terms):
+
+            # Проверяем, можно ли создать полигон
+            if len(coords_array) > 3 and not any(term in goal_text for term in skip_terms):
                 file_logger.debug(
                     f"Строка {row_idx} (№ п/п {main_name}): Создание полигона")
 
@@ -189,26 +195,28 @@ def create_kml_from_coordinates(
 
                 create_kml_polygon(
                     kml, name=f"№ п/п {main_name}", coords=sorted_coords, description=description, color=color, config=config)
+
+                # Проверяем, можно ли создать линию (только для прочих типов водопользования)
+            elif (len(coords_array) > 2
+                  and all(p.name.startswith("точка") for p in coords_array)
+                  and water_type == WaterUsageType.OTHER):
+                file_logger.debug(
+                    f"Строка {row_idx} (№ п/п {main_name}): Создание линии")
+                create_kml_line(kml, name=f"№ п/п {main_name}", coords=[
+                                (p.lon, p.lat) for p in coords_array], description=description, color=color, config=config)
+
+            # Создаем отдельные точки
             else:
-                if len(coords_array) > 2 \
-                        and all(p.name.startswith("точка") for p in coords_array) \
-                        and row[indices["goal"]] != "Сброс сточных вод":
+                index = 1
+                for p in coords_array:
                     file_logger.debug(
-                        f"Строка {row_idx} (№ п/п {main_name}): Создание линии")
-                    create_kml_line(kml, name=f"№ п/п {main_name}", coords=[
-                                    (p.lon, p.lat) for p in coords_array], description=description, color=color, config=config)
-                else:
-                    index = 1
-                    for p in coords_array:
-                        file_logger.debug(
-                            f"  Точка: {p.name} ({p.lat}, {p.lon})")
-                        if row[indices["goal"]] == "Сброс сточных вод":
-                            full_name = f"№ п/п {main_name} - сброс {index}"
-                        else:
-                            full_name = f"№ п/п {main_name} - {p.name}" if p.name else f"№ п/п {main_name}"
-                        create_kml_point(
-                            kml, full_name, (p.lon, p.lat), description, color, config=config)
-                        index += 1
+                        f"  Точка: {p.name} ({p.lat}, {p.lon})")
+
+                    full_name = generate_point_name(
+                        main_name, water_type, index, p.name)
+                    create_kml_point(
+                        kml, full_name, (p.lon, p.lat), description, color, config=config)
+                    index += 1
 
     kml.save(output_file)
 
