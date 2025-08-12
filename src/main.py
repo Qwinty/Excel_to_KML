@@ -35,7 +35,20 @@ def main() -> None:
         if user_input == "1":
             process_mode_1_full_processing(config)
         elif user_input == "2":
-            process_mode_2_single_file(config)
+            # Temporarily elevate console log level to INFO for Mode 2
+            root_logger = logging.getLogger()
+            previous_levels = []
+            for handler in root_logger.handlers:
+                if isinstance(handler, logging.StreamHandler):
+                    previous_levels.append((handler, handler.level))
+                    handler.setLevel(logging.INFO)
+
+            try:
+                process_mode_2_single_file(config)
+            finally:
+                # Restore previous console handler levels
+                for handler, level in previous_levels:
+                    handler.setLevel(level)
         elif user_input == "3":
             debug_coordinate_parser()
         elif user_input == "4":
