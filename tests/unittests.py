@@ -1,6 +1,5 @@
 import unittest
-# Replace 'your_module' with the actual module name
-from src.xlsx_to_kml import parse_coordinates
+from src.xlsx_to_kml import parse_coordinates, ParseError, Point
 import logging
 
 
@@ -29,10 +28,10 @@ class TestParseCoordinates(unittest.TestCase):
             ('точка 10', 50.052894, 53.136781)
         ]
 
-        result_coords, error_reason = parse_coordinates(input_data)
-        self.assertIsNone(
-            error_reason, f"Expected no error, but got: {error_reason}")
-        self.assertEqual(result_coords, expected_output)
+        result_coords = parse_coordinates(input_data)
+        # Map to comparable tuples
+        as_tuples = [(p.name, p.lon, p.lat) for p in result_coords]
+        self.assertEqual(as_tuples, expected_output)
 
     def test_parse_coordinates_case1_dms_multiline_dots(self):
         input_data = """
@@ -55,10 +54,9 @@ class TestParseCoordinates(unittest.TestCase):
             ('точка 10', 50.052894, 53.136781)
         ]
 
-        result_coords, error_reason = parse_coordinates(input_data)
-        self.assertIsNone(
-            error_reason, f"Expected no error, but got: {error_reason}")
-        self.assertEqual(result_coords, expected_output)
+        result_coords = parse_coordinates(input_data)
+        as_tuples = [(p.name, p.lon, p.lat) for p in result_coords]
+        self.assertEqual(as_tuples, expected_output)
 
     def test_parse_coordinates_case2_dms_semicolon_separated(self):
         input_data = """
@@ -95,13 +93,11 @@ class TestParseCoordinates(unittest.TestCase):
             ('точка 14', 50.062133, 53.140818)
         ]
 
-        result_coords, error_reason = parse_coordinates(input_data)
-        self.assertIsNone(
-            error_reason, f"Expected no error, but got: {error_reason}")
+        result_coords = parse_coordinates(input_data)
         self.assertEqual(len(result_coords), len(
             expected_output), f"Expected {len(expected_output)} coords, got {len(result_coords)}")
         for i, (res, exp) in enumerate(zip(result_coords, expected_output)):
-            self.assertEqual(res, exp, f"Mismatch at index {i}")
+            self.assertEqual((res.name, res.lon, res.lat), exp, f"Mismatch at index {i}")
         # self.assertEqual(result_coords, expected_output) # Use element-wise compare instead
 
     def test_parse_coordinates_case3_msk_single_point(self):
@@ -112,10 +108,8 @@ class TestParseCoordinates(unittest.TestCase):
             ('точка 1', 50.062209, 53.142413)
         ]
 
-        result_coords, error_reason = parse_coordinates(input_data)
-        self.assertIsNone(
-            error_reason, f"Expected no error, but got: {error_reason}")
-        self.assertEqual(result_coords, expected_output)
+        result_coords = parse_coordinates(input_data)
+        self.assertEqual([(p.name, p.lon, p.lat) for p in result_coords], expected_output)
 
     def test_parse_coordinates_case4_dms_no_point_numbers(self):
         input_data = """
@@ -126,10 +120,8 @@ class TestParseCoordinates(unittest.TestCase):
             ('точка 2', 123.269444, 55.203611)
         ]
 
-        result_coords, error_reason = parse_coordinates(input_data)
-        self.assertIsNone(
-            error_reason, f"Expected no error, but got: {error_reason}")
-        self.assertEqual(result_coords, expected_output)
+        result_coords = parse_coordinates(input_data)
+        self.assertEqual([(p.name, p.lon, p.lat) for p in result_coords], expected_output)
 
     def test_parse_coordinates_case5_gsk_priority_over_msk(self):
         input_data = """
@@ -144,54 +136,46 @@ class TestParseCoordinates(unittest.TestCase):
             ('точка 6', 55.943313, 54.522262)
         ]
         self.maxDiff = None
-        result_coords, error_reason = parse_coordinates(input_data)
-        self.assertIsNone(
-            error_reason, f"Expected no error, but got: {error_reason}")
-        self.assertEqual(result_coords, expected_output)
+        result_coords = parse_coordinates(input_data)
+        self.assertEqual([(p.name, p.lon, p.lat) for p in result_coords], expected_output)
 
     def test_empty_and_whitespace_string(self):
         """Tests that empty or whitespace-only strings are handled gracefully."""
-        coords, reason = parse_coordinates("")
-        self.assertIsNone(reason)
+        coords = parse_coordinates("")
         self.assertEqual(coords, [])
-        coords, reason = parse_coordinates("   \t\n  ")
-        self.assertIsNone(reason)
+        coords = parse_coordinates("   \t\n  ")
         self.assertEqual(coords, [])
 
     def test_no_valid_coordinates_in_string(self):
         """Tests a string with descriptive text but no coordinate data."""
         input_data = "Просто текстовое описание без каких-либо координат."
-        coords, reason = parse_coordinates(input_data)
-        self.assertIsNone(reason)
+        coords = parse_coordinates(input_data)
         self.assertEqual(coords, [])
 
     def test_odd_number_of_dms_coordinates_error(self):
         """Tests for an error when an odd number of DMS values are found."""
         input_data = "53° 8' 26\"СШ 50° 3' 44\" ВД ; 53° 8' 26\"СШ"
-        coords, reason = parse_coordinates(input_data)
-        self.assertIsNone(coords)
-        self.assertIsNotNone(reason)
-        self.assertIn("Нечетное количество найденных ДМС координат", reason)
+        with self.assertRaises(ParseError) as cm:
+            parse_coordinates(input_data)
+        self.assertIn("Нечетное количество найденных ДМС координат", str(cm.exception))
 
     def test_msk_unknown_zone_error(self):
         """Tests for an error when MSK coordinates are present but the zone is not in proj4.json."""
         input_data = "МСК-99 зона 1: 12345.67 м., 76543.21 м."
-        coords, reason = parse_coordinates(input_data)
-        self.assertIsNone(coords)
-        self.assertIsNotNone(reason)
-        self.assertIn("не найдена известная система координат МСК", reason)
+        with self.assertRaises(ParseError) as cm:
+            parse_coordinates(input_data)
+        self.assertIn("не найдена известная система координат МСК", str(cm.exception))
 
     def test_dms_with_south_west_directions(self):
         """Tests correct parsing of South (ЮШ) and West (ЗД) directions."""
         # FIX: The weird input 40°50'60" is calculated by the parser as 40.85. The test must expect this value.
         input_data = "10°20'30\" ЮШ 40°50'60\" ЗД"
         expected_output = [('точка 1', -40.85, -10.341667)]
-        result_coords, error_reason = parse_coordinates(input_data)
-        self.assertIsNone(error_reason)
+        result_coords = parse_coordinates(input_data)
         self.assertEqual(len(result_coords), 1)
-        self.assertEqual(expected_output[0][0], result_coords[0][0])
-        self.assertAlmostEqual(expected_output[0][1], result_coords[0][1], places=2) # Lower precision due to weird input
-        self.assertAlmostEqual(expected_output[0][2], result_coords[0][2], places=6)
+        self.assertEqual(expected_output[0][0], result_coords[0].name)
+        self.assertAlmostEqual(expected_output[0][1], result_coords[0].lon, places=2) # Lower precision due to weird input
+        self.assertAlmostEqual(expected_output[0][2], result_coords[0].lat, places=6)
 
     def test_anomaly_detection_error(self):
         """Tests that geographically distant points are flagged as an anomaly."""
@@ -200,19 +184,17 @@ class TestParseCoordinates(unittest.TestCase):
         2. 55°45'25"СШ 37°37'10"ВД;
         3. 43°06'50"СШ 131°53'07"ВД
         """
-        coords, reason = parse_coordinates(input_data)
-        self.assertIsNone(coords)
-        self.assertIsNotNone(reason)
-        self.assertIn("Обнаружены аномальные координаты", reason)
+        with self.assertRaises(ParseError) as cm:
+            parse_coordinates(input_data)
+        self.assertIn("Обнаружены аномальные координаты", str(cm.exception))
 
     def test_zero_coordinates_are_skipped(self):
         """Tests that points with (0,0) coordinates are ignored."""
         # FIX: The parser finds "2." and correctly names the point 'точка 2'.
         input_data = "1: 0°0'0\"СШ 0°0'0\"ВД; 2: 55°45'21\"СШ 37°37'04\"ВД"
         expected_output = [('точка 2', 37.617778, 55.755833)]
-        result_coords, error_reason = parse_coordinates(input_data)
-        self.assertIsNone(error_reason)
-        self.assertEqual(result_coords, expected_output)
+        result_coords = parse_coordinates(input_data)
+        self.assertEqual([(p.name, p.lon, p.lat) for p in result_coords], expected_output)
 
     def test_msk_multiple_points(self):
         """Tests a string containing multiple MSK coordinate pairs."""
@@ -222,27 +204,24 @@ class TestParseCoordinates(unittest.TestCase):
             ('точка 1', 50.062209, 53.142413),
             ('точка 2', 50.062373, 53.142575)
         ]
-        result_coords, error_reason = parse_coordinates(input_data)
-        self.assertIsNone(error_reason)
+        result_coords = parse_coordinates(input_data)
         self.assertEqual(len(result_coords), 2)
         for res, exp in zip(result_coords, expected_output):
-            self.assertEqual(exp[0], res[0])
-            self.assertAlmostEqual(exp[1], res[1], places=4)
-            self.assertAlmostEqual(exp[2], res[2], places=4)
+            self.assertEqual(exp[0], res.name)
+            self.assertAlmostEqual(exp[1], res.lon, places=4)
+            self.assertAlmostEqual(exp[2], res.lat, places=4)
 
     def test_out_of_range_wgs84_coordinates_error(self):
         """Tests that coordinates outside the valid WGS84 range are rejected."""
         input_data_lat = "91°0'0\"СШ 40°0'0\"ВД"
-        coords, reason = parse_coordinates(input_data_lat)
-        self.assertIsNone(coords)
-        self.assertIsNotNone(reason)
-        self.assertIn("Координаты ДМС вне допустимого диапазона WGS84", reason)
+        with self.assertRaises(ParseError) as cm1:
+            parse_coordinates(input_data_lat)
+        self.assertIn("Координаты ДМС вне допустимого диапазона WGS84", str(cm1.exception))
 
         input_data_lon = "90°0'0\"СШ 181°0'0\"ВД"
-        coords_lon, reason_lon = parse_coordinates(input_data_lon)
-        self.assertIsNone(coords_lon)
-        self.assertIsNotNone(reason_lon)
-        self.assertIn("Координаты ДМС вне допустимого диапазона WGS84", reason_lon)
+        with self.assertRaises(ParseError) as cm2:
+            parse_coordinates(input_data_lon)
+        self.assertIn("Координаты ДМС вне допустимого диапазона WGS84", str(cm2.exception))
 
 
 if __name__ == '__main__':

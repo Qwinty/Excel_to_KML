@@ -1,5 +1,5 @@
 import logging
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, Optional, Tuple, cast
 
 from rich.console import Console
 from rich.panel import Panel
@@ -7,7 +7,14 @@ from rich.prompt import Prompt
 from rich.table import Table
 
 from src.utils import setup_logging
-from src.xlsx_to_kml import parse_coordinates, process_coordinates, create_transformer
+from src.xlsx_to_kml import (
+    parse_coordinates,
+    process_coordinates,
+    create_transformer,
+    ParseError,
+    Point,
+)
+from pyproj import Transformer
 
 
 console = Console()
@@ -113,13 +120,21 @@ def _get_custom_proj4_transformer() -> Tuple[Optional[Any], Optional[str]]:
 def _parse_coordinate_string(input_string: str, mode_choice: str, selected_transformer: Optional[Any]):
     logger.info(f"--- Начало парсинга строки: '{input_string}' ---")
 
-    if mode_choice == "1":
-        return parse_coordinates(input_string)
-    elif mode_choice == "2":
-        if (' м.' in input_string or ', м.' in input_string or input_string.endswith('м.')) and '°' not in input_string:
-            return process_coordinates(input_string, selected_transformer)
-        else:
-            return parse_coordinates(input_string)
+    try:
+        if mode_choice == "1":
+            coords: List[Point] = parse_coordinates(input_string)
+            return coords, None
+        elif mode_choice == "2":
+            if (' м.' in input_string or ', м.' in input_string or input_string.endswith('м.')) and '°' not in input_string:
+                if selected_transformer is None:
+                    raise ParseError("Не задан трансформер Proj4 для режима МСК.")
+                coords = process_coordinates(input_string, cast(Transformer, selected_transformer))
+                return coords, None
+            else:
+                coords = parse_coordinates(input_string)
+                return coords, None
+    except ParseError as e:
+        return None, str(e)
 
     return None, "Неизвестный режим парсинга"
 
@@ -144,13 +159,13 @@ def _display_parsing_results(coords, reason):
         result_table.add_column("Долгота", style="green", justify="right")
         result_table.add_column("Широта", style="green", justify="right")
 
-        for i, (name, lon, lat) in enumerate(coords, 1):
-            result_table.add_row(str(i), name, f"{lon:.6f}", f"{lat:.6f}")
+        for i, p in enumerate(coords, 1):
+            result_table.add_row(str(i), p.name, f"{p.lon:.6f}", f"{p.lat:.6f}")
 
         console.print(result_table)
         console.print("\n[bold blue]📍 Формат для Geobridge:[/bold blue]")
-        for name, lon, lat in coords:
-            console.print(f"{lat}, {lon}")
+        for p in coords:
+            console.print(f"{p.lat}, {p.lon}")
 
     console.print()
 

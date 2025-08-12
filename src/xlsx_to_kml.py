@@ -6,10 +6,11 @@ import math
 import os
 import time
 from dataclasses import dataclass, field
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Dict, cast
 from functools import lru_cache
 import simplekml
 from openpyxl import Workbook
+from openpyxl.utils import get_column_letter
 from pyproj import CRS, Transformer
 
 # Import necessary functions from utils
@@ -55,6 +56,19 @@ class ConversionResult:
             return 0.0
         # failed_rows already includes all the problematic rows, no need to add anomaly_rows
         return (self.failed_rows / self.total_rows) * 100
+
+
+@dataclass(frozen=True)
+class Point:
+    """Typed representation of a geographic point."""
+    name: str
+    lon: float
+    lat: float
+
+
+class ParseError(Exception):
+    """Raised when coordinate parsing fails with a user-facing reason."""
+    pass
 
 
 def create_transformer(proj4_str: str) -> Transformer:
@@ -146,7 +160,7 @@ def haversine_distance(lat1, lon1, lat2, lon2):
     return c * r
 
 
-def detect_coordinate_anomalies(coordinates, threshold_km=20):
+def detect_coordinate_anomalies(coordinates: List[Point], threshold_km: float = 20):
     """
     Detect anomalous coordinates in a sequence by looking for points that are
     significantly further away from the majority of other points.
@@ -166,11 +180,13 @@ def detect_coordinate_anomalies(coordinates, threshold_km=20):
     anomalous_points = []
 
     # Calculate distance from each point to every other point
-    for i, (name_i, lon_i, lat_i) in enumerate(coordinates):
+    for i, point_i in enumerate(coordinates):
+        lon_i = point_i.lon
+        lat_i = point_i.lat
         point_distances = []
-        for j, (name_j, lon_j, lat_j) in enumerate(coordinates):
+        for j, point_j in enumerate(coordinates):
             if i != j:
-                dist = haversine_distance(lat_i, lon_i, lat_j, lon_j)
+                dist = haversine_distance(lat_i, lon_i, point_j.lat, point_j.lon)
                 point_distances.append(dist)
 
         # Calculate the average distance to other points
@@ -181,8 +197,8 @@ def detect_coordinate_anomalies(coordinates, threshold_km=20):
     for idx, avg_dist in distances:
         # If a point's average distance to others is larger than the threshold
         if avg_dist > threshold_km:
-            point_name, lon, lat = coordinates[idx]
-            anomalous_points.append((idx, point_name, lon, lat))
+            p = coordinates[idx]
+            anomalous_points.append((idx, p.name, p.lon, p.lat))
 
     if anomalous_points:
         anomaly_details = ', '.join([f"{point_name} ({lat}, {lon})"
@@ -193,88 +209,161 @@ def detect_coordinate_anomalies(coordinates, threshold_km=20):
     return False, None, []
 
 
-def process_coordinates(input_string, transformer) -> Tuple[Optional[List[Tuple[str, float, float]]], Optional[str]]:
-    """Processes a string with metric coordinates, transforming them and checking for validity."""
-    logger.debug(
-        f"-- Начало обработки МСК для строки: '{input_string[:70]}...' --")
+def _should_prioritize_dms(coord_str: str) -> bool:
+    return 'гск' in coord_str.lower()
 
-    logger.debug(f"1. Поиск координат МСК с помощью regex")
-    coordinates = MSK_COORD_PATTERN.findall(input_string)
 
-    if not coordinates:
-        logger.debug(
-            "  - Координаты МСК не найдены. Возвращаем пустой результат.")
-        return [], None
+def _is_candidate_msk(coord_str: str) -> bool:
+    return ((' м.' in coord_str or ', м.' in coord_str or coord_str.endswith('м.'))
+            and '°' not in coord_str)
 
-    logger.debug(f"2. Найдено {len(coordinates)} совпадений: {coordinates}")
-    results = []
-    for i, x_str, y_str in coordinates:
-        logger.debug(
-            f"\n-- Обработка совпадения {i}: x='{x_str}', y='{y_str}' --")
+
+def _validate_wgs84_range(lat: float, lon: float) -> bool:
+    return -90 <= lat <= 90 and -180 <= lon <= 180
+
+
+def parse_msk_coordinates(input_string: str, transformer: Transformer) -> List[Point]:
+    """Парсит MSK-координаты и возвращает список точек без детектора аномалий.
+
+    Возвращает [] если MSK-совпадений нет; в случае ошибки бросает ParseError.
+    """
+    matches = MSK_COORD_PATTERN.findall(input_string)
+    if not matches:
+        return []
+
+    results: List[Point] = []
+    for i, x_str, y_str in matches:
         try:
-            x = float(x_str)
-            y = float(y_str)
-            logger.debug(f"  - Конвертировано в float: x={x}, y={y}")
-
-            if x == 0 and y == 0:
-                logger.debug("  - Нулевые координаты (0,0). Пропуск.")
+            x_val = float(x_str)
+            y_val = float(y_str)
+            if x_val == 0 and y_val == 0:
                 continue
-
-            logger.debug("  - Трансформация в WGS84...")
-            lon, lat = transformer.transform(y, x)
-            logger.debug(
-                f"    - Результат трансформации: lon={lon}, lat={lat}")
-
-            if not (-90 <= lat <= 90 and -180 <= lon <= 180):
-                reason = f"Координаты МСК вне допустимого диапазона WGS84 (lat={lat}, lon={lon}) после трансформации."
-                logger.warning(f"{reason} Исходные: x={x}, y={y}.")
-                return None, reason
-
-            rounded_lon, rounded_lat = round(lon, 6), round(lat, 6)
-            point_name = f"точка {i}"
-            results.append((point_name, rounded_lon, rounded_lat))
-            logger.debug(
-                f"  - Координаты валидны и добавлены в результат: Имя='{point_name}', Lon={rounded_lon}, Lat={rounded_lat}")
-
+            lon, lat = transformer.transform(y_val, x_val)
+            if not _validate_wgs84_range(lat, lon):
+                reason = (
+                    f"Координаты МСК вне допустимого диапазона WGS84 (lat={lat}, lon={lon}) после трансформации.")
+                raise ParseError(reason)
+            results.append(Point(name=f"точка {i}", lon=round(lon, 6), lat=round(lat, 6)))
         except Exception as e:
-            reason = f"Ошибка трансформации МСК координат: {e}. Исходные: x='{x_str}', y='{y_str}'."
-            logger.error(reason)
-            return None, reason
+            reason = (
+                f"Ошибка трансформации МСК координат: {e}. Исходные: x='{x_str}', y='{y_str}'.")
+            raise ParseError(reason)
 
-    logger.debug(f"\n3. Финальная проверка обработанных МСК...")
     if not results:
-        logger.debug(
-            "  - После фильтрации (например, нулевых координат) не осталось валидных точек.")
-        return [], None
+        return []
+    return results
 
+
+def _extract_dms_matches(coord_str: str) -> Tuple[List[Dict[str, object]], Dict[int, List[str]]]:
+    """Извлекает все DMS-совпадения и номера точек по частям."""
+    parts = [p.strip() for p in coord_str.split(';') if p.strip()]
+    all_dms_coords: List[Dict[str, object]] = []
+    point_numbers_by_part: Dict[int, List[str]] = {}
+
+    for idx, part in enumerate(parts):
+        point_numbers = DMS_POINT_PATTERN.findall(part)
+        if point_numbers:
+            point_numbers_by_part[idx] = point_numbers
+        coords_match = DMS_COORD_PATTERN.findall(part)
+        for coord in coords_match:
+            all_dms_coords.append(
+                {'coord': coord, 'part': part, 'part_index': idx})
+
+    return all_dms_coords, point_numbers_by_part
+
+
+def _dms_tuple_to_decimal(d: Tuple[str, str, str]) -> float:
+    """Преобразует кортеж (deg, min, sec) в десятичные градусы."""
+    return sum(float(x.replace(',', '.')) / (60 ** k) for k, x in enumerate(d))
+
+
+def _derive_point_name(part_idx: int, pair_idx: int, mapping: Dict[int, List[str]], part_text: str) -> str:
+    name = f"точка {pair_idx + 1}"
+    part_point_numbers = mapping.get(part_idx, [])
+    if pair_idx < len(part_point_numbers):
+        name = f"точка {part_point_numbers[pair_idx]}"
+    else:
+        alt_match = ALT_POINT_PATTERN.search(part_text)
+        if alt_match:
+            name = f"точка {alt_match.group(1)}"
+    return name
+
+
+def parse_dms_coordinates(coord_str: str) -> List[Point]:
+    """Парсит DMS-координаты и возвращает список точек без детектора аномалий.
+
+    В случае ошибки бросает ParseError.
+    """
+    all_dms_coords, point_numbers_by_part = _extract_dms_matches(coord_str)
+
+    if not all_dms_coords:
+        return []
+
+    if len(all_dms_coords) % 2 != 0:
+        reason = (
+            f"Нечетное количество найденных ДМС координат ({len(all_dms_coords)}). Ожидается пара (широта, долгота).")
+        raise ParseError(reason)
+
+    result: List[Point] = []
+    for j in range(0, len(all_dms_coords), 2):
+        try:
+            lat_info = all_dms_coords[j]
+            lon_info = all_dms_coords[j + 1]
+
+            lat_parts = cast(Tuple[str, str, str], lat_info['coord'])
+            lon_parts = cast(Tuple[str, str, str], lon_info['coord'])
+
+            lat = _dms_tuple_to_decimal(lat_parts)
+            lon = _dms_tuple_to_decimal(lon_parts)
+
+            combined_text = f"{cast(str, lat_info['part'])} {cast(str, lon_info['part'])}"
+            if "ЮШ" in combined_text or "S" in combined_text:
+                lat = -lat
+            if "ЗД" in combined_text or "W" in combined_text:
+                lon = -lon
+
+            if not _validate_wgs84_range(lat, lon):
+                reason = f"Координаты ДМС вне допустимого диапазона WGS84 (lat={lat}, lon={lon})."
+                raise ParseError(reason)
+
+            part_idx = cast(int, lat_info['part_index'])
+            pair_idx = j // 2
+            point_name = _derive_point_name(
+                part_idx, pair_idx, point_numbers_by_part, cast(str, lat_info['part']))
+
+            if lat != 0 or lon != 0:
+                result.append(Point(name=point_name, lon=round(lon, 6), lat=round(lat, 6)))
+        except Exception as e:
+            reason = f"Внутренняя ошибка при обработке пары ДМС: {e}."
+            raise ParseError(reason)
+
+    return result
+
+
+def process_coordinates(input_string: str, transformer: Transformer) -> List[Point]:
+    """MSK parsing with anomaly detection. Returns points or raises ParseError."""
+    results = parse_msk_coordinates(input_string, transformer)
+    if not results:
+        return []
     if len(results) >= 3:
-        logger.debug("  - Запуск детектора аномалий для >= 3 точек.")
-        is_anomalous, reason, _ = detect_coordinate_anomalies(results)
+        is_anomalous, a_reason, _ = detect_coordinate_anomalies(results)
         if is_anomalous:
-            logger.warning(f"  - Детектор аномалий сообщил: {reason}")
-            return None, reason
-        logger.debug("  - Аномалий не обнаружено.")
-
-    logger.debug(
-        f"4. Обработка МСК успешно завершена. Найдено {len(results)} валидных координат.")
-    return results, None
+            raise ParseError(a_reason)
+    return results
 
 
 def parse_coordinates(
     coord_str: str,
     transformers: Optional[dict[str, Transformer]] = None,
     proj4_path: str = "data/proj4.json",
-) -> Tuple[Optional[List[Tuple[str, float, float]]], Optional[str]]:
-    """Парсит строку с координатами, проверяет их валидность и возвращает список кортежей (имя, долгота, широта) или ошибку.
+) -> List[Point]:
+    """Парсит строку с координатами и возвращает список `Point`.
 
-    Returns:
-        Tuple[Optional[List[Tuple[str, float, float]]], Optional[str]]:
-            (список_координат, None) при успехе, (None, причина_ошибки) при ошибке.
-            Список координат может быть пустым, если в строке не найдено валидных данных.
+    В случае ошибки бросает `ParseError`. Пустой список означает, что валидных координат не найдено.
     """
     if not coord_str or not isinstance(coord_str, str):
         logger.debug("Пустая или нестроковая строка координат")
-        return [], None
+        return []
 
     coord_str = coord_str.strip()
     logger.debug(f"1. Исходная строка после удаления пробелов: '{coord_str}'")
@@ -282,182 +371,60 @@ def parse_coordinates(
     if not coord_str:
         logger.debug(
             "Строка пуста после удаления пробелов. Возвращаем пустой результат.")
-        return [], None
+        return []
 
-    logger.debug("2. Проверка типа координат...")
+    logger.debug("2. Определение формата координат (детектор)...")
 
-    if 'гск' in coord_str.lower():
-        logger.debug(
-            "  - Обнаружен маркер 'гск'. Приоритет отдается парсингу ДМС (градусы, минуты, секунды).")
+    if _should_prioritize_dms(coord_str):
+        logger.debug("  - Обнаружен маркер 'гск'. Приоритет ДМС.")
     else:
-        logger.debug("  - Маркер 'гск' не найден.")
-        if (' м.' in coord_str or ', м.' in coord_str or coord_str.endswith('м.')) and '°' not in coord_str:
-            logger.debug(
-                "  - Обнаружен маркер 'м.' и отсутствует маркер '°'. Попытка парсинга как МСК (метровые).")
-            # Ленивая загрузка трансформеров, если не переданы явно
+        if _is_candidate_msk(coord_str):
+            logger.debug("  - Кандидат на МСК-формат. Попытка парсинга МСК.")
             if transformers is None:
                 try:
                     transformers = get_transformers(proj4_path)
                 except Exception:
                     reason = "Не удалось загрузить описания проекций для МСК."
                     logger.warning(f"{reason} Строка: '{coord_str[:50]}'")
-                    return None, reason
+                    raise ParseError(reason)
             for key, transformer in transformers.items():
                 if key in coord_str:
-                    logger.debug(
-                        f"    - Найдена известная система координат: '{key}'. Вызов process_coordinates.")
-                    return process_coordinates(coord_str, transformer)
+                    logger.debug(f"    - Найдена система координат: '{key}'.")
+                    # Парсер MSK (без аномалий)
+                    msk_points = parse_msk_coordinates(coord_str, transformer)
+                    # Отдельный вызов детектора аномалий над готовыми точками
+                    if msk_points and len(msk_points) >= 3:
+                        is_anomalous, a_reason, _ = detect_coordinate_anomalies(
+                            msk_points)
+                        if is_anomalous:
+                            logger.warning(
+                                f"  - Детектор аномалий сообщил: {a_reason}")
+                            raise ParseError(a_reason)
+                    return msk_points
             reason = "Обнаружены координаты 'м.', но не найдена известная система координат МСК в строке."
             logger.warning(f"{reason} Строка: '{coord_str[:50]}'")
-            return None, reason
+            raise ParseError(reason)
 
     logger.debug("3. Проверка на наличие маркера ДМС ('°')...")
     if '°' not in coord_str:
         logger.debug(
             "  - Маркер '°' не найден. Предполагается, что в строке нет координат. Возвращаем пустой результат.")
-        return [], None
+        return []
 
     logger.debug("  - Маркер '°' найден. Начинается парсинг ДМС.")
-    parts = coord_str.split(';')
-    logger.debug(
-        f"4. Строка разделена на {len(parts)} частей по символу ';': {parts}")
+    # Парсер DMS (без аномалий)
+    dms_points = parse_dms_coordinates(coord_str)
 
-    # Сначала собираем все DMS координаты из всех частей
-    all_dms_coords = []
-    point_numbers_by_part = {}
-
-    for i, part in enumerate([p.strip() for p in parts if p.strip()]):
-        logger.debug(f"\n-- Обработка части {i+1}: '{part}' --")
-
-        # Ищем все номера точек в этой части
-        point_numbers = DMS_POINT_PATTERN.findall(part)
-        if point_numbers:
-            logger.debug(
-                f"  - Найдено {len(point_numbers)} номеров точек (ДМС): {point_numbers}")
-            point_numbers_by_part[i] = point_numbers
-
-        logger.debug(f"  - Поиск ДМС с помощью regex")
-        coords_match = DMS_COORD_PATTERN.findall(part)
-
-        if coords_match:
-            logger.debug(
-                f"  - Найдено {len(coords_match)} совпадений ДМС: {coords_match}")
-            # Добавляем информацию о том, откуда взята координата (для определения широты/долготы)
-            for coord in coords_match:
-                coord_info = {
-                    'coord': coord,
-                    'part': part,
-                    'part_index': i
-                }
-                all_dms_coords.append(coord_info)
-        else:
-            logger.debug("  - Совпадений ДМС не найдено в этой части.")
-
-    logger.debug(f"\n5. Собрано всего ДМС координат: {len(all_dms_coords)}")
-
-    if not all_dms_coords:
-        logger.debug(
-            "  - ДМС координаты не найдены. Возвращаем пустой результат.")
-        return [], None
-
-    # Проверяем четность количества координат
-    if len(all_dms_coords) % 2 != 0:
-        reason = f"Нечетное количество найденных ДМС координат ({len(all_dms_coords)}). Ожидается пара (широта, долгота)."
-        logger.warning(reason)
-        return None, reason
-
-    result = []
-    has_valid_dms = True
-
-    # Формируем пары координат
-    for j in range(0, len(all_dms_coords), 2):
-        try:
-            lat_info = all_dms_coords[j]
-            lon_info = all_dms_coords[j+1]
-
-            lat_parts = lat_info['coord']
-            lon_parts = lon_info['coord']
-
-            logger.debug(f"\n-- Пара {j//2 + 1}: --")
-            logger.debug(
-                f"  - Широта (parts)={lat_parts} из части '{lat_info['part'][:50]}...'")
-            logger.debug(
-                f"  - Долгота (parts)={lon_parts} из части '{lon_info['part'][:50]}...'")
-
-            lat = sum(float(x.replace(',', '.')) / (60 ** k)
-                      for k, x in enumerate(lat_parts))
-            lon = sum(float(x.replace(',', '.')) / (60 ** k)
-                      for k, x in enumerate(lon_parts))
-            logger.debug(
-                f"  - Конвертировано в десятичные: lat={lat}, lon={lon}")
-
-            # Проверяем индикаторы направления в обеих частях
-            combined_text = lat_info['part'] + " " + lon_info['part']
-
-            if "ЮШ" in combined_text or "S" in combined_text:
-                lat = -lat
-                logger.debug(
-                    "  - Обнаружен южный идентификатор (ЮШ/S). Широта инвертирована.")
-            if "ЗД" in combined_text or "W" in combined_text:
-                lon = -lon
-                logger.debug(
-                    "  - Обнаружен западный идентификатор (ЗД/W). Долгота инвертирована.")
-
-            if not (-90 <= lat <= 90 and -180 <= lon <= 180):
-                reason = f"Координаты ДМС вне допустимого диапазона WGS84 (lat={lat}, lon={lon})."
-                logger.warning(reason)
-                return None, reason
-
-            # Определяем имя точки из контекста
-            part_idx = lat_info['part_index']
-            pair_idx = j // 2
-            point_name = f"точка {pair_idx + 1}"  # Имя по умолчанию
-
-            # Пытаемся найти более конкретный номер точки
-            # 1. Из предварительно найденных номеров по шаблону "N."
-            part_point_numbers = point_numbers_by_part.get(part_idx, [])
-            if pair_idx < len(part_point_numbers):
-                point_num = part_point_numbers[pair_idx]
-                point_name = f"точка {point_num}"
-            else:
-                # 2. Альтернативный поиск по шаблону "точка N" в тексте части
-                # Этот поиск менее надежен, если в одной строке несколько "точка N"
-                alt_match = ALT_POINT_PATTERN.search(lat_info['part'])
-                if alt_match:
-                    point_num = alt_match.group(1)
-                    point_name = f"точка {point_num}"
-
-            logger.debug(f"  - Итоговое имя точки: '{point_name}'")
-
-            if lat != 0 or lon != 0:
-                result.append((point_name, round(lon, 6), round(lat, 6)))
-                logger.debug(
-                    "  - Координаты не нулевые и добавлены в результат.")
-            else:
-                logger.debug("  - Координаты нулевые и пропущены.")
-
-        except Exception as e:
-            reason = f"Внутренняя ошибка при обработке пары ДМС: {e}."
-            logger.error(reason)
-            return None, reason
-
-    logger.debug("\n6. Финальная проверка...")
-    if '°' in coord_str and not has_valid_dms:
-        reason = "Обнаружен маркер '°', но не найдено валидных пар ДМС координат."
-        logger.warning(f"{reason} Строка: '{coord_str[:50]}'")
-        return None, reason
-
-    if result and len(result) >= 3:
-        logger.debug("  - Запуск детектора аномалий для >= 3 точек.")
-        is_anomalous, reason, _ = detect_coordinate_anomalies(result)
+    # Отдельный вызов детектора аномалий над готовыми точками
+    if dms_points and len(dms_points) >= 3:
+        is_anomalous, reason, _ = detect_coordinate_anomalies(dms_points)
         if is_anomalous:
             logger.warning(f"  - Детектор аномалий сообщил: {reason}")
-            return None, reason
-        logger.debug("  - Аномалий не обнаружено.")
+            raise ParseError(reason)
 
     logger.debug(
-        f"7. Парсинг успешно завершен. Найдено {len(result)} валидных координат.")
-    return result, None
+        f"7. Парсинг успешно завершен. Найдено {len(dms_points)} валидных координат.")
+    return dms_points
 
 
 def find_column_index(sheet, target_names: List[str], exact_match: bool = False) -> int:
@@ -588,14 +555,14 @@ def create_kml_from_coordinates(
         file_logger.info(f"------------")
 
         # Вызываем обновленную функцию парсинга
-        coords_array, error_reason = parse_coordinates(
-            coords_str,
-            transformers=transformers,
-            proj4_path=proj4_path,
-        )
-
-        # Если parse_coordinates вернула ошибку, пропускаем строку (она будет обработана как аномальная в другом модуле)
-        if error_reason is not None:
+        try:
+            coords_array: List[Point] = parse_coordinates(
+                coords_str,
+                transformers=transformers,
+                proj4_path=proj4_path,
+            )
+        except ParseError as e:
+            error_reason = str(e)
             # Логирование уже произошло внутри parse_coordinates
             file_logger.warning(
                 f"Строка {row_idx} (№ п/п {main_name}) пропущена из-за ошибки парсинга: {error_reason}")
@@ -674,10 +641,9 @@ def create_kml_from_coordinates(
                 # Сортируем координаты только если main_name есть в sort_numbers
                 if (sort_numbers and int(main_name) in sort_numbers) or len(coords_array) == 4:
                     sorted_coords = sort_coordinates(
-                        [(lon, lat) for _, lon, lat in coords_array])
+                        [(p.lon, p.lat) for p in coords_array])
                 else:
-                    sorted_coords = [(lon, lat)
-                                     for _, lon, lat in coords_array]
+                    sorted_coords = [(p.lon, p.lat) for p in coords_array]
 
                 polygon.outerboundaryis = sorted_coords  # type: ignore
                 polygon.style.linestyle.color = color
@@ -688,28 +654,28 @@ def create_kml_from_coordinates(
             else:
                 # Создаем линию, если есть несколько точек и условия выполнены
                 if len(coords_array) > 2 \
-                        and all(name.startswith("точка") for name, _, _ in coords_array) \
+                        and all(p.name.startswith("точка") for p in coords_array) \
                         and row[indices["goal"]] != "Сброс сточных вод":
                     file_logger.debug(
                         f"Строка {row_idx} (№ п/п {main_name}): Создание линии")
                     line = kml.newlinestring(name=f"№ п/п {main_name}",
-                                             coords=[(lon, lat) for _, lon, lat in coords_array])
+                                             coords=[(p.lon, p.lat) for p in coords_array])
                     line.style.linestyle.color = color
                     line.style.linestyle.width = 3
                     line.description = description
                 else:
                     # Создаем отдельные точки, если линия не была создана
                     index = 1
-                    for point_name, lon, lat in coords_array:
+                    for p in coords_array:
                         file_logger.debug(
-                            f"  Точка: {point_name} ({lat}, {lon})")
+                            f"  Точка: {p.name} ({p.lat}, {p.lon})")
                         # print(f"{lat}, {lon}")
                         if row[indices["goal"]] == "Сброс сточных вод":
                             full_name = f"№ п/п {main_name} - сброс {index}"
                         else:
-                            full_name = f"№ п/п {main_name} - {point_name}" if point_name else f"№ п/п {main_name}"
+                            full_name = f"№ п/п {main_name} - {p.name}" if p.name else f"№ п/п {main_name}"
                         create_kml_point(
-                            kml, full_name, (lon, lat), description, color)
+                            kml, full_name, (p.lon, p.lat), description, color)
                         index += 1
 
     kml.save(output_file)
@@ -773,11 +739,14 @@ def save_anomalies_to_excel(anomalies: List[dict], original_basename: str, outpu
         ])
 
     # Adjust column widths (optional, for better readability)
-    for col in ws.columns:
+    for col_idx, col in enumerate(
+        ws.iter_cols(min_row=1, max_row=ws.max_row,
+                     min_col=1, max_col=ws.max_column),
+        start=1,
+    ):
         max_length = 0
-        column = col[0].column_letter  # Get the column name
+        column_letter = get_column_letter(col_idx)
         for cell in col:
-            # Check if cell.value is not None and convert to string
             if cell.value is not None:
                 try:
                     value_str = str(cell.value)
@@ -785,11 +754,11 @@ def save_anomalies_to_excel(anomalies: List[dict], original_basename: str, outpu
                         max_length = len(value_str)
                 except Exception as e:
                     logger.warning(
-                        f"Could not determine length for cell value {cell.value} in column {column}: {e}")
+                        f"Could not determine length for cell value {cell.value} in column {column_letter}: {e}")
         adjusted_width = (max_length + 2)
         if adjusted_width > 64:
             adjusted_width = 64
-        ws.column_dimensions[column].width = adjusted_width
+        ws.column_dimensions[column_letter].width = adjusted_width
 
     try:
         wb.save(output_path)
@@ -822,7 +791,12 @@ if __name__ == "__main__":
             continue
 
         logger.info(f"--- Начало парсинга строки: '{input_string}' ---")
-        coords, reason = parse_coordinates(input_string)
+        try:
+            coords = parse_coordinates(input_string)
+            reason = None
+        except ParseError as e:
+            coords = []
+            reason = str(e)
         print("\n--- Итоговый результат ---")
 
         if reason:
@@ -831,10 +805,10 @@ if __name__ == "__main__":
             print("Координаты не найдены или являются нулевыми.")
         else:
             print(f"Успешно найдено {len(coords)} координат:")
-            for i, (name, lon, lat) in enumerate(coords):
-                print(f"  {i+1}. Имя: '{name}', Долгота: {lon}, Широта: {lat}")
+            for i, p in enumerate(coords):
+                print(f"  {i+1}. Имя: '{p.name}', Долгота: {p.lon}, Широта: {p.lat}")
 
             print(f"\nФормат для GeoBridge")
-            for i, (name, lon, lat) in enumerate(coords):
-                print(f"{lat}, {lon}")
+            for i, p in enumerate(coords):
+                print(f"{p.lat}, {p.lon}")
         print("--------------------------\n")
