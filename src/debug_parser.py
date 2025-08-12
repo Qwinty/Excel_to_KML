@@ -31,7 +31,8 @@ def _setup_debug_logging():
             console_handler = handler
             original_console_level = handler.level
             handler.setLevel(logging.DEBUG)
-            logger.debug("Установлен DEBUG уровень логирования для консоли в режиме отладки")
+            logger.debug(
+                "Установлен DEBUG уровень логирования для консоли в режиме отладки")
             break
 
     return console_handler, original_console_level
@@ -62,7 +63,8 @@ def _get_debug_mode_choice() -> str:
             show_choices=False
         )
     except (KeyboardInterrupt, EOFError):
-        console.print("\n[yellow]Ввод отменен. Возврат в главное меню.[/yellow]")
+        console.print(
+            "\n[yellow]Ввод отменен. Возврат в главное меню.[/yellow]")
         return "3"
 
 
@@ -99,7 +101,8 @@ def _get_custom_proj4_transformer() -> Tuple[Optional[Any], Optional[str]]:
             selected_transformer = create_transformer(custom_proj4)
             selected_proj4_name = "Пользовательская proj4"
 
-            display_proj4 = custom_proj4[:60] + "..." if len(custom_proj4) > 60 else custom_proj4
+            display_proj4 = custom_proj4[:60] + \
+                "..." if len(custom_proj4) > 60 else custom_proj4
             console.print(
                 f"[green]✓ Proj4 строка успешно загружена:[/green] [dim]{display_proj4}[/dim]")
             return selected_transformer, selected_proj4_name
@@ -127,8 +130,10 @@ def _parse_coordinate_string(input_string: str, mode_choice: str, selected_trans
         elif mode_choice == "2":
             if (' м.' in input_string or ', м.' in input_string or input_string.endswith('м.')) and '°' not in input_string:
                 if selected_transformer is None:
-                    raise ParseError("Не задан трансформер Proj4 для режима МСК.")
-                coords = process_coordinates(input_string, cast(Transformer, selected_transformer))
+                    raise ParseError(
+                        "Не задан трансформер Proj4 для режима МСК.")
+                coords = process_coordinates(
+                    input_string, cast(Transformer, selected_transformer))
                 return coords, None
             else:
                 coords = parse_coordinates(input_string)
@@ -153,14 +158,16 @@ def _display_parsing_results(coords, reason):
             border_style="yellow"
         ))
     else:
-        result_table = Table(title=f"✅ Найдено {len(coords)} координат", show_header=True, header_style="bold green")
+        result_table = Table(
+            title=f"✅ Найдено {len(coords)} координат", show_header=True, header_style="bold green")
         result_table.add_column("№", style="dim", width=3, justify="center")
         result_table.add_column("Имя", style="cyan")
         result_table.add_column("Долгота", style="green", justify="right")
         result_table.add_column("Широта", style="green", justify="right")
 
         for i, p in enumerate(coords, 1):
-            result_table.add_row(str(i), p.name, f"{p.lon:.6f}", f"{p.lat:.6f}")
+            result_table.add_row(
+                str(i), p.name, f"{p.lon:.6f}", f"{p.lat:.6f}")
 
         console.print(result_table)
         console.print("\n[bold blue]📍 Формат для Geobridge:[/bold blue]")
@@ -183,7 +190,8 @@ def _run_coordinate_parsing_loop(mode_choice: str, selected_transformer, selecte
 
     while True:
         try:
-            input_string = Prompt.ask("[bold cyan]Строка для парсинга[/bold cyan]")
+            input_string = Prompt.ask(
+                "[bold cyan]Строка для парсинга[/bold cyan]")
 
             if input_string.lower() in ["back", "назад"]:
                 break
@@ -191,7 +199,8 @@ def _run_coordinate_parsing_loop(mode_choice: str, selected_transformer, selecte
             if not input_string.strip():
                 continue
 
-            coords, reason = _parse_coordinate_string(input_string, mode_choice, selected_transformer)
+            coords, reason = _parse_coordinate_string(
+                input_string, mode_choice, selected_transformer)
             _display_parsing_results(coords, reason)
 
         except (KeyboardInterrupt, EOFError):
@@ -224,11 +233,11 @@ def debug_coordinate_parser() -> None:
                 if not selected_transformer:
                     continue
 
-            _run_coordinate_parsing_loop(mode_choice, selected_transformer, selected_proj4_name)
+            _run_coordinate_parsing_loop(
+                mode_choice, selected_transformer, selected_proj4_name)
 
     except (KeyboardInterrupt, EOFError):
-        console.print("\n[yellow]Выход из режима отладки. Возврат в главное меню.[/yellow]")
+        console.print(
+            "\n[yellow]Выход из режима отладки. Возврат в главное меню.[/yellow]")
     finally:
         _cleanup_debug_logging(console_handler, original_console_level)
-
-

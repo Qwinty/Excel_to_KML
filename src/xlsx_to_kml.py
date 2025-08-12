@@ -186,7 +186,8 @@ def detect_coordinate_anomalies(coordinates: List[Point], threshold_km: float = 
         point_distances = []
         for j, point_j in enumerate(coordinates):
             if i != j:
-                dist = haversine_distance(lat_i, lon_i, point_j.lat, point_j.lon)
+                dist = haversine_distance(
+                    lat_i, lon_i, point_j.lat, point_j.lon)
                 point_distances.append(dist)
 
         # Calculate the average distance to other points
@@ -243,7 +244,8 @@ def parse_msk_coordinates(input_string: str, transformer: Transformer) -> List[P
                 reason = (
                     f"Координаты МСК вне допустимого диапазона WGS84 (lat={lat}, lon={lon}) после трансформации.")
                 raise ParseError(reason)
-            results.append(Point(name=f"точка {i}", lon=round(lon, 6), lat=round(lat, 6)))
+            results.append(
+                Point(name=f"точка {i}", lon=round(lon, 6), lat=round(lat, 6)))
         except Exception as e:
             reason = (
                 f"Ошибка трансформации МСК координат: {e}. Исходные: x='{x_str}', y='{y_str}'.")
@@ -332,7 +334,8 @@ def parse_dms_coordinates(coord_str: str) -> List[Point]:
                 part_idx, pair_idx, point_numbers_by_part, cast(str, lat_info['part']))
 
             if lat != 0 or lon != 0:
-                result.append(Point(name=point_name, lon=round(lon, 6), lat=round(lat, 6)))
+                result.append(
+                    Point(name=point_name, lon=round(lon, 6), lat=round(lat, 6)))
         except Exception as e:
             reason = f"Внутренняя ошибка при обработке пары ДМС: {e}."
             raise ParseError(reason)
@@ -806,7 +809,8 @@ if __name__ == "__main__":
         else:
             print(f"Успешно найдено {len(coords)} координат:")
             for i, p in enumerate(coords):
-                print(f"  {i+1}. Имя: '{p.name}', Долгота: {p.lon}, Широта: {p.lat}")
+                print(
+                    f"  {i+1}. Имя: '{p.name}', Долгота: {p.lon}, Широта: {p.lat}")
 
             print(f"\nФормат для GeoBridge")
             for i, p in enumerate(coords):
