@@ -1,8 +1,10 @@
 import logging
 import json
+import os
 import re
 from typing import Dict, List, Tuple, Optional, cast
 from functools import lru_cache
+import yaml
 
 from pyproj import Transformer
 
@@ -36,6 +38,15 @@ def _should_prioritize_dms(coord_str: str) -> bool:
 
 def _validate_wgs84_range(lat: float, lon: float) -> bool:
     return -90 <= lat <= 90 and -180 <= lon <= 180
+
+
+def _normalize_text_for_exact_match(text: str) -> str:
+    """Нормализует строку для сравнения: заменяет неразрывные пробелы, схлопывает все пробелы.
+
+    Это позволяет хранить значения в YAML с переносами строк (блоковые скаляры)
+    без риска потерять точное совпадение по смыслу.
+    """
+    return " ".join(text.replace("\u00A0", " ").split())
 
 
 def parse_msk_coordinates(input_string: str, transformer: Transformer) -> List[Point]:
@@ -191,28 +202,91 @@ def _get_sk42_transformer() -> Transformer:
     return Transformer.from_pipeline(_SK42_PIPELINE)
 
 
+def _write_objects_info_yaml(data: Dict[str, List[str]], yaml_path: str) -> None:
+    """Записывает словарь objects_info в YAML, используя блоковые скаляры для значений.
+
+    Пример структуры:
+      СК-42:
+        - |-
+          <строка>
+        - |-
+          <строка>
+    """
+    lines: List[str] = []
+    for key, values in data.items():
+        lines.append(f"{key}:")
+        for value in values:
+            # Каждая запись — литеральный блоковый скаляр
+            lines.append("  - |-")
+            # Отступ четыре пробела для содержимого блока
+            for content_line in str(value).splitlines() or [""]:
+                lines.append(f"    {content_line}")
+    content = "\n".join(lines) + "\n"
+    with open(yaml_path, "w", encoding="utf-8") as f:
+        f.write(content)
+
+
 @lru_cache(maxsize=1)
-def _load_objects_info(path: str = "data/objects_info.json") -> Dict[str, List[str]]:
-    try:
-        with open(path, "r", encoding="utf-8") as f:
-            return cast(Dict[str, List[str]], json.load(f))
-    except FileNotFoundError:
-        logger.warning(
-            "Файл 'data/objects_info.json' не найден. SK-42 определение будет пропущено.")
-        return {}
-    except Exception as e:
-        logger.warning(
-            f"Не удалось загрузить 'data/objects_info.json' ({e}). SK-42 определение будет пропущено.")
-        return {}
+def _load_objects_info(path: str = "data/objects_info.yaml") -> Dict[str, List[str]]:
+    """Загружает словарь с информацией об объектах из YAML (fallback: JSON).
+
+    Ожидаемый формат:
+      system_key: [list of strings]
+    """
+    yaml_path = path
+    json_path = "data/objects_info.json"
+
+    # Primary: YAML
+    if os.path.exists(yaml_path):
+        try:
+            with open(yaml_path, "r", encoding="utf-8") as f:
+                data = yaml.safe_load(f)
+                if not isinstance(data, dict):
+                    raise ValueError("objects_info.yaml должен содержать словарь")
+                # Приводим тип к Dict[str, List[str]] с мягкой валидацией
+                result: Dict[str, List[str]] = {}
+                for key, value in data.items():
+                    if isinstance(value, list):
+                        result[str(key)] = [str(x) for x in value]
+                return result
+        except Exception as e:
+            logger.warning(
+                f"Не удалось загрузить 'data/objects_info.yaml' ({e}). SK-42 определение будет пропущено.")
+            return {}
+
+    # Fallback: legacy JSON (for backward compatibility during migration)
+    if os.path.exists(json_path):
+        try:
+            with open(json_path, "r", encoding="utf-8") as f:
+                legacy: Dict[str, List[str]] = cast(Dict[str, List[str]], json.load(f))
+            # Попытка автоконвертации в YAML при отсутствии YAML-файла
+            try:
+                _write_objects_info_yaml(legacy, yaml_path)
+                logger.info("Преобразовал 'objects_info.json' -> 'objects_info.yaml' (блоковые скаляры).")
+            except Exception as conv_err:
+                logger.warning(f"Не удалось автоконвертировать JSON в YAML: {conv_err}")
+            return legacy
+        except Exception as e:
+            logger.warning(
+                f"Не удалось загрузить 'data/objects_info.json' ({e}). SK-42 определение будет пропущено.")
+            return {}
+
+    logger.warning(
+        "Файлы 'data/objects_info.yaml' и 'data/objects_info.json' не найдены. SK-42 определение будет пропущено.")
+    return {}
 
 
 def _detect_system_key_for_string(coord_str: str) -> Optional[str]:
-    """Возвращает ключ системы координат из objects_info.json, если найдено точное совпадение строки."""
+    """Возвращает ключ системы координат из objects_info.yaml, если найдено точное совпадение строки.
+
+    Сравнение выполняется по нормализованным строкам, чтобы игнорировать различия
+    в количествах пробелов и переносах в блоковых скалярах YAML.
+    """
     info = _load_objects_info()
-    coord_trimmed = coord_str.strip()
+    coord_trimmed = _normalize_text_for_exact_match(coord_str)
     for system_key, entries in info.items():
         for s in entries:
-            if s.strip() == coord_trimmed:
+            if _normalize_text_for_exact_match(s) == coord_trimmed:
                 return system_key
     return None
 
@@ -254,11 +328,11 @@ def parse_coordinates(
 
     logger.debug("2. Определение формата координат (детектор)...")
 
-    # 2.a. Точное совпадение строки с любым объектом из objects_info.json → определяем систему
+    # 2.a. Точное совпадение строки с любым объектом из objects_info.yaml → определяем систему
     system_key = _detect_system_key_for_string(coord_str)
     if system_key:
         logger.debug(
-            f"  - Строка найдена в 'objects_info.json'. Система координат: '{system_key}'.")
+            f"  - Строка найдена в 'objects_info.yaml'. Система координат: '{system_key}'.")
         # Сейчас поддерживаем только СК-42
         if system_key.strip().upper() == "СК-42":
             logger.debug("    - Применяем преобразование СК-42→WGS84.")
