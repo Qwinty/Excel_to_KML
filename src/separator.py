@@ -142,17 +142,15 @@ def split_excel_file_by_merges(input_path, output_base_dir, header_rows_count, m
         # Работаем только со слияниями из оригинальной шапки
         if rng.min_row <= header_rows_count:
             new_min_row, new_max_row = rng.min_row, rng.max_row
-            
+
             # Сдвигаем вниз все, что было на 3-й строке и ниже
             if new_min_row >= 3:
                 new_min_row += 1
                 new_max_row += 1
-            
+
             # Собираем новую координату в виде строки
             new_coord = f"{get_column_letter(rng.min_col)}{new_min_row}:{get_column_letter(rng.max_col)}{new_max_row}"
             header_merged_ranges.append(new_coord)
-    
-
 
     meta_wb.close()
 
@@ -361,7 +359,8 @@ def save_region_file_optimized(header_data, region_data, bvu_folder_path, region
                 link_cell.hyperlink = "https://www.rudi.ru/kml-instruction.php"
                 link_cell.font = Font(color="0000FF", underline="single")
             except Exception as e:
-                logging.warning("        Не удалось добавить гиперссылку: %s", e)
+                logging.warning(
+                    "        Не удалось добавить гиперссылку: %s", e)
 
             wb_norm.save(filepath)
 

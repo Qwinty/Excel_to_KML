@@ -5,7 +5,7 @@ from rich import traceback
 from src.utils import setup_logging
 from src.config import Config
 from src.ui import console, display_welcome, show_main_menu
-from src.processing import process_mode_1_full_processing, process_mode_2_single_file
+from src.processing import process_mode_1_full_processing, process_mode_2_single_file, process_mode_3_demo_maps
 from src.debug_parser import debug_coordinate_parser
 
 
@@ -50,8 +50,23 @@ def main() -> None:
                 for handler, level in previous_levels:
                     handler.setLevel(level)
         elif user_input == "3":
-            debug_coordinate_parser()
+            # Temporarily elevate console log level to INFO for Mode 3 (Demo maps)
+            root_logger = logging.getLogger()
+            previous_levels = []
+            for handler in root_logger.handlers:
+                if isinstance(handler, logging.StreamHandler):
+                    previous_levels.append((handler, handler.level))
+                    handler.setLevel(logging.INFO)
+
+            try:
+                process_mode_3_demo_maps(config)
+            finally:
+                # Restore previous console handler levels
+                for handler, level in previous_levels:
+                    handler.setLevel(level)
         elif user_input == "4":
+            debug_coordinate_parser()
+        elif user_input == "5":
             from rich.panel import Panel
 
             console.print(Panel(
@@ -66,5 +81,3 @@ def main() -> None:
 if __name__ == '__main__':
     multiprocessing.freeze_support()
     main()
-
-

@@ -2,7 +2,7 @@ import logging
 import multiprocessing
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple, Optional
 
 from rich.console import Console
 from rich.panel import Panel
@@ -10,9 +10,10 @@ from rich.progress import Progress, BarColumn, TextColumn, TimeRemainingColumn, 
 
 from src.config import Config
 from src.stats import ProcessingStats, display_processing_statistics
-from src.ui import console, choose_file
+from src.ui import console, choose_file, choose_demo_files_mode, choose_demo_percentage
 from src.separator import split_excel_file_by_merges
 from src.workers import initialize_worker_logging, process_file_worker
+from src.xlsx_to_kml.models import ConversionResult
 
 
 logger = logging.getLogger(__name__)
@@ -381,3 +382,239 @@ def _log_processing_summary(stats: ProcessingStats) -> None:
         # Do not let logging issues affect the main flow
         logger.debug(
             "Не удалось записать сводку обработки в лог.", exc_info=True)
+
+
+def process_mode_3_demo_maps(config: Config) -> None:
+    """Process demo maps mode - create demo KML files with a percentage of objects."""
+    console.print(Panel(
+        "[bold cyan]Режим: Создание демо-карт[/bold cyan]\n\n"
+        "[dim]Создание демо-версий KML карт с ограниченным количеством объектов\n"
+        "из разделенных файлов xlsx.[/dim]",
+        title="🎨 Создание демо-карт",
+        border_style="cyan"
+    ))
+
+    # Get demo percentage
+    demo_percentage = choose_demo_percentage()
+
+    # Get files mode (single file or all files)
+    files_selection = choose_demo_files_mode(config)
+    if not files_selection:
+        return
+
+    processing_stats = ProcessingStats()
+
+    if files_selection == "all":
+        _process_all_demo_files(demo_percentage, processing_stats, config)
+    else:
+        _process_single_demo_file(
+            files_selection, demo_percentage, processing_stats, config)
+
+    display_processing_statistics(processing_stats)
+    _log_processing_summary(processing_stats)
+
+
+def _process_all_demo_files(demo_percentage: float, processing_stats: ProcessingStats, config: Config) -> None:
+    """Process all xlsx files in the output directory for demo conversion."""
+    xlsx_dir = Path(config.xlsx_output_dir)
+    xlsx_files = list(xlsx_dir.rglob('*.xlsx'))
+    # Filter out temp files
+    xlsx_files = [f for f in xlsx_files if not f.name.startswith('~$')]
+
+    if not xlsx_files:
+        console.print(Panel(
+            f"[red]Файлы для обработки не найдены в '{xlsx_dir}'[/red]",
+            title="❌ Ошибка",
+            border_style="red"
+        ))
+        return
+
+    console.print(
+        f"[green]Найдено {len(xlsx_files)} файлов для создания демо-карт[/green]")
+
+    # Create demo output directory
+    Path(config.demo_kml_output_dir).mkdir(parents=True, exist_ok=True)
+    logger.info(f"Создана папка для демо KML: {config.demo_kml_output_dir}")
+
+    processing_stats.regions_detected = len(xlsx_files)
+    conversion_errors = 0
+
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        BarColumn(),
+        TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+        TextColumn("({task.completed}/{task.total} файлов)"),
+        TimeRemainingColumn(),
+        console=console,
+        transient=False
+    ) as progress:
+        task = progress.add_task(
+            f"Создание демо-карт ({demo_percentage}%)...", total=len(xlsx_files))
+
+        for xlsx_file_path in xlsx_files:
+            try:
+                # Create output path preserving directory structure
+                relative_path = xlsx_file_path.relative_to(xlsx_dir)
+                demo_kml_rel_path = relative_path.with_suffix('.kml')
+                demo_kml_abs_path = Path(
+                    config.demo_kml_output_dir) / demo_kml_rel_path
+
+                # Create parent directories if needed
+                demo_kml_abs_path.parent.mkdir(parents=True, exist_ok=True)
+
+                success, conversion_result = _convert_single_file_to_demo_kml(
+                    str(xlsx_file_path), str(
+                        demo_kml_abs_path), demo_percentage, config
+                )
+
+                if success and conversion_result:
+                    processing_stats.add_file_result(conversion_result)
+                    if conversion_result.anomaly_file_created:
+                        processing_stats.anomaly_files_generated += 1
+                    console.print(
+                        f"[dim]Готово: [green]{xlsx_file_path.name}[/green][/dim]")
+                else:
+                    conversion_errors += 1
+                    processing_stats.conversion_errors += 1
+                    console.print(
+                        f"[dim]Ошибка: [red]{xlsx_file_path.name}[/red][/dim]")
+
+            except Exception as e:
+                conversion_errors += 1
+                processing_stats.conversion_errors += 1
+                logger.error(
+                    f"Ошибка при создании демо-карты для {xlsx_file_path}: {e}", exc_info=True)
+                console.print(
+                    f"[dim]Критическая ошибка: [red]{xlsx_file_path.name}[/red][/dim]")
+            finally:
+                progress.advance(task)
+
+    _report_demo_conversion_results(
+        len(xlsx_files), conversion_errors, demo_percentage, config)
+
+
+def _process_single_demo_file(file_path: str, demo_percentage: float, processing_stats: ProcessingStats, config: Config) -> None:
+    """Process a single xlsx file for demo conversion."""
+    xlsx_file_path = Path(file_path)
+
+    # Create demo output directory
+    Path(config.demo_kml_output_dir).mkdir(parents=True, exist_ok=True)
+
+    # Create output path preserving directory structure
+    xlsx_dir = Path(config.xlsx_output_dir)
+    relative_path = xlsx_file_path.relative_to(xlsx_dir)
+    demo_kml_rel_path = relative_path.with_suffix('.kml')
+    demo_kml_abs_path = Path(config.demo_kml_output_dir) / demo_kml_rel_path
+
+    # Create parent directories if needed
+    demo_kml_abs_path.parent.mkdir(parents=True, exist_ok=True)
+
+    processing_stats.regions_detected = 1
+
+    try:
+        with console.status(f"[cyan]Создание демо-карты ({demo_percentage}%)...[/cyan]", spinner="dots"):
+            success, conversion_result = _convert_single_file_to_demo_kml(
+                str(xlsx_file_path), str(
+                    demo_kml_abs_path), demo_percentage, config
+            )
+
+        if success and conversion_result:
+            processing_stats.add_file_result(conversion_result)
+            if conversion_result.anomaly_file_created:
+                processing_stats.anomaly_files_generated += 1
+
+            console.print(Panel(
+                f"[bold green]✅ Демо-карта создана успешно![/bold green]\n\n"
+                f"Исходный файл: [cyan]{xlsx_file_path.name}[/cyan]\n"
+                f"Демо-файл: [blue]{demo_kml_abs_path}[/blue]\n"
+                f"Процент объектов: [yellow]{demo_percentage}%[/yellow]",
+                title="🎉 Готово",
+                border_style="green"
+            ))
+        else:
+            processing_stats.conversion_errors = 1
+            console.print(Panel(
+                f"[bold red]Ошибка при создании демо-карты[/bold red]\n\n"
+                f"Файл: [cyan]{xlsx_file_path.name}[/cyan]\n"
+                "[dim]Возможно, файл пуст или поврежден[/dim]",
+                title="❌ Ошибка",
+                border_style="red"
+            ))
+
+    except Exception as e:
+        processing_stats.conversion_errors = 1
+        logger.error(
+            f"Ошибка при создании демо-карты для {file_path}: {e}", exc_info=True)
+        console.print(Panel(
+            f"[bold red]Критическая ошибка при обработке файла[/bold red]\n\n"
+            f"Файл: [cyan]{xlsx_file_path.name}[/cyan]\n"
+            f"Ошибка: {e}",
+            title="❌ Критическая ошибка",
+            border_style="red"
+        ))
+
+
+def _convert_single_file_to_demo_kml(xlsx_path: str, kml_path: str, demo_percentage: float, config: Config) -> Tuple[bool, Optional[ConversionResult]]:
+    """Convert a single xlsx file to demo KML with specified percentage of objects."""
+    try:
+        from openpyxl import load_workbook
+        from src.xlsx_to_kml import create_kml_from_coordinates, get_transformers
+
+        workbook = load_workbook(filename=xlsx_path, data_only=True)
+
+        # Load transformers
+        transformers = None
+        try:
+            transformers = get_transformers()
+        except Exception:
+            transformers = None
+
+        conversion_result = create_kml_from_coordinates(
+            workbook.active,
+            output_file=kml_path,
+            filename=Path(xlsx_path).name,
+            transformers=transformers,
+            config=config,
+            demo_percentage=demo_percentage
+        )
+
+        # Check if demo file is empty
+        if conversion_result.successful_rows == 0:
+            logger.warning(
+                f"Demo file would be empty for {xlsx_path}, skipping")
+            # Remove empty file if it was created
+            if Path(kml_path).exists():
+                Path(kml_path).unlink()
+            return False, None
+
+        return True, conversion_result
+
+    except Exception as e:
+        logger.error(
+            f"Error converting {xlsx_path} to demo KML: {e}", exc_info=True)
+        return False, None
+
+
+def _report_demo_conversion_results(total_files: int, conversion_errors: int, demo_percentage: float, config: Config) -> None:
+    """Report the results of demo conversion."""
+    if conversion_errors == 0:
+        console.print(Panel(
+            f"[bold green]✅ Демо-карты созданы успешно![/bold green]\n\n"
+            f"Обработано файлов: {total_files}\n"
+            f"Процент объектов: [yellow]{demo_percentage}%[/yellow]\n"
+            f"Демо-карты: [blue]{config.demo_kml_output_dir}[/blue]",
+            title="🎉 Создание демо-карт завершено",
+            border_style="green"
+        ))
+    else:
+        successful_files = total_files - conversion_errors
+        console.print(Panel(
+            f"[bold yellow]⚠️ Демо-карты созданы с ошибками[/bold yellow]\n\n"
+            f"Успешно обработано: [green]{successful_files}[/green] файлов\n"
+            f"Ошибок: [red]{conversion_errors}[/red]\n"
+            f"Процент объектов: [yellow]{demo_percentage}%[/yellow]\n"
+            f"Демо-карты: [blue]{config.demo_kml_output_dir}[/blue]",
+            title="⚠️ Создание демо-карт завершено с ошибками",
+            border_style="yellow"
+        ))

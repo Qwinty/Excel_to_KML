@@ -86,6 +86,7 @@ def create_kml_from_coordinates(
     transformers: Optional[dict[str, Transformer]] = None,
     proj4_path: str = "data/proj4.json",
     config: Config | None = None,
+    demo_percentage: Optional[float] = None,
 ) -> ConversionResult:
     if config is None:
         config = Config()
@@ -107,10 +108,35 @@ def create_kml_from_coordinates(
             min_row = cell.row
             break
 
+    # For demo mode, calculate how many rows to process
+    rows_limit = None
+    if demo_percentage is not None:
+        # First, count total data rows
+        total_data_rows = 0
+        for row in sheet.iter_rows(min_row=min_row, values_only=True):
+            coords_str = row[indices["coord"]
+                             ] if indices["coord"] != -1 else None
+            if isinstance(coords_str, str) and coords_str.strip():
+                total_data_rows += 1
+
+        # Calculate limit (take first X% of rows)
+        rows_limit = max(1, int(total_data_rows * demo_percentage / 100))
+        file_logger.info(
+            f"Demo mode: processing first {rows_limit} out of {total_data_rows} rows ({demo_percentage}%)")
+
+    processed_data_rows = 0
     for row_idx, row in enumerate(sheet.iter_rows(min_row=min_row, values_only=True), start=min_row):
         coords_str = row[indices["coord"]] if indices["coord"] != -1 else None
         if not isinstance(coords_str, str) or not coords_str.strip():
             continue
+
+        # Check demo mode limit
+        if rows_limit is not None:
+            if processed_data_rows >= rows_limit:
+                file_logger.info(
+                    f"Demo mode: reached limit of {rows_limit} rows, stopping processing")
+                break
+            processed_data_rows += 1
 
         stats.total_rows += 1
 
